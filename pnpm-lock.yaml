@@ -33,11 +33,11 @@ importers:
         specifier: ^2.7.2
         version: 2.7.2(@types/react@18.3.12)(framer-motion@12.4.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.17)
       '@jellypack/runtime':
-        specifier: ^0.0.3
-        version: 0.0.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^0.0.4
+        version: 0.0.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@jellypack/wasm-react':
-        specifier: ^0.0.2
-        version: 0.0.2(bufferutil@4.0.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
+        specifier: ^0.0.3
+        version: 0.0.3(bufferutil@4.0.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
       '@plasmohq/messaging':
         specifier: ^0.7.1
         version: 0.7.1(react@18.3.1)
@@ -1491,20 +1491,17 @@ packages:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
 
-  '@jellypack/runtime@0.0.1':
-    resolution: {integrity: sha512-CGXCtYND/9zsNwDri/pYsnuuX5fKkKTMuCFrh85jcEyMWqCeOVbw6GxYWQMp8xJlp0xzBokq5QdOhFeHXKTbQA==}
-
-  '@jellypack/runtime@0.0.3':
-    resolution: {integrity: sha512-lGEzlKzx/IJ4CzI1MPtxfR3mOZYPCuniCtUA7jcRJyI397zcjbN+NKge4R+uGrcdArevDSrumUbWtL5Yr7webg==}
+  '@jellypack/runtime@0.0.4':
+    resolution: {integrity: sha512-+6/FmaJ0K3WGi7xO7qtcXVmA/fZyiTce9FTPIxRL0betn1uw3rb6UfKGfgKsO6DqqHFg/bXXjJm/04ZgDAqa2A==}
 
   '@jellypack/types@0.0.2':
     resolution: {integrity: sha512-yXsQStgiDK33alt5kgBAaTI5bya2H9aw35TlXue2J6KpMp5Z9rhg9VILplZm5YbXaQTa8aw5l++G2k2sRxfoDQ==}
 
-  '@jellypack/wasm-api@0.0.1':
-    resolution: {integrity: sha512-k4oCgROdrAZUiO1McKG2obc7UK2++zx++uAkj2xMcnu2BzR3iimKAWxwQkVmukkxhUEzMW8cM1N2EWbg7CK4Lw==}
+  '@jellypack/wasm-api@0.0.3':
+    resolution: {integrity: sha512-WSneygkDPLamlF6IGuwzV2lq3fGziso7m7Y4kQnURugUpkYHKOgyJgvx3EcqRw9LCmuzteDnOL+QCCvmWEvMsQ==}
 
-  '@jellypack/wasm-react@0.0.2':
-    resolution: {integrity: sha512-1cFD7nGZuyoef55bEb6IQS2XwSTh4ZBXnwT1vXsnJOINg13PQm2rUmpoyCj1xgIHMvPJuEVeE9T+NqUlHZGlkw==}
+  '@jellypack/wasm-react@0.0.3':
+    resolution: {integrity: sha512-CLrV5jEAkG5CVQXj182/faAlVT9kBJ6MQjQBaqKGbyZX6NLp8EtC8K5SqCHQGoKTRkbPKhoRKeJrKK/QzGyxTQ==}
     peerDependencies:
       react: '>=18 || >=19.0.0-rc.0'
       react-dom: '>=18 || >=19.0.0-rc.0'
@@ -3664,10 +3661,6 @@ packages:
     resolution: {integrity: sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w==}
     engines: {node: '>=0.8'}
 
-  clones@1.2.0:
-    resolution: {integrity: sha512-FXDYw4TjR8wgPZYui2LeTqWh1BLpfQ8lB6upMtlpDF6WlOOxghmTTxWyngdKTgozqBgKnHbTVwTE+hOHqAykuQ==}
-    engines: {node: '>=4.0.0'}
-
   clsx@1.2.1:
     resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
     engines: {node: '>=6'}
@@ -5318,10 +5311,6 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
-
-  safer-eval@1.3.6:
-    resolution: {integrity: sha512-DN9tBsZgtUOHODzSfO1nGCLhZtxc7Qq/d8/2SNxQZ9muYXZspSh1fO7HOsrf4lcelBNviAJLCxB/ggmG+jV1aw==}
-    engines: {node: '>=6.0.0'}
 
   sass@1.84.0:
     resolution: {integrity: sha512-XDAbhEPJRxi7H0SxrnOpiXFQoUJHwkR2u3Zc4el+fK/Tt5Hpzw5kkQ59qVDfvdaUq6gCrEZIbySFBM2T9DNKHg==}
@@ -7607,7 +7596,7 @@ snapshots:
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
-  '@jellypack/runtime@0.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@jellypack/runtime@0.0.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@aws-crypto/sha256-js': 5.2.0
       '@choptop/haw': 0.0.13
@@ -7620,25 +7609,6 @@ snapshots:
       ethers: 6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       lodash: 4.17.21
       query-string: 9.1.1
-      safer-eval: 1.3.6
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@jellypack/runtime@0.0.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
-    dependencies:
-      '@aws-crypto/sha256-js': 5.2.0
-      '@choptop/haw': 0.0.13
-      '@dfinity/agent': 2.3.0(@dfinity/candid@2.3.0(@dfinity/principal@2.3.0))(@dfinity/principal@2.3.0)
-      '@dfinity/candid': 2.3.0(@dfinity/principal@2.3.0)
-      '@dfinity/identity': 2.3.0(@dfinity/agent@2.3.0(@dfinity/candid@2.3.0(@dfinity/principal@2.3.0))(@dfinity/principal@2.3.0))(@dfinity/principal@2.3.0)
-      '@dfinity/principal': 2.3.0
-      '@jellypack/types': 0.0.2
-      bs58: 6.0.0
-      ethers: 6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      lodash: 4.17.21
-      query-string: 9.1.1
-      safer-eval: 1.3.6
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -7648,26 +7618,25 @@ snapshots:
       '@dfinity/principal': 2.3.0
       lodash: 4.17.21
 
-  '@jellypack/wasm-api@0.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@jellypack/wasm-api@0.0.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@choptop/haw': 0.0.13
-      '@jellypack/runtime': 0.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@jellypack/runtime': 0.0.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@jellypack/types': 0.0.2
       '@jellypack/wasm': 0.0.1
       bs58: 6.0.0
       ethers: 6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       lodash: 4.17.21
       query-string: 9.1.1
-      safer-eval: 1.3.6
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@jellypack/wasm-react@0.0.2(bufferutil@4.0.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
+  '@jellypack/wasm-react@0.0.3(bufferutil@4.0.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
-      '@jellypack/runtime': 0.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@jellypack/runtime': 0.0.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@jellypack/types': 0.0.2
-      '@jellypack/wasm-api': 0.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@jellypack/wasm-api': 0.0.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       buffer: 6.0.3
       lodash: 4.17.21
       react: 18.3.1
@@ -10507,8 +10476,6 @@ snapshots:
 
   clone@2.1.2: {}
 
-  clones@1.2.0: {}
-
   clsx@1.2.1: {}
 
   clsx@2.1.1: {}
@@ -12208,10 +12175,6 @@ snapshots:
   safe-buffer@5.2.1: {}
 
   safer-buffer@2.1.2: {}
-
-  safer-eval@1.3.6:
-    dependencies:
-      clones: 1.2.0
 
   sass@1.84.0:
     dependencies:
