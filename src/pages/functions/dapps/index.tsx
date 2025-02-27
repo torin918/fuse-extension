@@ -1,7 +1,12 @@
-import type { MainPageState } from '~pages/functions';
+import { FuseSlideTransition } from '~components/transition';
+import type { WindowType } from '~types/pages';
 
-function DappsPage({ setState }: { setState: (state: MainPageState) => void }) {
-    return <div className="w-full">Dapps</div>;
+function FunctionDappsPage({ wt }: { wt: WindowType }) {
+    return (
+        <FuseSlideTransition>
+            <div className="w-full">Dapps</div>
+        </FuseSlideTransition>
+    );
 }
 
-export default DappsPage;
+export default FunctionDappsPage;

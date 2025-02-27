@@ -1,5 +1,6 @@
 import { Tooltip } from '@heroui/react';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import { useNavigate } from 'react-router-dom';
 
 import Img_icp from '~assets/svg/icp.svg';
 import default_wallet from '~assets/svg/wallet.svg';
@@ -10,6 +11,7 @@ import { truncate_text } from '~lib/utils/text';
 import type { MainPageState } from '~pages/functions';
 
 function HomePage({ setState }: { setState: (state: MainPageState) => void }) {
+    const navigate = useNavigate();
     const { current_address } = useSecuredData();
     // console.debug(`🚀 ~ HomePage ~ current_address:`, current_address);
 
@@ -161,7 +163,7 @@ function HomePage({ setState }: { setState: (state: MainPageState) => void }) {
                         <span className="pt-1 text-xs text-[#EEEEEE]">Swap</span>
                     </div>
                     <div
-                        onClick={() => setState('dapps')}
+                        onClick={() => navigate('/home/dapps')}
                         className="flex h-[70px] w-[70px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-[#333333] transition duration-300 hover:border-[#FFCF13]"
                     >
                         <Icon

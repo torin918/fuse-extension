@@ -141,3 +141,26 @@ h4 {
         transform 300ms,
         opacity 300ms;
 }
+
+.fuse-slide-enter {
+    transform: translateX(0);
+    opacity: 1;
+}
+.fuse-slide-enter-active {
+    transform: translateX(100%);
+    opacity: 0;
+    transition:
+        transform 300ms,
+        opacity 300ms;
+}
+.fuse-slide-exit {
+    transform: translateX(100%);
+    opacity: 0;
+}
+.fuse-slide-exit-active {
+    transform: translateX(0);
+    opacity: 1;
+    transition:
+        transform 300ms,
+        opacity 300ms;
+}

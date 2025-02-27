@@ -6,7 +6,6 @@ import { useNavigatePages } from '~hooks/navigate';
 import { useSecuredData } from '~hooks/store';
 import type { WindowType } from '~types/pages';
 
-import DappsPage from './dapps';
 import HomePage from './home';
 import ReceivePage from './receive';
 import RecordPage from './record';
@@ -15,7 +14,7 @@ import SendPage from './send';
 import SettingPage from './settings';
 import SwapPage from './swap';
 
-export type MainPageState = 'home' | 'search' | 'setting' | 'send' | 'receive' | 'swap' | 'dapps' | 'record';
+export type MainPageState = 'home' | 'search' | 'setting' | 'send' | 'receive' | 'swap' | 'record';
 
 function MainPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
@@ -38,7 +37,6 @@ function MainPage({ wt }: { wt: WindowType }) {
                         {state === 'send' && <SendPage setState={setState}></SendPage>}
                         {state === 'receive' && <ReceivePage setState={setState}></ReceivePage>}
                         {state === 'swap' && <SwapPage setState={setState}></SwapPage>}
-                        {state === 'dapps' && <DappsPage setState={setState}></DappsPage>}
                         {state === 'record' && <RecordPage setState={setState}></RecordPage>}
                     </div>
                 </CSSTransition>

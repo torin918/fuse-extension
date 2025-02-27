@@ -26,9 +26,13 @@ export const useNavigatePages = (current_state: CurrentState, replace = true) =>
         })();
         if (route) {
             const pathname = location.pathname;
-            if (route === '/locked' && pathname === '/initial/restore') {
+            if (route === '/home' && pathname === '/locked') {
+                console.error('go back');
+                navigate(-1);
+            } else if (route === '/locked' && pathname === '/initial/restore') {
                 // pass
             } else if (!pathname.startsWith(route)) {
+                console.error('go', pathname, '->', route);
                 navigate(route, { replace });
             } else if (route === '/home' && !['/', '/home'].includes(pathname)) {
                 navigate('/', { replace });
