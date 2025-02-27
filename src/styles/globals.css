@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Rethink';
+    src: url('../assets/font/Rethink-Regular.woff2') format('woff2');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Rethink';
+    src: url('../assets/font/Rethink-Medium.woff2') format('woff2');
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: 'Rethink';
+    src: url('../assets/font/Rethink-Medium.woff2') format('woff2');
+    font-weight: 600;
+}
+
+* {
+    scrollbar-width: none;
+    box-sizing: border-box;
+    user-select: none;
+    overscroll-behavior: none;
+}
+
+html {
+    background-color: #0a0600 !important;
+}
+
+body {
+    font-family:
+        'Rethink',
+        -apple-system,
+        system-ui,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        'Helvetica Neue',
+        Arial,
+        sans-serif;
+    font-weight: 400;
+    background-color: #0a0600;
+    color: aliceblue;
+    min-height: 100vh;
+    color: #eeeeee;
+}
+
+body,
+div,
+p,
+span,
+ul,
+li,
+dl,
+dt,
+dd,
+h1,
+h2,
+h3,
+h4 {
+    margin: 0;
+    padding: 0;
+}
+
+.font-bold {
+    font-family: 'RethinkB';
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #181818;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #333;
+}
+
+.switch-xs {
+    zoom: 0.6;
+}
+
+.bg-default-200 {
+    background: #666666;
+}
+
+.slide-in-right {
+    animation: slide-in-right 0.3s forwards;
+}
+
+.bg-content1 {
+    background: #181818;
+}
+
+.group[data-has-value='true'] .group-data-\[has-value\=true\]\:text-default-foreground {
+    color: #eeeeee !important;
+}
+
+@keyframes slide-in-right {
+    from {
+        transform: translateX(50%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* animations.css */
+.slide-enter {
+    transform: translateX(100%);
+    opacity: 0;
+}
+.slide-enter-active {
+    transform: translateX(0);
+    opacity: 1;
+    transition:
+        transform 300ms,
+        opacity 300ms;
+}
+.slide-exit {
+    transform: translateX(0);
+    opacity: 1;
+}
+.slide-exit-active {
+    transform: translateX(100%);
+    opacity: 0;
+    transition:
+        transform 300ms,
+        opacity 300ms;
+}

@@ -1,0 +1,37 @@
+{
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "npm.packageManager": "pnpm",
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "files.eol": "\n",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "cSpell.words": [
+        "BGSW",
+        "choptop",
+        "CSUI",
+        "CSUIJSX",
+        "dfinity",
+        "fusewallet",
+        "hdkey",
+        "heroui",
+        "ianvs",
+        "iconfont",
+        "icrc1",
+        "icrc10",
+        "icrc2",
+        "icrc21",
+        "icrc3",
+        "jellypack",
+        "nanos",
+        "plasmo",
+        "plasmohq",
+        "secp256k",
+        "Sidepanel",
+        "solana",
+        "subaccount",
+        "usehooks"
+    ],
+    "nuxt.isNuxtApp": false
+}
