@@ -31,10 +31,18 @@ function RestoreMnemonicPage({
     const [mnemonicInputs12, setMnemonicInputs12] = useState<string[]>(Array(12).fill(''));
     const [mnemonicInputs24, setMnemonicInputs24] = useState<string[]>(Array(24).fill(''));
 
+    useEffect(() => setMnemonic(mnemonicInputs12.join(' ')), [setMnemonic, mnemonicInputs12]);
+    useEffect(() => setMnemonic(mnemonicInputs24.join(' ')), [setMnemonic, mnemonicInputs24]);
+
     const handleMnemonic = useCallback(
         (mnemonic: string) => {
             if (!mnemonic) return false;
-            mnemonic = mnemonic.split(/[\s\u3000]+/).join(' '); // space chars
+            while (/^[\s\u3000].*/.test(mnemonic)) mnemonic = mnemonic.slice(1);
+            while (/.*[\s\u3000]$/.test(mnemonic)) mnemonic = mnemonic.slice(0, mnemonic.length - 1);
+            mnemonic = mnemonic
+                .split(/[\s\u3000]+/)
+                .join(' ')
+                .trim(); // space chars
             const valid = validate_mnemonic(mnemonic);
             if (!valid) return false;
 
@@ -45,17 +53,9 @@ function RestoreMnemonicPage({
             if (words.length === 24) setMnemonicInputs24(words);
 
             setMnemonic(mnemonic);
+            return true;
         },
         [mnemonicCount, setMnemonic],
-    );
-
-    const handlePaste = useCallback(
-        (event: React.ClipboardEvent<HTMLInputElement>) => {
-            const text: string = event.clipboardData.getData('text').trim();
-
-            if (handleMnemonic(text)) event.preventDefault();
-        },
-        [handleMnemonic],
     );
 
     // TODO TEST
@@ -116,12 +116,11 @@ function RestoreMnemonicPage({
                                             className="h-[48px] w-full border-transparent bg-transparent text-base text-[#EEEEEE] outline-none"
                                             value={mnemonicInputs12[index]}
                                             onChange={(e) => {
-                                                const newInputs = [...mnemonicInputs12];
-                                                newInputs[index] = e.target.value;
-                                                setMnemonicInputs12(newInputs);
-                                            }}
-                                            onPaste={(e) => {
-                                                handlePaste(e);
+                                                if (!handleMnemonic(e.target.value)) {
+                                                    const newInputs = [...mnemonicInputs12];
+                                                    newInputs[index] = e.target.value;
+                                                    setMnemonicInputs12(newInputs);
+                                                }
                                             }}
                                         />
                                     </div>
@@ -140,12 +139,11 @@ function RestoreMnemonicPage({
                                             className="h-[48px] w-full border-transparent bg-transparent text-base text-[#EEEEEE] outline-none"
                                             value={mnemonicInputs24[index]}
                                             onChange={(e) => {
-                                                const newInputs = [...mnemonicInputs24];
-                                                newInputs[index] = e.target.value;
-                                                setMnemonicInputs24(newInputs);
-                                            }}
-                                            onPaste={(e) => {
-                                                handlePaste(e);
+                                                if (!handleMnemonic(e.target.value)) {
+                                                    const newInputs = [...mnemonicInputs24];
+                                                    newInputs[index] = e.target.value;
+                                                    setMnemonicInputs24(newInputs);
+                                                }
                                             }}
                                         />
                                     </div>
@@ -157,9 +155,9 @@ function RestoreMnemonicPage({
                 <Button
                     className="h-[48px] bg-[#FFCF13] text-lg font-semibold text-black"
                     isDisabled={
-                        mnemonicCount === 12
+                        (mnemonicCount === 12
                             ? mnemonicInputs12.some((input) => input.trim() === '')
-                            : mnemonicInputs24.some((input) => input.trim() === '')
+                            : mnemonicInputs24.some((input) => input.trim() === '')) || !validate_mnemonic(mnemonic)
                     }
                     onPress={onNext}
                 >
