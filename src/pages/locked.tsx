@@ -2,7 +2,7 @@ import { Button } from '@heroui/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import logo_Img from '~assets/svg/logo.svg';
+import ic_svg from '~assets/svg/chains/ic.min.svg';
 import InputPassword from '~components/input-password';
 import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
@@ -45,22 +45,13 @@ function LockedPage({ wt }: { wt: WindowType }) {
     }, [valid, password1, unlock]);
 
     return (
-
-        <div className="flex h-full w-full flex-col items-center justify-center p-5">
-            <div className="flex w-full flex-1 flex-col items-center justify-center">
-                <div className="mb-[74px] flex w-full flex-col items-center justify-center">
-                    <img src={logo_Img} width={80} />
-                    <p className="py-5 text-lg font-semibold text-[#FECE13]">Connect Your On-Chain World</p>
-                </div>
-
         <FusePage current_state={current_state} states={CurrentState.LOCKED} replace={true}>
             <div className="flex h-full w-full flex-col items-center justify-center p-5">
                 <div className="flex w-full flex-1 flex-col items-center justify-center">
                     <div className="mb-[74px] flex w-full flex-col items-center justify-center">
-                        <img src={logo_Img} width={80} />
-                        <p className="py-5 text-lg font-semibold text-[#FECE13]">Your Gateway to the Web3 World</p>
+                        <img src={ic_svg} width={80} />
+                        <p className="py-5 text-lg font-semibold text-[#FECE13]">Connect Your On-Chain World</p>
                     </div>
-
 
                     <InputPassword
                         placeholder="Password"

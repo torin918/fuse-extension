@@ -1,6 +1,6 @@
 import CopyToClipboard from 'react-copy-to-clipboard';
 
-import token_img from '~assets/svg/icp.svg';
+import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import { showToast } from '~components/toast';
 import type { MainPageState } from '~pages/functions';
@@ -27,7 +27,7 @@ function ReceivePage({ setState }: { setState: (state: MainPageState) => void })
                 <div className="flex justify-center py-10">
                     <div className="relative h-[160px] w-[160px] overflow-hidden rounded-xl bg-white">
                         <img
-                            src={token_img}
+                            src={ic_svg}
                             className="absolute left-1/2 top-1/2 z-10 h-10 w-10 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-[2px] border-white"
                         />
                         <img
