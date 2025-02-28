@@ -5,7 +5,7 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { useIdentityList } from '~hooks/store/local-secure';
+import { useIdentityKeys } from '~hooks/store/local-secure';
 
 import { SettingsHeader } from '../../components/header';
 
@@ -14,7 +14,7 @@ function FunctionSettingsAccountsPage() {
 
     const { setHide, goto, navigate } = useGoto();
 
-    const { current_identity, identity_list } = useIdentityList();
+    const { current_identity, identity_list } = useIdentityKeys();
 
     return (
         <FusePage current_state={current_address}>

@@ -6,7 +6,7 @@ import type { CurrentInfo } from '~types/current';
 import { type IdentityAddress, type IdentityId, type PrivateKeys } from '~types/identity';
 import { DEFAULT_CURRENT_CHAIN_NETWORK, type CurrentChainNetwork } from '~types/network';
 
-import { __get_session_storage, usePassword } from '..';
+import { __get_session_storage, usePassword, usePasswordHashed } from '..';
 import { agent_refresh_unique_identity } from '../agent';
 import {
     LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK,
@@ -17,7 +17,7 @@ import {
 import { useCurrentChainNetworkInner } from './current_chain_network';
 import { useCurrentConnectedAppsInner } from './current_connected_apps';
 import { inner_get_current_address, useCurrentAddressBy } from './memo/current_address';
-import { useIdentityListBy } from './memo/identity';
+import { useIdentityKeysBy } from './memo/identity';
 import { usePrivateKeysInner } from './private_keys';
 import { useSecureStorageInner } from './storage';
 
@@ -45,11 +45,12 @@ export const useCurrentAddress = () => {
     return useCurrentAddressBy(private_keys, current_chain_network);
 };
 
-export const useIdentityList = () => {
+export const useIdentityKeys = () => {
+    const [password_hashed] = usePasswordHashed();
     const [password] = usePassword();
     const storage = useSecureStorageBy(password);
     const [private_keys, setPrivateKeys] = usePrivateKeysInner(storage);
-    return useIdentityListBy(private_keys, setPrivateKeys);
+    return useIdentityKeysBy(password_hashed, private_keys, setPrivateKeys);
 };
 
 // ================ set directly by storage ================
