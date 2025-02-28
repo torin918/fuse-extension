@@ -12,10 +12,9 @@ import ReceivePage from './receive';
 import RecordPage from './record';
 import SearchPage from './search';
 import SendPage from './send';
-import SettingPage from './settings';
 import SwapPage from './swap';
 
-export type MainPageState = 'home' | 'search' | 'setting' | 'send' | 'receive' | 'swap' | 'record';
+export type MainPageState = 'home' | 'search' | 'send' | 'receive' | 'swap' | 'record';
 
 function MainPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
@@ -37,12 +36,11 @@ const InnerMainPage = ({ wt }: { wt: WindowType }) => {
     if (!current_address) return <></>;
     return (
         <div className="w-full">
-            {state === 'home' && <HomePage setState={setState}></HomePage>}
+            {state === 'home' && <HomePage setState={setState} current_address={current_address}></HomePage>}
             <TransitionGroup>
                 <CSSTransition key={state} classNames="slide" timeout={300}>
                     <div>
                         {state === 'search' && <SearchPage setState={setState}></SearchPage>}
-                        {state === 'setting' && <SettingPage setState={setState}></SettingPage>}
                         {state === 'send' && <SendPage setState={setState}></SendPage>}
                         {state === 'receive' && <ReceivePage setState={setState}></ReceivePage>}
                         {state === 'swap' && <SwapPage setState={setState}></SwapPage>}

@@ -1,8 +1,8 @@
 import '~styles/toast.css';
 
-import error_svg from '~assets/svg/error.svg';
-import info_svg from '~assets/svg/info.svg';
-import success_svg from '~assets/svg/success.svg';
+import error_svg from '~assets/svg/tips/error.min.svg';
+import info_svg from '~assets/svg/tips/info.min.svg';
+import success_svg from '~assets/svg/tips/success.min.svg';
 
 export const showToast = (() => {
     const toastContainerId = 'global-toast-container';

@@ -1,4 +1,4 @@
-import Logo_icpex from '~assets/svg/icpex.svg';
+import logo_icp from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import type { MainPageState } from '~pages/functions';
 
@@ -35,7 +35,7 @@ function RecordPage({ setState }: { setState: (state: MainPageState) => void }) 
                     {/* swap */}
                     <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
                         <div className="flex items-center">
-                            <img src={Logo_icpex} className="h-10 w-10 rounded-full" />
+                            <img src={logo_icp} className="h-10 w-10 rounded-full" />
                             <div className="ml-[10px]">
                                 <strong className="block text-base text-[#EEEEEE]">Swap</strong>
                                 <span className="text-xs text-[#999999]">To ICS</span>
@@ -92,7 +92,7 @@ function RecordPage({ setState }: { setState: (state: MainPageState) => void }) 
                     {/* swap */}
                     <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
                         <div className="flex items-center">
-                            <img src={Logo_icpex} className="h-10 w-10 rounded-full" />
+                            <img src={logo_icp} className="h-10 w-10 rounded-full" />
                             <div className="ml-[10px]">
                                 <strong className="block text-base text-[#EEEEEE]">Swap</strong>
                                 <span className="text-xs text-[#999999]">To ICS</span>
@@ -123,7 +123,7 @@ function RecordPage({ setState }: { setState: (state: MainPageState) => void }) 
                     {/* swap */}
                     <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
                         <div className="flex items-center">
-                            <img src={Logo_icpex} className="h-10 w-10 rounded-full" />
+                            <img src={logo_icp} className="h-10 w-10 rounded-full" />
                             <div className="ml-[10px]">
                                 <strong className="block text-base text-[#EEEEEE]">Swap</strong>
                                 <span className="text-xs text-[#999999]">To ICS</span>

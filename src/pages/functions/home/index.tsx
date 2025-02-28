@@ -2,20 +2,23 @@ import { Tooltip } from '@heroui/react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useNavigate } from 'react-router-dom';
 
-import Img_icp from '~assets/svg/icp.svg';
-import default_wallet from '~assets/svg/wallet.svg';
+import ic_svg from '~assets/svg/chains/ic.min.svg';
+import default_wallet from '~assets/svg/common/wallet.min.svg';
 import Icon from '~components/icon';
 import { showToast } from '~components/toast';
-import { useSecuredData } from '~hooks/store';
 import { truncate_text } from '~lib/utils/text';
 import type { MainPageState } from '~pages/functions';
+import type { IdentityAddress } from '~types/identity';
 
-function HomePage({ setState }: { setState: (state: MainPageState) => void }) {
+function HomePage({
+    setState,
+    current_address,
+}: {
+    setState: (state: MainPageState) => void;
+    current_address: IdentityAddress;
+}) {
     const navigate = useNavigate();
-    const { current_address } = useSecuredData();
-    // console.debug(`🚀 ~ HomePage ~ current_address:`, current_address);
 
-    if (!current_address) return <></>;
     return (
         <div className="w-full">
             <div className="fixed top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
@@ -31,7 +34,7 @@ function HomePage({ setState }: { setState: (state: MainPageState) => void }) {
                         }}
                         content={
                             <div className="flex flex-col gap-y-2 p-[10px]">
-                                {current_address?.ic?.owner && (
+                                {current_address.ic?.owner && (
                                     <CopyToClipboard
                                         text={current_address?.ic?.owner}
                                         onCopy={() => {
@@ -40,7 +43,7 @@ function HomePage({ setState }: { setState: (state: MainPageState) => void }) {
                                     >
                                         <div className="flex items-center">
                                             <div className="h-6 w-6 overflow-hidden rounded-full">
-                                                <img src={Img_icp} className="h-full w-full" />
+                                                <img src={ic_svg} className="h-full w-full" />
                                             </div>
                                             <div className="ml-2 flex items-center justify-between">
                                                 <span className="pr-3 text-sm font-semibold text-[#eeeeee]">
@@ -60,7 +63,7 @@ function HomePage({ setState }: { setState: (state: MainPageState) => void }) {
                                     </CopyToClipboard>
                                 )}
 
-                                {current_address?.ic?.account_id && (
+                                {current_address.ic?.account_id && (
                                     <CopyToClipboard
                                         text={current_address?.ic?.account_id}
                                         onCopy={() => {
@@ -69,7 +72,7 @@ function HomePage({ setState }: { setState: (state: MainPageState) => void }) {
                                     >
                                         <div className="flex items-center">
                                             <div className="h-6 w-6 overflow-hidden rounded-full">
-                                                <img src={Img_icp} className="h-full w-full" />
+                                                <img src={ic_svg} className="h-full w-full" />
                                             </div>
                                             <div className="ml-2 flex items-center justify-between">
                                                 <span className="pr-3 text-sm font-semibold text-[#eeeeee]">
@@ -113,7 +116,7 @@ function HomePage({ setState }: { setState: (state: MainPageState) => void }) {
                             className="mx-3 h-[18px] w-[18px] cursor-pointer text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"
                         ></Icon>
                     </div>
-                    <div onClick={() => setState('setting')}>
+                    <div onClick={() => navigate('/home/settings')}>
                         <Icon
                             name="icon-setting"
                             className="h-[18px] w-[18px] cursor-pointer text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"
