@@ -1,27 +1,36 @@
-import { useRef, useState } from 'react';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { useEffect, useRef, useState } from 'react';
+import { CSSTransition } from 'react-transition-group';
 import { useTimeout } from 'usehooks-ts';
 
-export const FusePageTransition = ({ children }: { children: React.ReactNode }) => {
-    const [key, setKey] = useState<'show' | 'hide'>('hide');
-    useTimeout(() => setKey('show'), 1);
+const TRANSITION_TIMEOUT = 300;
 
-    const nodeRef = useRef(null);
+export const FusePageTransition = ({
+    setHide,
+    children,
+}: {
+    setHide?: (v: { hide?: () => Promise<void> }) => void;
+    children: React.ReactNode;
+}) => {
+    const ref = useRef(null);
+
+    const [show, setShow] = useState<boolean>(false);
+    useTimeout(() => setShow(true), 1);
+    useEffect(() => {
+        if (!setHide) return;
+        setHide({
+            hide: () =>
+                new Promise<void>((resolve) => {
+                    setShow(false);
+                    setTimeout(() => resolve(), TRANSITION_TIMEOUT * 0.7);
+                }),
+        });
+    }, [setHide]);
 
     return (
         <div className="w-full">
-            <TransitionGroup>
-                <CSSTransition nodeRef={nodeRef} key={key} in classNames="fuse-slide" timeout={300}>
-                    <div>
-                        {key === 'show' && <div ref={nodeRef}>{children}</div>}
-                        {key === 'hide' && (
-                            <div ref={nodeRef}>
-                                <div className="w-full"></div>
-                            </div>
-                        )}
-                    </div>
-                </CSSTransition>
-            </TransitionGroup>
+            <CSSTransition nodeRef={ref} in={show} classNames="fuse-page-left" timeout={TRANSITION_TIMEOUT}>
+                <div ref={ref}>{children}</div>
+            </CSSTransition>
         </div>
     );
 };
