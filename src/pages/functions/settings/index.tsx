@@ -5,7 +5,6 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { useIdentityKeysCount } from '~hooks/store/local-secure';
 
 import AboutPage from './components/about';
 import AddressPage from './components/address';
