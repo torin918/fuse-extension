@@ -32,20 +32,37 @@ const InnerMainPage = ({ wt }: { wt: WindowType }) => {
     console.debug(`🚀 ~ MainPage ~ current_address:`, wt, current_address);
 
     const [state, setState] = useState<MainPageState>('home');
+
     if (!current_address) return <></>;
     return (
-        <div className="w-full">
+        <div className="h-full w-full">
             {state === 'home' && <HomePage setState={setState} current_address={current_address}></HomePage>}
-            <TransitionGroup>
-                <CSSTransition key={state} classNames="slide" timeout={300}>
-                    <div>
-                        {state === 'search' && <SearchPage setState={setState}></SearchPage>}
-                        {state === 'send' && <SendPage setState={setState}></SendPage>}
-                        {state === 'receive' && <ReceivePage setState={setState}></ReceivePage>}
-                        {state === 'swap' && <SwapPage setState={setState}></SwapPage>}
-                        {state === 'record' && <RecordPage setState={setState}></RecordPage>}
-                    </div>
-                </CSSTransition>
+            <TransitionGroup component={null}>
+                {state === 'search' && (
+                    <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
+                        <SearchPage setState={setState}></SearchPage>
+                    </CSSTransition>
+                )}
+                {state === 'send' && (
+                    <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
+                        <SendPage setState={setState}></SendPage>
+                    </CSSTransition>
+                )}
+                {state === 'receive' && (
+                    <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
+                        <ReceivePage setState={setState}></ReceivePage>
+                    </CSSTransition>
+                )}
+                {state === 'swap' && (
+                    <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
+                        <SwapPage setState={setState}></SwapPage>
+                    </CSSTransition>
+                )}
+                {state === 'record' && (
+                    <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
+                        <RecordPage setState={setState}></RecordPage>
+                    </CSSTransition>
+                )}
             </TransitionGroup>
         </div>
     );

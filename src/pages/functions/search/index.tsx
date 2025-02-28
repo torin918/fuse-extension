@@ -84,8 +84,8 @@ function SearchPage({ setState }: { setState: (state: MainPageState) => void }) 
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="w-full pt-[60px]">
-            <div className="fixed top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
+        <div className="flex h-full w-full flex-col">
+            <div className="flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
                 <div onClick={() => setState('home')}>
                     <Icon
                         name="icon-arrow-left"
@@ -95,7 +95,7 @@ function SearchPage({ setState }: { setState: (state: MainPageState) => void }) 
                 <div className="text-lg">Search</div>
                 <div className="w-[14px]"></div>
             </div>
-            <div className="relative px-5 pb-5">
+            <div className="w-full px-5">
                 <div className="flex h-12 w-full items-center rounded-xl border border-[#333333] px-3 transition duration-300 hover:border-[#FFCF13]">
                     <Icon name="icon-search" className="h-[16px] w-[16px] text-[#999999]"></Icon>
                     <input
@@ -104,227 +104,227 @@ function SearchPage({ setState }: { setState: (state: MainPageState) => void }) 
                         placeholder="Search token or canister"
                     />
                 </div>
-                <div className="flex items-center justify-between py-3">
-                    <div className="flex items-center text-sm">
-                        <span
-                            className={cn(
-                                'cursor-pointer rounded-full px-5 py-1',
-                                activeTab === 'All' ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
-                            )}
-                            onClick={() => setActiveTab('All')}
-                        >
-                            All
-                        </span>
-                        <span
-                            className={cn(
-                                'cursor-pointer rounded-full px-5 py-1',
-                                activeTab === 'SNS' ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
-                            )}
-                            onClick={() => setActiveTab('SNS')}
-                        >
-                            SNS
-                        </span>
-                        <span
-                            className={cn(
-                                'cursor-pointer rounded-full px-5 py-1',
-                                activeTab === 'CK' ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
-                            )}
-                            onClick={() => setActiveTab('CK')}
-                        >
-                            CK
-                        </span>
-                    </div>
-                    <div
-                        className="flex cursor-pointer items-center text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
-                        onClick={() => setIsOpen(true)}
+            </div>
+            <div className="flex items-center justify-between px-5 py-3">
+                <div className="flex items-center text-sm">
+                    <span
+                        className={cn(
+                            'cursor-pointer rounded-full px-5 py-1',
+                            activeTab === 'All' ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
+                        )}
+                        onClick={() => setActiveTab('All')}
                     >
-                        <span className="pr-1">Custom Token</span>
-                        <Icon name="icon-arrow-right" className="h-[6px] w-[11px] text-[#FFCF13]"></Icon>
+                        All
+                    </span>
+                    <span
+                        className={cn(
+                            'cursor-pointer rounded-full px-5 py-1',
+                            activeTab === 'SNS' ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
+                        )}
+                        onClick={() => setActiveTab('SNS')}
+                    >
+                        SNS
+                    </span>
+                    <span
+                        className={cn(
+                            'cursor-pointer rounded-full px-5 py-1',
+                            activeTab === 'CK' ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
+                        )}
+                        onClick={() => setActiveTab('CK')}
+                    >
+                        CK
+                    </span>
+                </div>
+                <div
+                    className="flex cursor-pointer items-center text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
+                    onClick={() => setIsOpen(true)}
+                >
+                    <span className="pr-1">Custom Token</span>
+                    <Icon name="icon-arrow-right" className="h-[6px] w-[11px] text-[#FFCF13]"></Icon>
+                </div>
+            </div>
+            <div className="flex w-full flex-1 flex-col gap-y-[10px] overflow-y-auto px-5 pb-5">
+                <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
+                    <div className="flex items-center">
+                        <img
+                            src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
+                            className="h-10 w-10 rounded-full"
+                        />
+                        <div className="ml-[10px]">
+                            <strong className="block text-base text-[#EEEEEE]">ICP</strong>
+                            <span className="text-xs text-[#999999]">Internet Computer</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center">
+                        <div className="mr-3">
+                            <Icon
+                                name="icon-sswap"
+                                className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                            ></Icon>
+                        </div>
+                        <div className="switch-xs">
+                            <Switch defaultSelected color="success" size="sm"></Switch>
+                        </div>
                     </div>
                 </div>
-                <div className="flex w-full flex-col gap-y-[10px]">
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICP</strong>
-                                <span className="text-xs text-[#999999]">Internet Computer</span>
-                            </div>
-                        </div>
-                        <div className="flex items-center">
-                            <div className="mr-3">
-                                <Icon
-                                    name="icon-sswap"
-                                    className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                                ></Icon>
-                            </div>
-                            <div className="switch-xs">
-                                <Switch defaultSelected color="success" size="sm"></Switch>
-                            </div>
+                <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
+                    <div className="flex items-center">
+                        <img
+                            src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
+                            className="h-10 w-10 rounded-full"
+                        />
+                        <div className="ml-[10px]">
+                            <strong className="block text-base text-[#EEEEEE]">ICS</strong>
+                            <span className="text-xs text-[#999999]">ICPSwap</span>
                         </div>
                     </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICS</strong>
-                                <span className="text-xs text-[#999999]">ICPSwap</span>
-                            </div>
+                    <div className="flex items-center">
+                        <div className="mr-3">
+                            <Icon
+                                name="icon-sswap"
+                                className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                            ></Icon>
                         </div>
-                        <div className="flex items-center">
-                            <div className="mr-3">
-                                <Icon
-                                    name="icon-sswap"
-                                    className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                                ></Icon>
-                            </div>
-                            <div className="switch-xs">
-                                <Switch defaultSelected color="success" size="sm"></Switch>
-                            </div>
+                        <div className="switch-xs">
+                            <Switch defaultSelected color="success" size="sm"></Switch>
                         </div>
                     </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICP</strong>
-                                <span className="text-xs text-[#999999]">Internet Computer</span>
-                            </div>
-                        </div>
-                        <div className="flex items-center">
-                            <div className="mr-3">
-                                <Icon
-                                    name="icon-sswap"
-                                    className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                                ></Icon>
-                            </div>
-                            <div className="switch-xs">
-                                <Switch defaultSelected color="success" size="sm"></Switch>
-                            </div>
+                </div>
+                <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
+                    <div className="flex items-center">
+                        <img
+                            src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
+                            className="h-10 w-10 rounded-full"
+                        />
+                        <div className="ml-[10px]">
+                            <strong className="block text-base text-[#EEEEEE]">ICP</strong>
+                            <span className="text-xs text-[#999999]">Internet Computer</span>
                         </div>
                     </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICS</strong>
-                                <span className="text-xs text-[#999999]">ICPSwap</span>
-                            </div>
+                    <div className="flex items-center">
+                        <div className="mr-3">
+                            <Icon
+                                name="icon-sswap"
+                                className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                            ></Icon>
                         </div>
-                        <div className="flex items-center">
-                            <div className="mr-3">
-                                <Icon
-                                    name="icon-sswap"
-                                    className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                                ></Icon>
-                            </div>
-                            <div className="switch-xs">
-                                <Switch defaultSelected color="success" size="sm"></Switch>
-                            </div>
+                        <div className="switch-xs">
+                            <Switch defaultSelected color="success" size="sm"></Switch>
                         </div>
                     </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICP</strong>
-                                <span className="text-xs text-[#999999]">Internet Computer</span>
-                            </div>
-                        </div>
-                        <div className="flex items-center">
-                            <div className="mr-3">
-                                <Icon
-                                    name="icon-sswap"
-                                    className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                                ></Icon>
-                            </div>
-                            <div className="switch-xs">
-                                <Switch defaultSelected color="success" size="sm"></Switch>
-                            </div>
+                </div>
+                <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
+                    <div className="flex items-center">
+                        <img
+                            src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
+                            className="h-10 w-10 rounded-full"
+                        />
+                        <div className="ml-[10px]">
+                            <strong className="block text-base text-[#EEEEEE]">ICS</strong>
+                            <span className="text-xs text-[#999999]">ICPSwap</span>
                         </div>
                     </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICS</strong>
-                                <span className="text-xs text-[#999999]">ICPSwap</span>
-                            </div>
+                    <div className="flex items-center">
+                        <div className="mr-3">
+                            <Icon
+                                name="icon-sswap"
+                                className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                            ></Icon>
                         </div>
-                        <div className="flex items-center">
-                            <div className="mr-3">
-                                <Icon
-                                    name="icon-sswap"
-                                    className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                                ></Icon>
-                            </div>
-                            <div className="switch-xs">
-                                <Switch defaultSelected color="success" size="sm"></Switch>
-                            </div>
+                        <div className="switch-xs">
+                            <Switch defaultSelected color="success" size="sm"></Switch>
                         </div>
                     </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICP</strong>
-                                <span className="text-xs text-[#999999]">Internet Computer</span>
-                            </div>
-                        </div>
-                        <div className="flex items-center">
-                            <div className="mr-3">
-                                <Icon
-                                    name="icon-sswap"
-                                    className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                                ></Icon>
-                            </div>
-                            <div className="switch-xs">
-                                <Switch defaultSelected color="success" size="sm"></Switch>
-                            </div>
+                </div>
+                <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
+                    <div className="flex items-center">
+                        <img
+                            src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
+                            className="h-10 w-10 rounded-full"
+                        />
+                        <div className="ml-[10px]">
+                            <strong className="block text-base text-[#EEEEEE]">ICP</strong>
+                            <span className="text-xs text-[#999999]">Internet Computer</span>
                         </div>
                     </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICS</strong>
-                                <span className="text-xs text-[#999999]">ICPSwap</span>
-                            </div>
+                    <div className="flex items-center">
+                        <div className="mr-3">
+                            <Icon
+                                name="icon-sswap"
+                                className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                            ></Icon>
                         </div>
-                        <div className="flex items-center">
-                            <div className="mr-3">
-                                <Icon
-                                    name="icon-sswap"
-                                    className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                                ></Icon>
-                            </div>
-                            <div className="switch-xs">
-                                <Switch defaultSelected color="success" size="sm"></Switch>
-                            </div>
+                        <div className="switch-xs">
+                            <Switch defaultSelected color="success" size="sm"></Switch>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
+                    <div className="flex items-center">
+                        <img
+                            src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
+                            className="h-10 w-10 rounded-full"
+                        />
+                        <div className="ml-[10px]">
+                            <strong className="block text-base text-[#EEEEEE]">ICS</strong>
+                            <span className="text-xs text-[#999999]">ICPSwap</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center">
+                        <div className="mr-3">
+                            <Icon
+                                name="icon-sswap"
+                                className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                            ></Icon>
+                        </div>
+                        <div className="switch-xs">
+                            <Switch defaultSelected color="success" size="sm"></Switch>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
+                    <div className="flex items-center">
+                        <img
+                            src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
+                            className="h-10 w-10 rounded-full"
+                        />
+                        <div className="ml-[10px]">
+                            <strong className="block text-base text-[#EEEEEE]">ICP</strong>
+                            <span className="text-xs text-[#999999]">Internet Computer</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center">
+                        <div className="mr-3">
+                            <Icon
+                                name="icon-sswap"
+                                className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                            ></Icon>
+                        </div>
+                        <div className="switch-xs">
+                            <Switch defaultSelected color="success" size="sm"></Switch>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
+                    <div className="flex items-center">
+                        <img
+                            src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
+                            className="h-10 w-10 rounded-full"
+                        />
+                        <div className="ml-[10px]">
+                            <strong className="block text-base text-[#EEEEEE]">ICS</strong>
+                            <span className="text-xs text-[#999999]">ICPSwap</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center">
+                        <div className="mr-3">
+                            <Icon
+                                name="icon-sswap"
+                                className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                            ></Icon>
+                        </div>
+                        <div className="switch-xs">
+                            <Switch defaultSelected color="success" size="sm"></Switch>
                         </div>
                     </div>
                 </div>

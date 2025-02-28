@@ -17,7 +17,7 @@ function FunctionSettingsAccountsSinglePage() {
     return (
         <FusePage current_state={current_address}>
             <FusePageTransition
-                className="w-full pt-[60px]"
+                className="w-full"
                 setHide={setHide}
                 header={
                     <SettingsHeader

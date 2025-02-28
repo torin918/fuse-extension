@@ -15,7 +15,7 @@ function InitialPage({ wt }: { wt: WindowType }) {
 
     if (current_state !== CurrentState.INITIAL) return <></>;
     return (
-        <div className={'flex h-full w-full items-center justify-center'}>
+        <div className="flex h-full w-full items-center justify-center">
             <div className="h-full w-full">
                 <div className="flex h-full flex-col justify-between px-5 pb-5">
                     <div className="flex w-full flex-1 flex-col items-center justify-center">
@@ -25,13 +25,13 @@ function InitialPage({ wt }: { wt: WindowType }) {
 
                     <div className="flex w-full flex-col gap-y-5">
                         <Button
-                            className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                            className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold !text-black"
                             onPress={() => navigate('/initial/create')}
                         >
                             Create a new wallet
                         </Button>
                         <Button
-                            className="h-[48px] w-full border border-[#FFCF13] bg-transparent text-lg font-semibold text-yellow-500 hover:bg-yellow-300 hover:text-black"
+                            className="h-[48px] w-full border border-[#FFCF13] bg-transparent text-lg font-semibold text-yellow-500 opacity-100 hover:bg-[#FFCF13] hover:text-black"
                             onPress={() => navigate('/initial/restore')}
                         >
                             Import an existing wallet

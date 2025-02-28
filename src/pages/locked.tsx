@@ -2,7 +2,7 @@ import { Button } from '@heroui/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import ic_svg from '~assets/svg/chains/ic.min.svg';
+import logo_svg from '~assets/svg/logo.svg';
 import InputPassword from '~components/input-password';
 import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
@@ -49,7 +49,7 @@ function LockedPage({ wt }: { wt: WindowType }) {
             <div className="flex h-full w-full flex-col items-center justify-center p-5">
                 <div className="flex w-full flex-1 flex-col items-center justify-center">
                     <div className="mb-[74px] flex w-full flex-col items-center justify-center">
-                        <img src={ic_svg} width={80} />
+                        <img src={logo_svg} width={80} />
                         <p className="py-5 text-lg font-semibold text-[#FECE13]">Connect Your On-Chain World</p>
                     </div>
 

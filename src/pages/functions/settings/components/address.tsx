@@ -124,7 +124,7 @@ function AddressPage() {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     return (
-        <div className="relative flex h-[calc(100vh-60px)] flex-col justify-between">
+        <div className="flex h-[calc(100vh-60px)] flex-col justify-between">
             <div className="flex-1 overflow-y-auto">
                 <div className="w-full px-5">
                     {addresses.map((add, index) => (

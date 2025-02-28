@@ -4,8 +4,8 @@ import type { MainPageState } from '~pages/functions';
 
 function RecordPage({ setState }: { setState: (state: MainPageState) => void }) {
     return (
-        <div className="w-full pt-[60px]">
-            <div className="fixed top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
+        <div className="flex h-full w-full flex-col">
+            <div className="flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
                 <div onClick={() => setState('home')}>
                     <Icon
                         name="icon-arrow-left"
@@ -15,7 +15,7 @@ function RecordPage({ setState }: { setState: (state: MainPageState) => void }) 
                 <div className="text-lg">History</div>
                 <div className="w-[14px]"></div>
             </div>
-            <div className="w-full">
+            <div className="w-full flex-1 overflow-y-auto">
                 <div className="flex flex-col">
                     <span className="px-5 py-[5px] text-xs text-[#999999]">02/24/2025</span>
                     {/* send / receive */}
