@@ -1,20 +1,20 @@
 import { useNavigatePages } from '~hooks/navigate';
-import type { CurrentState } from '~types/state';
+import { CurrentState } from '~types/state';
 
 export const FusePage = ({
     current_state,
-    states,
+    states = CurrentState.ALIVE,
     replace = false,
     children,
 }: {
     current_state: CurrentState;
-    states?: CurrentState | CurrentState[];
+    states?: CurrentState | CurrentState[] | null;
     replace?: boolean; // can go back or not
     children: React.ReactNode;
 }) => {
     useNavigatePages(current_state, replace); // ! always check state and page
 
-    if (states !== undefined) {
+    if (states !== undefined && states !== null) {
         if (Array.isArray(states)) {
             if (!states.includes(current_state)) {
                 return <></>;

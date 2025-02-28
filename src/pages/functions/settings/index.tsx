@@ -1,31 +1,21 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { CurrentState } from '~types/state';
 
 import AboutPage from './components/about';
-import AccountPage from './components/account';
 import AddressPage from './components/address';
 import ApplicationsPage from './components/applications';
+import { SettingsHeader } from './components/header';
 import SettingsHome from './components/home';
 import LockPage from './components/lock';
 import PreferencesPage from './components/preferences';
 import PrivacyPage from './components/privacy';
 
-export type SettingPageState =
-    | 'home'
-    | 'account'
-    | 'privacy'
-    | 'preferences'
-    | 'address'
-    | 'applications'
-    | 'lock'
-    | 'about';
+export type SettingPageState = 'home' | 'privacy' | 'preferences' | 'address' | 'applications' | 'lock' | 'about';
 
 function FunctionSettingsPage() {
     const current_address = useCurrentState();
@@ -37,9 +27,7 @@ function FunctionSettingsPage() {
     const title = useMemo(() => {
         switch (settingState) {
             case 'home':
-                return 'Setting';
-            case 'account':
-                return 'Manage Account';
+                return 'Settings';
             case 'privacy':
                 return 'Security & Privacy';
             case 'preferences':
@@ -57,36 +45,52 @@ function FunctionSettingsPage() {
         }
     }, [settingState]);
 
+    const ref = useRef(null);
+
     return (
-        <FusePage current_state={current_address} states={CurrentState.ALIVE}>
+        <FusePage current_state={current_address}>
             <FusePageTransition setHide={setHide}>
                 <div className="w-full pt-[60px]">
-                    <div className="fixed top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
-                        <div onClick={() => goto('/')}>
-                            <Icon
-                                name="icon-arrow-left"
-                                className="h-[14px] w-[19px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                            ></Icon>
-                        </div>
-                        <div className="text-lg">{title}</div>
-                        <div className="w-[14px]" onClick={() => goto('/')}>
-                            <Icon
-                                name="icon-close"
-                                className="h-5 w-5 cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                            ></Icon>
-                        </div>
-                    </div>
+                    <SettingsHeader title={title} onBack={() => goto('/')} onClose={() => goto('/')} />
+
                     <TransitionGroup>
-                        <CSSTransition key={settingState} classNames="slide" timeout={300}>
+                        <CSSTransition nodeRef={ref} key={settingState} classNames="fuse-page-left" timeout={300}>
                             <div>
-                                {settingState === 'home' && <SettingsHome setSettingState={setSettingState} />}
-                                {settingState === 'account' && <AccountPage />}
-                                {settingState === 'privacy' && <PrivacyPage />}
-                                {settingState === 'preferences' && <PreferencesPage />}
-                                {settingState === 'address' && <AddressPage />}
-                                {settingState === 'applications' && <ApplicationsPage />}
-                                {settingState === 'lock' && <LockPage />}
-                                {settingState === 'about' && <AboutPage />}
+                                {settingState === 'home' && (
+                                    <div ref={ref}>
+                                        <SettingsHome setSettingState={setSettingState} />
+                                    </div>
+                                )}
+                                {settingState === 'privacy' && (
+                                    <div ref={ref}>
+                                        <PrivacyPage />
+                                    </div>
+                                )}
+                                {settingState === 'preferences' && (
+                                    <div ref={ref}>
+                                        <PreferencesPage />
+                                    </div>
+                                )}
+                                {settingState === 'address' && (
+                                    <div ref={ref}>
+                                        <AddressPage />
+                                    </div>
+                                )}
+                                {settingState === 'applications' && (
+                                    <div ref={ref}>
+                                        <ApplicationsPage />
+                                    </div>
+                                )}
+                                {settingState === 'lock' && (
+                                    <div ref={ref}>
+                                        <LockPage />
+                                    </div>
+                                )}
+                                {settingState === 'about' && (
+                                    <div ref={ref}>
+                                        <AboutPage />
+                                    </div>
+                                )}
                             </div>
                         </CSSTransition>
                     </TransitionGroup>

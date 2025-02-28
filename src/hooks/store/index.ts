@@ -27,6 +27,7 @@ import { usePasswordHashedInner } from './local/password_hashed';
 import { useWelcomedInner } from './local/welcome';
 import { usePasswordInner } from './session/password';
 import { usePasswordAliveInner } from './session/password_alive';
+import { usePathnameInner } from './session/pathname';
 import { usePopupActionsInner } from './session/popup_actions';
 import { useRestoreInner } from './session/restore';
 import { useUserSettingsIdleInner } from './sync/user/settings/idle';
@@ -60,6 +61,7 @@ export const usePassword = () => usePasswordInner(SESSION_STORAGE); // session
 export const usePasswordAlive = () => usePasswordAliveInner(SESSION_STORAGE); // session
 export const useRestore = () => useRestoreInner(SESSION_STORAGE); // session
 export const usePopupActions = () => usePopupActionsInner(SESSION_STORAGE); // session
+export const usePathname = () => usePathnameInner(SESSION_STORAGE); // session
 
 // ================ set directly by storage ================
 

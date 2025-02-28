@@ -1,14 +1,17 @@
+import { useNavigate } from 'react-router-dom';
+
 import Icon from '~components/icon';
 
 import type { SettingPageState } from '..';
 
 function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPageState) => void }) {
+    const navigate = useNavigate();
     return (
         <>
             <div className="mt-6 w-full px-5">
                 <div className="flex flex-col overflow-hidden rounded-xl bg-[#181818]">
                     <div
-                        onClick={() => setSettingState('account')}
+                        onClick={() => navigate('/home/settings/accounts')}
                         className="flex w-full cursor-pointer items-center justify-between border-b border-[#222222] p-3 duration-300 hover:bg-[#2B2B2B]"
                     >
                         <div className="flex items-center">

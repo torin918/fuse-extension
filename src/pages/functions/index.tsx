@@ -5,7 +5,6 @@ import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useSecuredData } from '~hooks/store';
 import type { WindowType } from '~types/pages';
-import { CurrentState } from '~types/state';
 
 import HomePage from './home';
 import ReceivePage from './receive';
@@ -20,7 +19,7 @@ function MainPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
 
     return (
-        <FusePage current_state={current_state} states={CurrentState.ALIVE}>
+        <FusePage current_state={current_state}>
             <InnerMainPage wt={wt} />
         </FusePage>
     );
