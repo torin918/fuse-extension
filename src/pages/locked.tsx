@@ -51,7 +51,7 @@ function LockedPage({ wt }: { wt: WindowType }) {
             <div className="flex w-full flex-1 flex-col items-center justify-center">
                 <div className="mb-[74px] flex w-full flex-col items-center justify-center">
                     <img src={logo_Img} width={80} />
-                    <p className="py-5 text-lg font-semibold text-[#FECE13]">Your Gateway to the Web3 World</p>
+                    <p className="py-5 text-lg font-semibold text-[#FECE13]">Connect Your On-Chain World</p>
                 </div>
 
                 <InputPassword

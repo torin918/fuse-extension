@@ -11,7 +11,7 @@ function AboutPage() {
                 <div className="w-[70px]">
                     <img src={Img_logo} className="w-full" />
                 </div>
-                <span className="py-3 text-3xl text-[#FFCF13]">Fuse Wallet</span>
+                <span className="py-3 text-3xl font-bold text-[#FFCF13]">FUSE</span>
                 <span className="text-sm text-[#999999]">Version 1.1</span>
             </div>
             <div className="flex flex-col overflow-hidden rounded-xl bg-[#181818]">
