@@ -50,7 +50,7 @@ function FunctionSettingsPage() {
     return (
         <FusePage current_state={current_address}>
             <FusePageTransition setHide={setHide}>
-                <div className="w-full pt-[60px]">
+                <div className="relative flex h-full w-full flex-col items-center justify-center pt-[60px]">
                     <SettingsHeader title={title} onBack={() => goto('/')} onClose={() => goto('/')} />
 
                     <TransitionGroup>

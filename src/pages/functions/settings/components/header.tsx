@@ -10,7 +10,7 @@ export const SettingsHeader = ({
     onClose?: () => void;
 }) => {
     return (
-        <div className="fixed top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
+        <div className="absolute top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
             {onBack ? (
                 <div onClick={onBack}>
                     <Icon

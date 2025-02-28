@@ -19,7 +19,7 @@ function FunctionSettingsAccountsPage() {
     return (
         <FusePage current_state={current_address}>
             <FusePageTransition
-                className="w-full pt-[60px]"
+                className="relative flex h-full w-full flex-col items-center justify-center pt-[60px]"
                 setHide={setHide}
                 header={
                     <SettingsHeader
@@ -29,7 +29,7 @@ function FunctionSettingsAccountsPage() {
                     />
                 }
             >
-                <div className="flex h-[calc(100vh-60px)] flex-col justify-between">
+                <div className="flex h-full w-full flex-col justify-between">
                     <div className="flex-1 overflow-y-auto px-5">
                         {(identity_list ?? []).map((identity) => (
                             <div
