@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
+import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
-import { useNavigatePages } from '~hooks/navigate';
 import { useSecuredData } from '~hooks/store';
 import type { WindowType } from '~types/pages';
+import { CurrentState } from '~types/state';
 
 import HomePage from './home';
 import ReceivePage from './receive';
@@ -18,13 +19,21 @@ export type MainPageState = 'home' | 'search' | 'setting' | 'send' | 'receive' |
 
 function MainPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
-    useNavigatePages(current_state, false); // can go back
 
+    return (
+        <FusePage current_state={current_state} states={CurrentState.ALIVE}>
+            <InnerMainPage wt={wt} />
+        </FusePage>
+    );
+}
+
+export default MainPage;
+
+const InnerMainPage = ({ wt }: { wt: WindowType }) => {
     const { current_address } = useSecuredData();
-    console.debug(`🚀 ~ MainPage ~ current_address:`, wt, current_address, current_state);
+    console.debug(`🚀 ~ MainPage ~ current_address:`, wt, current_address);
 
     const [state, setState] = useState<MainPageState>('home');
-
     if (!current_address) return <></>;
     return (
         <div className="w-full">
@@ -43,6 +52,4 @@ function MainPage({ wt }: { wt: WindowType }) {
             </TransitionGroup>
         </div>
     );
-}
-
-export default MainPage;
+};

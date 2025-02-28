@@ -2,9 +2,9 @@ import { useRef, useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { useTimeout } from 'usehooks-ts';
 
-export const FuseSlideTransition = ({ children }: { children: React.ReactNode }) => {
+export const FusePageTransition = ({ children }: { children: React.ReactNode }) => {
     const [key, setKey] = useState<'show' | 'hide'>('hide');
-    useTimeout(() => setKey('show'), 13);
+    useTimeout(() => setKey('show'), 1);
 
     const nodeRef = useRef(null);
 

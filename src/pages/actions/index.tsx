@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
+import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
-import { useNavigatePages } from '~hooks/navigate';
 import { usePopupActions } from '~hooks/store';
 import { get_popup_action_id, match_popup_action, type PopupAction } from '~types/actions';
 import type { WindowType } from '~types/pages';
@@ -12,7 +12,6 @@ import ConnectActionPage from './connect';
 
 function ActionsPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
-    useNavigatePages(current_state, true); // can not go back
 
     const [popup_actions, , { deletePopupAction }] = usePopupActions();
     useEffect(() => {
@@ -22,19 +21,18 @@ function ActionsPage({ wt }: { wt: WindowType }) {
         }
     }, [popup_actions, wt]);
 
-    if (current_state !== CurrentState.ACTION) return <></>;
     return (
-        <>
+        <FusePage current_state={current_state} states={CurrentState.ACTION} replace={true}>
             {0 < popup_actions.length && (
-                <InnerActionPage action={popup_actions[0]} deletePopupAction={deletePopupAction} />
+                <SingleActionPage action={popup_actions[0]} deletePopupAction={deletePopupAction} />
             )}
-        </>
+        </FusePage>
     );
 }
 
 export default ActionsPage;
 
-const InnerActionPage = ({
+const SingleActionPage = ({
     action,
     deletePopupAction,
 }: {
