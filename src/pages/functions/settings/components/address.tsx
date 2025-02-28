@@ -235,13 +235,20 @@ function AddressPage() {
                 </Button>
             </div>
             <AddAddress isOpen={isAddrOpen} setIsOpen={setIsOpen} />
-            <Modal backdrop="blur" isOpen={isOpen} onClose={onClose} size="xs" placement="center" closeButton={false}>
+            <Modal
+                backdrop="blur"
+                isOpen={isOpen}
+                onClose={onClose}
+                size="xs"
+                placement="center"
+                hideCloseButton={true}
+            >
                 <ModalContent>
                     {(onClose) => (
                         <>
                             <ModalBody>
                                 <div className="flex w-full flex-col items-center justify-center pt-5">
-                                    <Icon name="icon-tips" className="h-[52px] w-[52px] text-[#FFCF13]" />
+                                    <Icon name="icon-tips" className="h-[56px] w-[56px] text-[#FFCF13]" />
                                     <p className="w-full pt-4 text-base">
                                         Are you sure you want to delete the address?
                                     </p>
@@ -259,7 +266,7 @@ function AddressPage() {
                                         className="rounded-xl bg-[#FFCF13] py-3 text-base font-semibold text-black"
                                         onPress={onClose}
                                     >
-                                        Action
+                                        Confirm
                                     </Button>
                                 </div>
                             </ModalFooter>
