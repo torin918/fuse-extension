@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { StorageWatchCallback } from '@plasmohq/storage';
 import type { SecureStorage } from '@plasmohq/storage/secure';
 
-import type { PrivateKeys } from '~types/identity';
+import { type PrivateKeys } from '~types/identity';
 
 import { LOCAL_SECURE_KEY_PRIVATE_KEYS } from '../keys';
 
@@ -11,7 +11,7 @@ import { LOCAL_SECURE_KEY_PRIVATE_KEYS } from '../keys';
 let cached_private_keys: PrivateKeys | undefined = undefined;
 
 // private keys ->  // * local secure
-export const usePrivateKeyInner = (
+export const usePrivateKeysInner = (
     storage: SecureStorage | undefined,
 ): [PrivateKeys | undefined, (value: PrivateKeys) => Promise<void>] => {
     const [private_keys, setPrivateKeys] = useState<PrivateKeys | undefined>(cached_private_keys); // use cached value to init
@@ -50,6 +50,8 @@ export const usePrivateKeyInner = (
         },
         [storage],
     );
+
+    // memo
 
     return [private_keys, updatePrivateKeys];
 };

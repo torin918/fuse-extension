@@ -31,7 +31,7 @@ const useSecureStorageBy = (password: string) => useSecureStorageInner(password,
 export const useCurrentConnectedApps = () => {
     const [password] = usePassword();
     const storage = useSecureStorageBy(password);
-    const [private_keys] = usePrivateKeyInner(storage);
+    const [private_keys] = usePrivateKeysInner(storage);
     const [current_chain_network] = useCurrentChainNetworkInner(storage, private_keys?.current);
     return useCurrentConnectedAppsInner(storage, private_keys?.current, current_chain_network);
 };
@@ -39,7 +39,7 @@ export const useCurrentConnectedApps = () => {
 export const useCurrentAddress = () => {
     const [password] = usePassword();
     const storage = useSecureStorageBy(password);
-    const [private_keys] = usePrivateKeyInner(storage);
+    const [private_keys] = usePrivateKeysInner(storage);
     const [current_chain_network] = useCurrentChainNetworkInner(storage, private_keys?.current);
     return useCurrentAddressBy(private_keys, current_chain_network);
 };
