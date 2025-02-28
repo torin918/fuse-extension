@@ -14,7 +14,7 @@ function FunctionSettingsAccountsPage() {
 
     const { setHide, goto, navigate } = useGoto();
 
-    const { current_identity, identity_list } = useIdentityKeys();
+    const { current_identity, identity_list, has_main_mnemonic, pushIdentityByMainMnemonic } = useIdentityKeys();
 
     return (
         <FusePage current_state={current_address}>
@@ -53,6 +53,22 @@ function FunctionSettingsAccountsPage() {
                             </div>
                         ))}
                     </div>
+                    {has_main_mnemonic && (
+                        <div className="w-full p-5">
+                            <Button
+                                className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                                onPress={() => {
+                                    pushIdentityByMainMnemonic().then((r) => {
+                                        if (r === undefined) return;
+                                        if (r === false) return;
+                                        // notice successful
+                                    });
+                                }}
+                            >
+                                Add wallet by main seed
+                            </Button>
+                        </div>
+                    )}
                     <div className="w-full p-5">
                         <Button className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black">
                             Add wallet

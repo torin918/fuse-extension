@@ -67,7 +67,7 @@ const InnerSingleAccountPage = () => {
                             showMnemonic(current.id, '1111qqqq1').then((m) => {
                                 if (m === undefined) return;
                                 if (m === false) setMnemonic('wrong password');
-                                if (typeof m === 'string') setMnemonic(m);
+                                if (typeof m === 'object') setMnemonic(m.mnemonic);
                             });
                         }}
                     >

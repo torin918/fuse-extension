@@ -2,6 +2,7 @@ import { Button } from '@heroui/react';
 import { useNavigate } from 'react-router-dom';
 
 import logo_svg from '~assets/svg/logo.svg';
+import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useNavigatePages } from '~hooks/navigate';
 import type { WindowType } from '~types/pages';
@@ -13,33 +14,34 @@ function InitialPage({ wt }: { wt: WindowType }) {
 
     const navigate = useNavigate();
 
-    if (current_state !== CurrentState.INITIAL) return <></>;
     return (
-        <div className={'flex h-full w-full items-center justify-center'}>
-            <div className="h-full w-full">
-                <div className="flex h-full flex-col justify-between px-5 pb-5">
-                    <div className="flex w-full flex-1 flex-col items-center justify-center">
-                        <img src={logo_svg} width={80} />
-                        <p className="py-5 text-lg font-semibold text-[#FECE13]">Connect Your On-Chain World</p>
-                    </div>
+        <FusePage current_state={current_state} states={CurrentState.INITIAL}>
+            <div className={'flex h-full w-full items-center justify-center'}>
+                <div className="h-full w-full">
+                    <div className="flex h-full flex-col justify-between px-5 pb-5">
+                        <div className="flex w-full flex-1 flex-col items-center justify-center">
+                            <img src={logo_svg} width={80} />
+                            <p className="py-5 text-lg font-semibold text-[#FECE13]">Connect Your On-Chain World</p>
+                        </div>
 
-                    <div className="flex w-full flex-col gap-y-5">
-                        <Button
-                            className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
-                            onPress={() => navigate('/initial/create')}
-                        >
-                            Create a new wallet
-                        </Button>
-                        <Button
-                            className="h-[48px] w-full border border-[#FFCF13] bg-transparent text-lg font-semibold text-yellow-500 hover:bg-yellow-300 hover:text-black"
-                            onPress={() => navigate('/initial/restore')}
-                        >
-                            Import an existing wallet
-                        </Button>
+                        <div className="flex w-full flex-col gap-y-5">
+                            <Button
+                                className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                                onPress={() => navigate('/initial/create')}
+                            >
+                                Create a new wallet
+                            </Button>
+                            <Button
+                                className="h-[48px] w-full border border-[#FFCF13] bg-transparent text-lg font-semibold text-yellow-500 hover:bg-yellow-300 hover:text-black"
+                                onPress={() => navigate('/initial/restore')}
+                            >
+                                Import an existing wallet
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </FusePage>
     );
 }
 

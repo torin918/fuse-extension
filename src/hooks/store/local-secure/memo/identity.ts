@@ -24,11 +24,16 @@ export const useIdentityKeysBy = (
 ): {
     current_identity: IdentityId | undefined;
     identity_list: ShowIdentityKey[] | undefined;
-    showMnemonic: (id: IdentityId, password: string) => Promise<string | boolean | undefined>;
+    has_main_mnemonic: boolean | undefined;
+    showMnemonic: (
+        id: IdentityId,
+        password: string,
+    ) => Promise<{ mnemonic: string; subaccount: number } | boolean | undefined>;
     showPrivateKey: (id: IdentityId, password: string) => Promise<string | boolean | undefined>;
     isKeyExist: (key: CombinedIdentityKey) => Promise<boolean>;
     deleteIdentity: (id: IdentityId, password: string) => Promise<boolean | undefined>;
     pushIdentity: (key: CombinedIdentityKey) => Promise<boolean | undefined>;
+    pushIdentityByMainMnemonic: () => Promise<boolean | undefined>;
     updateIdentity: (id: IdentityId, name: string, icon: string) => Promise<boolean | undefined>;
 } => {
     const current_identity = useMemo(() => private_keys?.current, [private_keys]);
@@ -47,16 +52,24 @@ export const useIdentityKeysBy = (
         if (!same(new_identity_list, identity_list)) setIdentityList(new_identity_list);
     }, [private_keys, identity_list]);
 
+    const has_main_mnemonic = useMemo(() => {
+        if (!private_keys) return undefined;
+        return !!private_keys.mnemonic;
+    }, [private_keys]);
+
     // query
     const showMnemonic = useCallback(
-        async (id: IdentityId, password: string): Promise<string | boolean | undefined> => {
+        async (
+            id: IdentityId,
+            password: string,
+        ): Promise<{ mnemonic: string; subaccount: number } | boolean | undefined> => {
             const checked = await verify_password(password_hashed, password);
             if (!checked) return false;
             if (!private_keys) return undefined;
             const identity = private_keys.keys.find((i) => i.id === id);
             if (!identity) return undefined;
             return match_combined_identity_key(identity.key, {
-                mnemonic: (m) => m.mnemonic,
+                mnemonic: (m) => ({ mnemonic: m.mnemonic, subaccount: m.subaccount }),
                 private_key: () => undefined,
             });
         },
@@ -139,6 +152,33 @@ export const useIdentityKeysBy = (
         },
         [private_keys, setPrivateKeys],
     );
+    const pushIdentityByMainMnemonic = useCallback(async (): Promise<boolean | undefined> => {
+        if (!private_keys) return undefined;
+        if (!private_keys.mnemonic) return undefined;
+
+        let max_subaccount = 0;
+        for (const key of private_keys.keys) {
+            match_combined_identity_key(key.key, {
+                mnemonic: (m) => {
+                    if (m.mnemonic !== private_keys.mnemonic) return;
+                    if (max_subaccount < m.subaccount) max_subaccount = m.subaccount;
+                },
+                private_key: () => {
+                    /* do nothing */
+                },
+            });
+        }
+
+        const key: CombinedIdentityKey = {
+            mnemonic: {
+                type: 'mnemonic',
+                mnemonic: private_keys.mnemonic,
+                subaccount: max_subaccount + 1,
+            },
+        };
+
+        return await pushIdentity(key);
+    }, [private_keys, pushIdentity]);
 
     // update
     const updateIdentity = useCallback(
@@ -179,11 +219,13 @@ export const useIdentityKeysBy = (
     return {
         current_identity,
         identity_list,
+        has_main_mnemonic,
         showMnemonic,
         showPrivateKey,
         isKeyExist,
         deleteIdentity,
         pushIdentity,
+        pushIdentityByMainMnemonic,
         updateIdentity,
     };
 };
