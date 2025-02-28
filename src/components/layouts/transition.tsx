@@ -45,7 +45,7 @@ export const FusePageTransition = ({
     return (
         <div className={className ?? 'h-full w-full'}>
             {header}
-            <CSSTransition nodeRef={ref} in={show} classNames="fuse-page-left" timeout={TRANSITION_TIMEOUT}>
+            <CSSTransition nodeRef={ref} in={show} classNames="slide" timeout={TRANSITION_TIMEOUT}>
                 <div ref={ref} className="h-full w-full">
                     {children}
                 </div>

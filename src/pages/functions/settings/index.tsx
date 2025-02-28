@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { FusePage } from '~components/layouts/page';
@@ -46,54 +46,48 @@ function FunctionSettingsPage() {
         }
     }, [settingState]);
 
-    const ref = useRef(null);
-
     return (
         <FusePage current_state={current_address}>
             <FusePageTransition setHide={setHide}>
                 <div className="relative flex h-full w-full flex-col items-center justify-center pt-[60px]">
                     <SettingsHeader title={title} onBack={() => goto('/')} onClose={() => goto('/')} />
 
-                    <TransitionGroup>
-                        <CSSTransition nodeRef={ref} key={settingState} classNames="fuse-page-left" timeout={300}>
-                            <div>
-                                {settingState === 'home' && (
-                                    <div ref={ref}>
-                                        <SettingsHome setSettingState={setSettingState} />
-                                    </div>
-                                )}
-                                {settingState === 'privacy' && (
-                                    <div ref={ref}>
-                                        <PrivacyPage />
-                                    </div>
-                                )}
-                                {settingState === 'preferences' && (
-                                    <div ref={ref}>
-                                        <PreferencesPage />
-                                    </div>
-                                )}
-                                {settingState === 'address' && (
-                                    <div ref={ref}>
-                                        <AddressPage />
-                                    </div>
-                                )}
-                                {settingState === 'applications' && (
-                                    <div ref={ref}>
-                                        <ApplicationsPage />
-                                    </div>
-                                )}
-                                {settingState === 'lock' && (
-                                    <div ref={ref}>
-                                        <LockPage />
-                                    </div>
-                                )}
-                                {settingState === 'about' && (
-                                    <div ref={ref}>
-                                        <AboutPage />
-                                    </div>
-                                )}
-                            </div>
-                        </CSSTransition>
+                    <TransitionGroup component={null}>
+                        {settingState === 'home' && (
+                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
+                                <SettingsHome setSettingState={setSettingState} />
+                            </CSSTransition>
+                        )}
+                        {settingState === 'privacy' && (
+                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
+                                <PrivacyPage />
+                            </CSSTransition>
+                        )}
+                        {settingState === 'preferences' && (
+                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
+                                <PreferencesPage />
+                            </CSSTransition>
+                        )}
+                        {settingState === 'address' && (
+                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
+                                <AddressPage />
+                            </CSSTransition>
+                        )}
+                        {settingState === 'applications' && (
+                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
+                                <ApplicationsPage />
+                            </CSSTransition>
+                        )}
+                        {settingState === 'lock' && (
+                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
+                                <LockPage />
+                            </CSSTransition>
+                        )}
+                        {settingState === 'about' && (
+                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
+                                <AboutPage />
+                            </CSSTransition>
+                        )}
                     </TransitionGroup>
                 </div>
             </FusePageTransition>

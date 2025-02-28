@@ -66,8 +66,8 @@ function RestoreMnemonicPage({
     }, [handleMnemonic]);
 
     return (
-        <div className="slide-in-right flex h-full w-full flex-col justify-between">
-            <div className="flex h-[58px] items-center justify-between px-5">
+        <div className="slide-in-right flex h-full w-full flex-col justify-between px-5">
+            <div className="flex h-[58px] items-center justify-between">
                 <div className="flex items-center" onClick={onBack}>
                     <Icon
                         name="icon-arrow-left"
@@ -82,78 +82,77 @@ function RestoreMnemonicPage({
                     ></Icon>
                 </div> */}
             </div>
-            <div className="flex w-full flex-1 flex-col justify-between px-5 pb-5">
-                <div className="mt-5 w-full">
-                    <div className="flex w-full items-center gap-x-5">
-                        <div className="flex cursor-pointer flex-col items-center" onClick={() => setMnemonicCount(12)}>
-                            <div className="text-sm text-[#EEEEEE]">
-                                <i className="pr-2 not-italic text-[#FFCF13]">12</i>words
-                            </div>
-                            <span
-                                className={cn(`mt-1 h-[3px] w-5 bg-[#FFCF13]`, mnemonicCount === 12 ? '' : 'opacity-0')}
-                            ></span>
+            <div className="mt-5 w-full flex-1 overflow-y-auto">
+                <div className="flex w-full items-center gap-x-5">
+                    <div className="flex cursor-pointer flex-col items-center" onClick={() => setMnemonicCount(12)}>
+                        <div className="text-sm text-[#EEEEEE]">
+                            <i className="pr-2 not-italic text-[#FFCF13]">12</i>words
                         </div>
-                        <div className="flex cursor-pointer flex-col items-center" onClick={() => setMnemonicCount(24)}>
-                            <div className="text-sm text-[#EEEEEE]">
-                                <i className="pr-2 not-italic text-[#FFCF13]">24</i>words
-                            </div>
-                            <span
-                                className={cn(`mt-1 h-[3px] w-5 bg-[#FFCF13]`, mnemonicCount === 24 ? '' : 'opacity-0')}
-                            ></span>
-                        </div>
+                        <span
+                            className={cn(`mt-1 h-[3px] w-5 bg-[#FFCF13]`, mnemonicCount === 12 ? '' : 'opacity-0')}
+                        ></span>
                     </div>
-                    <div className="custom-scrollbar mt-4 grid max-h-[calc(100vh-200px)] w-full grid-cols-2 gap-4 overflow-y-auto">
-                        {mnemonicCount === 12 &&
-                            Array.from({ length: 12 }, (_, index) => (
-                                <div
-                                    key={index}
-                                    className="flex h-[48px] items-center rounded-xl border border-[#333333] px-3 duration-300 hover:border-[#FFCF13]"
-                                >
-                                    <i className="mr-2 text-sm not-italic text-[#999999]">{index + 1}.</i>
-                                    <div className="flex-1">
-                                        <input
-                                            type="text"
-                                            className="h-[48px] w-full border-transparent bg-transparent text-base text-[#EEEEEE] outline-none"
-                                            value={mnemonicInputs12[index]}
-                                            onChange={(e) => {
-                                                if (!handleMnemonic(e.target.value)) {
-                                                    const newInputs = [...mnemonicInputs12];
-                                                    newInputs[index] = e.target.value;
-                                                    setMnemonicInputs12(newInputs);
-                                                }
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            ))}
-                        {mnemonicCount === 24 &&
-                            Array.from({ length: 24 }, (_, index) => (
-                                <div
-                                    key={index}
-                                    className="flex h-[48px] items-center rounded-xl border border-[#333333] px-3 duration-300 hover:border-[#FFCF13]"
-                                >
-                                    <i className="mr-2 text-sm not-italic text-[#999999]">{index + 1}.</i>
-                                    <div className="flex-1">
-                                        <input
-                                            type="text"
-                                            className="h-[48px] w-full border-transparent bg-transparent text-base text-[#EEEEEE] outline-none"
-                                            value={mnemonicInputs24[index]}
-                                            onChange={(e) => {
-                                                if (!handleMnemonic(e.target.value)) {
-                                                    const newInputs = [...mnemonicInputs24];
-                                                    newInputs[index] = e.target.value;
-                                                    setMnemonicInputs24(newInputs);
-                                                }
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            ))}
+                    <div className="flex cursor-pointer flex-col items-center" onClick={() => setMnemonicCount(24)}>
+                        <div className="text-sm text-[#EEEEEE]">
+                            <i className="pr-2 not-italic text-[#FFCF13]">24</i>words
+                        </div>
+                        <span
+                            className={cn(`mt-1 h-[3px] w-5 bg-[#FFCF13]`, mnemonicCount === 24 ? '' : 'opacity-0')}
+                        ></span>
                     </div>
                 </div>
-
+                <div className="mt-4 grid w-full grid-cols-2 gap-4">
+                    {mnemonicCount === 12 &&
+                        Array.from({ length: 12 }, (_, index) => (
+                            <div
+                                key={index}
+                                className="flex h-[48px] items-center rounded-xl border border-[#333333] px-3 duration-300 hover:border-[#FFCF13]"
+                            >
+                                <i className="mr-2 text-sm not-italic text-[#999999]">{index + 1}.</i>
+                                <div className="flex-1">
+                                    <input
+                                        type="text"
+                                        className="h-[48px] w-full border-transparent bg-transparent text-base text-[#EEEEEE] outline-none"
+                                        value={mnemonicInputs12[index]}
+                                        onChange={(e) => {
+                                            if (!handleMnemonic(e.target.value)) {
+                                                const newInputs = [...mnemonicInputs12];
+                                                newInputs[index] = e.target.value;
+                                                setMnemonicInputs12(newInputs);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    {mnemonicCount === 24 &&
+                        Array.from({ length: 24 }, (_, index) => (
+                            <div
+                                key={index}
+                                className="flex h-[48px] items-center rounded-xl border border-[#333333] px-3 duration-300 hover:border-[#FFCF13]"
+                            >
+                                <i className="mr-2 text-sm not-italic text-[#999999]">{index + 1}.</i>
+                                <div className="flex-1">
+                                    <input
+                                        type="text"
+                                        className="h-[48px] w-full border-transparent bg-transparent text-base text-[#EEEEEE] outline-none"
+                                        value={mnemonicInputs24[index]}
+                                        onChange={(e) => {
+                                            if (!handleMnemonic(e.target.value)) {
+                                                const newInputs = [...mnemonicInputs24];
+                                                newInputs[index] = e.target.value;
+                                                setMnemonicInputs24(newInputs);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                </div>
+            </div>
+            <div className="w-full py-5">
                 <Button
-                    className="h-[48px] bg-[#FFCF13] text-lg font-semibold text-black"
+                    className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
                     isDisabled={
                         (mnemonicCount === 12
                             ? mnemonicInputs12.some((input) => input.trim() === '')

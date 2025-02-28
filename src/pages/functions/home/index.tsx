@@ -21,7 +21,7 @@ function HomePage({
     const navigate = useNavigate();
 
     return (
-        <div className="relative w-full">
+        <div className="relative h-full w-full">
             <div className="absolute top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
                 <div className="flex items-center">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#333333] text-lg font-semibold text-[#999999]">
@@ -126,7 +126,7 @@ function HomePage({
                 </div>
             </div>
 
-            <div className="mt-[60px] pb-5">
+            <div className="flex-1 overflow-y-auto pb-5">
                 <div className="w-full py-2">
                     <div className="block text-center text-4xl font-semibold text-[#FFCF13]">$12,879.76</div>
                     <div className="mt-2 flex w-full items-center justify-center">
