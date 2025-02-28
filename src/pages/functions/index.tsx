@@ -34,7 +34,7 @@ const InnerMainPage = ({ wt }: { wt: WindowType }) => {
     const [state, setState] = useState<MainPageState>('home');
     if (!current_address) return <></>;
     return (
-        <div className="w-full">
+        <div className="flex w-full items-center justify-center">
             {state === 'home' && <HomePage setState={setState} current_address={current_address}></HomePage>}
             <TransitionGroup>
                 <CSSTransition key={state} classNames="slide" timeout={300}>

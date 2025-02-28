@@ -20,8 +20,8 @@ function HomePage({
     const navigate = useNavigate();
 
     return (
-        <div className="w-full">
-            <div className="fixed top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
+        <div className="relative w-full">
+            <div className="absolute top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
                 <div className="flex items-center">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#333333] text-lg font-semibold text-[#999999]">
                         <img src={default_wallet} className="w-5" />
