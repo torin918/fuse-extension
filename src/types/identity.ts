@@ -5,12 +5,23 @@ export type IdentityId = string; // uuid
 
 export type CombinedIdentityKey = { mnemonic: IdentityKeyMnemonic } | { private_key: IdentityKeyPrivate };
 
-export interface IdentityKey {
+export interface SimpleIdentityKey {
     id: IdentityId; // uuid
     created: number; // ms
     name: string; // show identity name
-    key: CombinedIdentityKey;
+    icon: string;
 }
+
+export type IdentityKey = SimpleIdentityKey & {
+    key: CombinedIdentityKey; // ! must be secret
+};
+
+export const simple_identity_key = (identity_key: IdentityKey) => ({
+    id: identity_key.id,
+    created: identity_key.created,
+    name: identity_key.name,
+    icon: identity_key.icon,
+});
 
 export interface IdentityAddress {
     ic?: {

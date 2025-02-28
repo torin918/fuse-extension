@@ -5,6 +5,7 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { useIdentityList } from '~hooks/store/local-secure';
 
 import { SettingsHeader } from '../components/header';
 
@@ -13,11 +14,8 @@ function FunctionSettingsAccountsPage() {
 
     const { setHide, goto } = useGoto();
 
-    const wallets = [
-        { id: '1', name: 'Wallet 1', img: '😄' },
-        { id: '2', name: 'Wallet 2', img: '😄' },
-        { id: '3', name: 'Wallet 3', img: '😄' },
-    ];
+    const { current_identity, identity_list } = useIdentityList();
+
     return (
         <FusePage current_state={current_address}>
             <FusePageTransition
@@ -33,22 +31,23 @@ function FunctionSettingsAccountsPage() {
             >
                 <div className="flex h-[calc(100vh-60px)] flex-col justify-between">
                     <div className="flex-1 overflow-y-auto px-5">
-                        {wallets.map((wallet, index) => (
+                        {(identity_list ?? []).map((identity) => (
                             <div
-                                key={index}
+                                key={identity.id}
                                 className="mt-3 block w-full cursor-pointer rounded-xl bg-[#181818] p-4 duration-300 hover:bg-[#2B2B2B]"
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">
                                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#333333] p-2 text-2xl">
-                                            {wallet.img}
+                                            {identity.icon}
                                         </div>
-                                        <span className="pl-3 text-sm">{wallet.name}</span>
+                                        <span className="pl-3 text-sm">{identity.name}</span>
                                     </div>
+                                    {identity.id === current_identity && <div>CURRENT</div>}
                                     <Icon
                                         name="icon-arrow-right"
                                         className="h-[9px] w-[14px] cursor-pointer text-[#999999]"
-                                    ></Icon>
+                                    />
                                 </div>
                             </div>
                         ))}

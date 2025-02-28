@@ -17,7 +17,8 @@ import {
 import { useCurrentChainNetworkInner } from './current_chain_network';
 import { useCurrentConnectedAppsInner } from './current_connected_apps';
 import { inner_get_current_address, useCurrentAddressBy } from './memo/current_address';
-import { usePrivateKeyInner } from './private_keys';
+import { useIdentityListBy } from './memo/identity';
+import { usePrivateKeysInner } from './private_keys';
 import { useSecureStorageInner } from './storage';
 
 // ! Important data and do NEVER export
@@ -42,6 +43,13 @@ export const useCurrentAddress = () => {
     const [private_keys] = usePrivateKeysInner(storage);
     const [current_chain_network] = useCurrentChainNetworkInner(storage, private_keys?.current);
     return useCurrentAddressBy(private_keys, current_chain_network);
+};
+
+export const useIdentityList = () => {
+    const [password] = usePassword();
+    const storage = useSecureStorageBy(password);
+    const [private_keys, setPrivateKeys] = usePrivateKeysInner(storage);
+    return useIdentityListBy(private_keys, setPrivateKeys);
 };
 
 // ================ set directly by storage ================
