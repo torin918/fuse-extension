@@ -103,8 +103,8 @@ h4 {
     background: #181818;
 }
 
-.group[data-has-value='true'] .group-data-\[has-value\=true\]\:text-default-foreground {
-    color: #eeeeee !important;
+button[aria-label='Close']:hover {
+    background-color: #333333 !important;
 }
 
 @keyframes slide-in-right {
