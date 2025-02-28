@@ -9,10 +9,10 @@ import {
     delete_current_session_approve,
     delete_popup_action,
     find_current_session_approve,
-    get_current_info,
     push_popup_action,
 } from '~hooks/store';
 import { get_unique_ic_agent } from '~hooks/store/agent';
+import { get_current_info } from '~hooks/store/local-secure';
 import { get_current_notification, open_notification } from '~lib/notification';
 import { parse_proxy_message, stringify_proxy_message } from '~lib/utils/ic-message';
 import { stringify_factory } from '~lib/utils/json';

@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { v4 as uuid } from 'uuid';
 
-import { refreshPasswordDirectly, setPasswordHashedDirectly, setPrivateKeysDirectly } from '~hooks/store';
+import { refreshPasswordDirectly, setPasswordHashedDirectly } from '~hooks/store';
+import { setPrivateKeysDirectly } from '~hooks/store/local-secure';
 import { hash_password } from '~lib/password';
 import type { PrivateKeys } from '~types/identity';
 import { CurrentState } from '~types/state';

@@ -1,6 +1,6 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 
-import { get_current_identity_address, get_current_info } from '~hooks/store';
+import { get_current_identity_address, get_current_info } from '~hooks/store/local-secure';
 import type { MessageResult } from '~lib/messages';
 import type { IdentityAddress } from '~types/identity';
 import type { CurrentWindow } from '~types/window';

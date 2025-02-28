@@ -3,7 +3,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
-import { useSecuredData } from '~hooks/store';
+import { useCurrentAddress } from '~hooks/store/local-secure';
 import type { WindowType } from '~types/pages';
 
 import HomePage from './home';
@@ -28,7 +28,7 @@ function MainPage({ wt }: { wt: WindowType }) {
 export default MainPage;
 
 const InnerMainPage = ({ wt }: { wt: WindowType }) => {
-    const { current_address } = useSecuredData();
+    const current_address = useCurrentAddress();
     console.debug(`🚀 ~ MainPage ~ current_address:`, wt, current_address);
 
     const [state, setState] = useState<MainPageState>('home');
