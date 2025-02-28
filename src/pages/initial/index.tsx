@@ -24,13 +24,15 @@ function InitialPage({ wt }: { wt: WindowType }) {
                 wt === 'options' ? 'h-screen bg-[#fef4ca]' : '',
             )}
         >
-            <div className="fixed left-0 top-6 flex w-full items-center justify-between px-10">
-                <img src={logo_black} className="mr-2 w-[120px]" />
-                <div className="flex items-center">
-                    <Icon name="icon-tips" className="mr-1 h-4 w-4 text-[#333333]" />
-                    <span className="text-base text-[#333333]">Help</span>
+            {wt === 'options' && (
+                <div className="fixed left-0 top-6 flex w-full items-center justify-between px-10">
+                    <img src={logo_black} className="mr-2 w-[120px]" />
+                    <div className="flex items-center">
+                        <Icon name="icon-tips" className="mr-1 h-4 w-4 text-[#333333]" />
+                        <span className="text-base text-[#333333]">Help</span>
+                    </div>
                 </div>
-            </div>
+            )}
             <div
                 className={cn(
                     wt === 'options' ? 'h-[520px] w-[400px] rounded-2xl bg-[#0a0600] shadow-2xl' : 'h-full w-full',
