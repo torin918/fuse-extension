@@ -12,10 +12,10 @@ function WelcomePage() {
 
     return (
         <FusePage current_state={current_state} states={CurrentState.WELCOME}>
-            <div className="flex h-screen w-full flex-col items-center justify-center">
-                {/* <div className="h1">Welcome</div>
-                <div>...</div> */}
-                <div className="mt-10">
+            <div className="flex h-full w-full flex-col items-center justify-center">
+                <div className="text-2xl">Welcome to Fuse Wallet</div>
+
+                <div className="pt-[260px]">
                     <Button
                         className="bg-gradient-to-tr from-pink-500 to-yellow-500 text-white shadow-lg"
                         size="md"
