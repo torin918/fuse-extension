@@ -26,6 +26,7 @@ export const useNavigatePages = (current_state: CurrentState, replace = true) =>
         })();
         if (route) {
             const pathname = location.pathname;
+            // console.debug(`🚀 ~ useEffect ~ pathname:`, pathname, route);
             if (route === '/home' && pathname === '/locked') {
                 console.error("go back to home'page from", pathname);
                 navigate(-1);

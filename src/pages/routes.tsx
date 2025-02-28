@@ -6,7 +6,8 @@ import ActionsPage from './actions';
 import MainPage from './functions';
 import FunctionDappsPage from './functions/dapps';
 import FunctionSettingsPage from './functions/settings';
-import FunctionSettingsAccountsPage from './functions/settings/pages/account';
+import SettingsAccountsPage from './functions/settings/pages/account';
+import AccountsSinglePage from './functions/settings/pages/account/edit';
 import InitialPage from './initial';
 import InnerCreatePage from './initial/create';
 import CreateRestorePage from './initial/restore';
@@ -26,7 +27,8 @@ export const getRoutes = (wt: WindowType) => {
 
         // settings
         ...(hit(wt, []) ? [{ path: '/home/settings', element: <FunctionSettingsPage /> }] : []),
-        ...(hit(wt, []) ? [{ path: '/home/settings/accounts', element: <FunctionSettingsAccountsPage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/accounts', element: <SettingsAccountsPage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/accounts/:id', element: <AccountsSinglePage /> }] : []),
         // dapps
         ...(hit(wt, []) ? [{ path: '/home/dapps', element: <FunctionDappsPage wt={wt} /> }] : []),
 

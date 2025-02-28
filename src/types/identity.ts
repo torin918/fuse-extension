@@ -5,23 +5,13 @@ export type IdentityId = string; // uuid
 
 export type CombinedIdentityKey = { mnemonic: IdentityKeyMnemonic } | { private_key: IdentityKeyPrivate };
 
-export interface SimpleIdentityKey {
+export interface IdentityKey {
     id: IdentityId; // uuid
     created: number; // ms
     name: string; // show identity name
     icon: string;
+    key: CombinedIdentityKey;
 }
-
-export type IdentityKey = SimpleIdentityKey & {
-    key: CombinedIdentityKey; // ! must be secret
-};
-
-export const simple_identity_key = (identity_key: IdentityKey) => ({
-    id: identity_key.id,
-    created: identity_key.created,
-    name: identity_key.name,
-    icon: identity_key.icon,
-});
 
 export interface IdentityAddress {
     ic?: {
@@ -62,3 +52,13 @@ export const match_combined_identity_key_async = <T>(
     if ('private_key' in self) return private_key(self.private_key);
     throw new Error(`Unknown identity type: ${Object.keys(self)[0]}`);
 };
+
+// show identity
+
+export interface ShowIdentityKey {
+    id: IdentityId; // uuid
+    created: number; // ms
+    name: string; // show identity name
+    icon: string;
+    address: IdentityAddress;
+}

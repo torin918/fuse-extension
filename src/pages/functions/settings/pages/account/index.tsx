@@ -7,12 +7,12 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useIdentityList } from '~hooks/store/local-secure';
 
-import { SettingsHeader } from '../components/header';
+import { SettingsHeader } from '../../components/header';
 
 function FunctionSettingsAccountsPage() {
     const current_address = useCurrentState();
 
-    const { setHide, goto } = useGoto();
+    const { setHide, goto, navigate } = useGoto();
 
     const { current_identity, identity_list } = useIdentityList();
 
@@ -35,6 +35,7 @@ function FunctionSettingsAccountsPage() {
                             <div
                                 key={identity.id}
                                 className="mt-3 block w-full cursor-pointer rounded-xl bg-[#181818] p-4 duration-300 hover:bg-[#2B2B2B]"
+                                onClick={() => navigate(`/home/settings/accounts/${identity.id}`)}
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">

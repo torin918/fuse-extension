@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
-import { useNavigate, type NavigateOptions } from 'react-router-dom';
+import { useNavigate, type NavigateFunction, type NavigateOptions } from 'react-router-dom';
 
 export const useGoto = (): {
     setHide: (v: { hide?: () => Promise<void> }) => void;
     goto: (path: string | number, options?: NavigateOptions) => void;
+    navigate: NavigateFunction;
 } => {
     const navigate = useNavigate();
 
@@ -24,5 +25,6 @@ export const useGoto = (): {
     return {
         setHide,
         goto,
+        navigate,
     };
 };
