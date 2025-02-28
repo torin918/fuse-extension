@@ -35,6 +35,7 @@ export const useIdentityKeysBy = (
     pushIdentity: (key: CombinedIdentityKey) => Promise<boolean | undefined>;
     pushIdentityByMainMnemonic: () => Promise<boolean | undefined>;
     updateIdentity: (id: IdentityId, name: string, icon: string) => Promise<boolean | undefined>;
+    switchIdentity: (id: IdentityId) => Promise<boolean | undefined>;
 } => {
     const current_identity = useMemo(() => private_keys?.current, [private_keys]);
 
@@ -109,7 +110,7 @@ export const useIdentityKeysBy = (
             if (
                 private_keys.mnemonic &&
                 match_combined_identity_key(identity.key, {
-                    mnemonic: (m) => m.mnemonic === private_keys.mnemonic,
+                    mnemonic: (m) => m.mnemonic === private_keys.mnemonic && m.subaccount === 0, // main mnemonic
                     private_key: () => false,
                 })
             ) {
@@ -216,6 +217,25 @@ export const useIdentityKeysBy = (
         [private_keys, setPrivateKeys],
     );
 
+    // switch
+    const switchIdentity = useCallback(
+        async (id: IdentityId): Promise<boolean | undefined> => {
+            if (!private_keys) return undefined;
+            const identity = private_keys.keys.find((i) => i.id === id);
+            if (!identity) return undefined; // can not find account
+            if (identity.id === private_keys.current) return true;
+
+            await setPrivateKeys({
+                mnemonic: private_keys.mnemonic,
+                current: identity.id,
+                keys: [...private_keys.keys],
+            });
+
+            return true;
+        },
+        [private_keys, setPrivateKeys],
+    );
+
     return {
         current_identity,
         identity_list,
@@ -227,6 +247,7 @@ export const useIdentityKeysBy = (
         pushIdentity,
         pushIdentityByMainMnemonic,
         updateIdentity,
+        switchIdentity,
     };
 };
 
@@ -245,7 +266,7 @@ const show_identity_key = (private_keys: PrivateKeys, identity_key: IdentityKey)
         private_keys.keys.length > 1 &&
         private_keys.current !== identity_key.id &&
         match_combined_identity_key(identity_key.key, {
-            mnemonic: (m) => m.mnemonic !== private_keys.mnemonic,
+            mnemonic: (m) => m.mnemonic !== private_keys.mnemonic || m.subaccount !== 0, // not main mnemonic
             private_key: () => true,
         }),
 });

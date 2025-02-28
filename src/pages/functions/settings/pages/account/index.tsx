@@ -14,7 +14,8 @@ function FunctionSettingsAccountsPage() {
 
     const { setHide, goto, navigate } = useGoto();
 
-    const { current_identity, identity_list, has_main_mnemonic, pushIdentityByMainMnemonic } = useIdentityKeys();
+    const { current_identity, identity_list, has_main_mnemonic, pushIdentityByMainMnemonic, switchIdentity } =
+        useIdentityKeys();
 
     return (
         <FusePage current_state={current_address}>
@@ -38,8 +39,22 @@ function FunctionSettingsAccountsPage() {
                                 onClick={() => navigate(`/home/settings/accounts/${identity.id}`)}
                             >
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#333333] p-2 text-2xl">
+                                    <div className="flex cursor-default items-center">
+                                        <div
+                                            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#333333] p-2 text-2xl"
+                                            onClick={(e) => {
+                                                if (current_identity !== identity.id) {
+                                                    switchIdentity(identity.id).then((r) => {
+                                                        console.error('switch identity', r);
+                                                        if (r === undefined) return;
+                                                        if (r === false) throw Error('switch identity failed');
+                                                        // notice successful
+                                                    });
+                                                }
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                            }}
+                                        >
                                             {identity.icon}
                                         </div>
                                         <span className="pl-3 text-sm">{identity.name}</span>
@@ -70,7 +85,10 @@ function FunctionSettingsAccountsPage() {
                         </div>
                     )}
                     <div className="w-full p-5">
-                        <Button className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black">
+                        <Button
+                            className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                            onPress={() => navigate('/home/settings/accounts/extra')}
+                        >
                             Add wallet
                         </Button>
                     </div>

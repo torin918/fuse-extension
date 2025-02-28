@@ -2,3 +2,4 @@
 .vscode
 .idea
 /dist/
+src/pages/routes.tsx

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, type NavigateOptions } from 'react-router-dom';
 
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
@@ -27,7 +27,7 @@ function FunctionSettingsAccountsSinglePage() {
                     />
                 }
             >
-                <InnerSingleAccountPage />
+                <InnerSingleAccountPage goto={goto} />
             </FusePageTransition>
         </FusePage>
     );
@@ -35,10 +35,12 @@ function FunctionSettingsAccountsSinglePage() {
 
 export default FunctionSettingsAccountsSinglePage;
 
-const InnerSingleAccountPage = () => {
+const InnerSingleAccountPage = ({
+    goto: _goto,
+}: {
+    goto: (path: string | number, options?: NavigateOptions) => void;
+}) => {
     const { id } = useParams();
-
-    console.debug(`🚀 ~ FunctionSettingsAccountsSinglePage ~ params:`, id);
 
     const { current_identity, identity_list, showMnemonic, showPrivateKey, deleteIdentity, updateIdentity } =
         useIdentityKeys();
@@ -65,6 +67,7 @@ const InnerSingleAccountPage = () => {
                     <div
                         onClick={() => {
                             showMnemonic(current.id, '1111qqqq1').then((m) => {
+                                console.error('show mnemonic', m);
                                 if (m === undefined) return;
                                 if (m === false) setMnemonic('wrong password');
                                 if (typeof m === 'object') setMnemonic(m.mnemonic);
@@ -79,10 +82,11 @@ const InnerSingleAccountPage = () => {
                 <>
                     <div
                         onClick={() => {
-                            showPrivateKey(current.id, '1111qqqq1').then((m) => {
-                                if (m === undefined) return;
-                                if (m === false) setPrivateKey('wrong password');
-                                if (typeof m === 'string') setPrivateKey(m);
+                            showPrivateKey(current.id, '1111qqqq').then((pk) => {
+                                console.error('show private key', pk);
+                                if (pk === undefined) return;
+                                if (pk === false) setPrivateKey('wrong password');
+                                if (typeof pk === 'string') setPrivateKey(pk);
                             });
                         }}
                     >
@@ -94,6 +98,7 @@ const InnerSingleAccountPage = () => {
             <div
                 onClick={() => {
                     updateIdentity(current.id, current.name + '1', current.icon).then((r) => {
+                        console.error('update identity', r);
                         if (r === undefined) return;
                         if (r === false) throw new Error('can not update');
                         // notice successful
@@ -106,9 +111,11 @@ const InnerSingleAccountPage = () => {
                 <div
                     onClick={() => {
                         deleteIdentity(current.id, '1111qqqq').then((r) => {
+                            console.error('delete identity', r);
                             if (r === undefined) return;
                             if (r === false) throw new Error('can not delete');
                             // notice successful
+                            _goto(-1);
                         });
                     }}
                 >

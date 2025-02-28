@@ -27,7 +27,7 @@ function InputPasswordPage({
                 <Icon
                     name="icon-arrow-left"
                     className="h-[14px] w-[19px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                ></Icon>
+                />
             </div>
             <div className="mt-[35px] flex w-full flex-1 flex-col justify-between">
                 <div className="w-full">
