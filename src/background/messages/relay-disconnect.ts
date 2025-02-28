@@ -1,6 +1,7 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 
-import { get_current_info, revoke_current_session_connected_app } from '~hooks/store';
+import { revoke_current_session_connected_app } from '~hooks/store';
+import { get_current_info } from '~hooks/store/local-secure';
 import type { MessageResult } from '~lib/messages';
 import { type Chain } from '~types/chain';
 import type { CurrentWindow } from '~types/window';

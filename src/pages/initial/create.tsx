@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useRestoreAccount } from '~hooks/memo/restore_account';
-import { useNavigatePages } from '~hooks/navigate';
 import { random_mnemonic } from '~lib/mnemonic';
 import type { WindowType } from '~types/pages';
 import { CurrentState } from '~types/state';
@@ -16,7 +16,6 @@ type CreateState = 'password' | 'mnemonic' | 'verification';
 
 function InnerCreatePage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
-    useNavigatePages(current_state, false); // can go back
 
     const navigate = useNavigate();
 
@@ -41,9 +40,8 @@ function InnerCreatePage({ wt }: { wt: WindowType }) {
         }
     }, [password1, current_mnemonic, restoreAccountByMnemonic, wt]);
 
-    if (current_state !== CurrentState.INITIAL) return <></>;
     return (
-        <>
+        <FusePage current_state={current_state} states={CurrentState.INITIAL}>
             {state === 'password' && (
                 <InputPasswordPage
                     onBack={() => navigate(-1)}
@@ -74,7 +72,7 @@ function InnerCreatePage({ wt }: { wt: WindowType }) {
                     onNext={onCompleted}
                 />
             )}
-        </>
+        </FusePage>
     );
 }
 

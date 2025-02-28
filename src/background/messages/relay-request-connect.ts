@@ -4,12 +4,11 @@ import {
     delete_current_session_connected_app_message,
     delete_popup_action,
     find_current_session_connected_app_message,
-    get_current_info,
     is_current_initial,
     push_popup_action,
     reset_current_session_connected_app,
-    set_current_connected_apps,
 } from '~hooks/store';
+import { get_current_info, set_current_connected_apps } from '~hooks/store/local-secure';
 import type { MessageResult } from '~lib/messages';
 import { get_current_notification, open_notification } from '~lib/notification';
 import type { PopupAction } from '~types/actions';

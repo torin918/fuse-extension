@@ -1,12 +1,5 @@
-import { HeroUIProvider } from '@heroui/react';
-import { HashRouter, useRoutes } from 'react-router-dom';
-
+import { SinglePageApp } from '~components/layouts/app';
 import { getRoutes } from '~pages/routes';
-
-import '~styles/globals.css';
-import '../assets/iconfont/iconfont';
-
-import { useBackground } from '~hooks/memo/background';
 
 // routes of notification page
 const routes = getRoutes('notification');
@@ -19,21 +12,7 @@ const routes = getRoutes('notification');
 // - A dedicated page for authentication
 // - When you need a more elaborate routing setup
 function NotificationPage() {
-    return (
-        <HashRouter>
-            <HeroUIProvider>
-                <div className="flex h-full w-full flex-col">
-                    <InnerNotificationPage />
-                </div>
-            </HeroUIProvider>
-        </HashRouter>
-    );
+    return <SinglePageApp className="flex h-full w-full flex-col" routes={routes} />;
 }
 
 export default NotificationPage;
-
-function InnerNotificationPage() {
-    useBackground();
-    const views = useRoutes(routes);
-    return <>{views}</>;
-}

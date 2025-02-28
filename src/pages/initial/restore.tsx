@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useRestoreAccount } from '~hooks/memo/restore_account';
-import { useNavigatePages } from '~hooks/navigate';
 import type { WindowType } from '~types/pages';
 import { CurrentState } from '~types/state';
 
@@ -16,7 +16,6 @@ type RestoreState = 'way' | 'mnemonic' | 'private_key' | 'password';
 
 function CreateRestorePage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
-    useNavigatePages(current_state, false); // can go back
 
     const navigate = useNavigate();
 
@@ -38,9 +37,8 @@ function CreateRestorePage({ wt }: { wt: WindowType }) {
         }
     }, [password1, mnemonic, restoreAccountByMnemonic, wt]);
 
-    if (current_state !== CurrentState.INITIAL && current_state !== CurrentState.LOCKED) return <></>;
     return (
-        <>
+        <FusePage current_state={current_state} states={[CurrentState.INITIAL, CurrentState.LOCKED]}>
             {/* Import Wallet - Select the way to import the wallet */}
             {state === 'way' && (
                 <RestoreWayPage
@@ -78,7 +76,7 @@ function CreateRestorePage({ wt }: { wt: WindowType }) {
                     onNext={onCompleted}
                 />
             )}
-        </>
+        </FusePage>
     );
 }
 

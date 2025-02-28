@@ -1,20 +1,14 @@
 import { Storage } from '@plasmohq/storage';
-import { SecureStorage } from '@plasmohq/storage/secure';
 
 import { is_same_popup_action, type PopupAction, type PopupActions } from '~types/actions';
 import { match_chain_async, type Chain } from '~types/chain';
-import type { ConnectedApps, CurrentConnectedApps } from '~types/connect';
 import type { CurrentInfo } from '~types/current';
-import type { IdentityAddress, IdentityId, PrivateKeys } from '~types/identity';
-import { DEFAULT_CURRENT_CHAIN_NETWORK, type CurrentChainNetwork } from '~types/network';
+import type { IdentityId } from '~types/identity';
+import { type CurrentChainNetwork } from '~types/network';
 
-import { agent_refresh_unique_identity } from './agent';
 import {
     LOCAL_KEY_CACHED_KEY,
     LOCAL_KEY_PASSWORD_HASHED,
-    LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK,
-    LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS,
-    LOCAL_SECURE_KEY_PRIVATE_KEYS,
     SESSION_KEY_CURRENT_SESSION_APPROVE,
     SESSION_KEY_CURRENT_SESSION_CONNECTED_APP,
     SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_MESSAGE,
@@ -22,11 +16,11 @@ import {
     SESSION_KEY_PASSWORD_ALIVE,
     SESSION_KEY_POPUP_ACTIONS,
 } from './keys';
-import { inner_get_current_address, useSecuredDataInner } from './local-secure';
 import { usePasswordHashedInner } from './local/password_hashed';
 import { useWelcomedInner } from './local/welcome';
 import { usePasswordInner } from './session/password';
 import { usePasswordAliveInner } from './session/password_alive';
+import { usePathnameInner } from './session/pathname';
 import { usePopupActionsInner } from './session/popup_actions';
 import { useRestoreInner } from './session/restore';
 import { useUserSettingsIdleInner } from './sync/user/settings/idle';
@@ -36,10 +30,11 @@ const STORAGE = new Storage(); // sync
 // const secure_storage = new SecureStorage(); // sync
 // * local -> current browser
 const LOCAL_STORAGE = new Storage({ area: 'local' }); // local
-const LOCAL_SECURE_STORAGE = new SecureStorage({ area: 'local' }); // local
+// const LOCAL_SECURE_STORAGE = new SecureStorage({ area: 'local' }); // local
 // * session -> current session
 const SESSION_STORAGE = new Storage({ area: 'session' }); // session
 // const session_secure_storage = new SecureStorage({ area: 'session' }); // session
+export const __get_session_storage = () => SESSION_STORAGE;
 
 // ================ hooks ================
 
@@ -47,9 +42,6 @@ const SESSION_STORAGE = new Storage({ area: 'session' }); // session
 
 // use settings
 export const useUserSettingsIdle = () => useUserSettingsIdleInner(STORAGE); // sync
-
-// ############### LOCAL SECURE ###############
-export const useSecuredData = () => useSecuredDataInner(LOCAL_SECURE_STORAGE); // local secure
 
 // ############### LOCAL ###############
 export const useWelcomed = () => useWelcomedInner(LOCAL_STORAGE); // local
@@ -60,84 +52,9 @@ export const usePassword = () => usePasswordInner(SESSION_STORAGE); // session
 export const usePasswordAlive = () => usePasswordAliveInner(SESSION_STORAGE); // session
 export const useRestore = () => useRestoreInner(SESSION_STORAGE); // session
 export const usePopupActions = () => usePopupActionsInner(SESSION_STORAGE); // session
+export const usePathname = () => usePathnameInner(SESSION_STORAGE); // session
 
 // ================ set directly by storage ================
-
-// ############### LOCAL SECURE ###############
-
-export const setPrivateKeysDirectly = async (password: string, private_keys: PrivateKeys) => {
-    await LOCAL_SECURE_STORAGE.setPassword(password);
-    await LOCAL_SECURE_STORAGE.set(LOCAL_SECURE_KEY_PRIVATE_KEYS, private_keys);
-};
-
-// identity address
-export const get_current_identity_address = async (): Promise<IdentityAddress | undefined> => {
-    const password = await SESSION_STORAGE.get<string>(SESSION_KEY_PASSWORD);
-    if (!password) return undefined; // locked
-
-    await LOCAL_SECURE_STORAGE.setPassword(password); // set password before any action
-
-    const private_keys = await LOCAL_SECURE_STORAGE.get<PrivateKeys>(LOCAL_SECURE_KEY_PRIVATE_KEYS);
-    // const chain_networks = await LOCAL_SECURE_STORAGE.get<ChainNetworks>(KEY_CHAIN_NETWORKS);
-    if (private_keys === undefined) throw new Error('no private keys');
-
-    const current = private_keys.keys.find((i) => i.id === private_keys.current);
-    if (!current) throw new Error('can not find current identity');
-
-    const current_address = inner_get_current_address(current);
-
-    return current_address;
-};
-
-// current info
-export const get_current_info = async (): Promise<CurrentInfo | undefined> => {
-    const password = await SESSION_STORAGE.get<string>(SESSION_KEY_PASSWORD);
-    if (!password) return undefined; // locked
-
-    await LOCAL_SECURE_STORAGE.setPassword(password); // set password before any action
-
-    const private_keys = await LOCAL_SECURE_STORAGE.get<PrivateKeys>(LOCAL_SECURE_KEY_PRIVATE_KEYS);
-    // const chain_networks = await local_secure_storage.get<ChainNetworks>(KEY_CHAIN_NETWORKS);
-    if (private_keys === undefined) throw new Error('no private keys');
-
-    const current_chain_network =
-        (await LOCAL_SECURE_STORAGE.get<CurrentChainNetwork>(
-            LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK(private_keys.current),
-        )) ?? DEFAULT_CURRENT_CHAIN_NETWORK;
-
-    agent_refresh_unique_identity(private_keys, current_chain_network); // * refresh identity
-
-    const current_connected_apps: CurrentConnectedApps = {
-        ic:
-            (await LOCAL_SECURE_STORAGE.get<ConnectedApps>(
-                LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(private_keys.current, current_chain_network.ic),
-            )) ?? [],
-    };
-
-    return { current_identity: private_keys.current, current_chain_network, current_connected_apps };
-};
-
-// update connected apps
-export const set_current_connected_apps = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
-    chain: Chain,
-    apps: ConnectedApps,
-): Promise<void> => {
-    const password = await SESSION_STORAGE.get<string>(SESSION_KEY_PASSWORD);
-    if (!password) return; // locked
-
-    await LOCAL_SECURE_STORAGE.setPassword(password); // set password before any action
-
-    match_chain_async(chain, {
-        ic: async () => {
-            await LOCAL_SECURE_STORAGE.set(
-                LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity, current_chain_network.ic),
-                apps,
-            );
-        },
-    });
-};
 
 // ############### LOCAL ###############
 

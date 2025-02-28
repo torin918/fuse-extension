@@ -9,6 +9,7 @@ export interface IdentityKey {
     id: IdentityId; // uuid
     created: number; // ms
     name: string; // show identity name
+    icon: string;
     key: CombinedIdentityKey;
 }
 
@@ -51,3 +52,13 @@ export const match_combined_identity_key_async = <T>(
     if ('private_key' in self) return private_key(self.private_key);
     throw new Error(`Unknown identity type: ${Object.keys(self)[0]}`);
 };
+
+// show identity
+
+export interface ShowIdentityKey {
+    id: IdentityId; // uuid
+    created: number; // ms
+    name: string; // show identity name
+    icon: string;
+    address: IdentityAddress;
+}

@@ -7,6 +7,6 @@ import { SYNC_KEY_USER_SETTINGS_IDLE } from '../../../keys';
 export const useUserSettingsIdleInner = (storage: Storage) => {
     return useStorage<number>(
         { key: SYNC_KEY_USER_SETTINGS_IDLE, instance: storage },
-        1000 * 60 * 1, // default 1min
+        1000 * 60 * 5, // default 5 min
     );
 };

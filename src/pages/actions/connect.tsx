@@ -1,7 +1,8 @@
 import { Button } from '@heroui/react';
 import { useCallback } from 'react';
 
-import { set_current_session_connected_app_message, useSecuredData } from '~hooks/store';
+import { set_current_session_connected_app_message } from '~hooks/store';
+import { useCurrentConnectedApps } from '~hooks/store/local-secure';
 import type { PopupAction } from '~types/actions';
 import type { ConnectAction } from '~types/actions/connect';
 import type { ConnectedApp, ConnectedAppState } from '~types/connect';
@@ -15,7 +16,7 @@ function ConnectActionPage({
     connect: ConnectAction;
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) {
-    const { current_chain_network, current_identity, pushOrUpdateConnectedApp } = useSecuredData();
+    const [, , { current_chain_network, current_identity, pushOrUpdateConnectedApp }] = useCurrentConnectedApps();
 
     const onAction = useCallback(
         async (type: 'deny' | 'deny_once' | 'granted_once' | 'granted' | 'granted_5m') => {

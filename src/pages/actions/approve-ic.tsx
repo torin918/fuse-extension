@@ -1,7 +1,8 @@
 import { Button } from '@heroui/react';
 import { useCallback, useMemo } from 'react';
 
-import { set_current_session_approve, useSecuredData } from '~hooks/store';
+import { set_current_session_approve } from '~hooks/store';
+import { useCurrentConnectedApps } from '~hooks/store/local-secure';
 import { get_popup_action_id, type PopupAction } from '~types/actions';
 import type { ApproveIcAction } from '~types/actions/approve-ic';
 
@@ -14,7 +15,7 @@ function ApproveIcActionPage({
     approve_ic: ApproveIcAction;
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) {
-    const { current_chain_network, current_connected_apps, current_identity } = useSecuredData();
+    const [current_connected_apps, , { current_identity, current_chain_network }] = useCurrentConnectedApps();
 
     const app = useMemo(() => {
         if (!current_connected_apps) return undefined;

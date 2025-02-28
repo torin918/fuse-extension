@@ -5,7 +5,7 @@ import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
 import { LOCAL_KEY_WELCOMED } from '../keys';
 
 // ! always try to use this value to avoid BLINK
-let cached_welcomed = false;
+let cached_welcomed = true; // * welcome message cloud be skip
 
 // check welcome page -> // * local
 export const useWelcomedInner = (storage: Storage): [boolean, (value: boolean) => Promise<void>] => {
