@@ -6,6 +6,7 @@ import ic_svg from '~assets/svg/chains/ic.min.svg';
 import default_wallet from '~assets/svg/common/wallet.min.svg';
 import Icon from '~components/icon';
 import { showToast } from '~components/toast';
+import { useIdentityKeysCount } from '~hooks/store/local-secure';
 import { truncate_text } from '~lib/utils/text';
 import type { MainPageState } from '~pages/functions';
 import type { IdentityAddress } from '~types/identity';
@@ -20,8 +21,8 @@ function HomePage({
     const navigate = useNavigate();
 
     return (
-        <div className="flex h-full w-full flex-col">
-            <div className="flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
+        <div className="relative h-full w-full">
+            <div className="absolute top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
                 <div className="flex items-center">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#333333] text-lg font-semibold text-[#999999]">
                         <img src={default_wallet} className="w-5" />

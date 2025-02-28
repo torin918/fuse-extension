@@ -32,7 +32,7 @@ export const SinglePageApp = ({
                                     <span className="text-base text-[#333333]">Help</span>
                                 </div>
                             </div>
-                            <div className="h-[600px] w-[400px] overflow-hidden rounded-2xl bg-[#0a0600] shadow-2xl">
+                            <div className="h-[640px] w-[400px] overflow-hidden rounded-2xl bg-[#0a0600] shadow-2xl">
                                 <PageRoutes routes={routes} />
                             </div>
                         </div>

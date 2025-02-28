@@ -5,6 +5,7 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { useIdentityKeysCount } from '~hooks/store/local-secure';
 
 import AboutPage from './components/about';
 import AddressPage from './components/address';
@@ -48,7 +49,7 @@ function FunctionSettingsPage() {
     return (
         <FusePage current_state={current_address}>
             <FusePageTransition setHide={setHide}>
-                <div className="flex h-full w-full flex-col">
+                <div className="relative flex h-full w-full flex-col items-center justify-center pt-[60px]">
                     <SettingsHeader title={title} onBack={() => goto('/')} onClose={() => goto('/')} />
 
                     <TransitionGroup component={null}>

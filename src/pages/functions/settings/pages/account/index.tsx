@@ -5,7 +5,7 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { useIdentityList } from '~hooks/store/local-secure';
+import { useIdentityKeys } from '~hooks/store/local-secure';
 
 import { SettingsHeader } from '../../components/header';
 
@@ -14,12 +14,13 @@ function FunctionSettingsAccountsPage() {
 
     const { setHide, goto, navigate } = useGoto();
 
-    const { current_identity, identity_list } = useIdentityList();
+    const { current_identity, identity_list, has_main_mnemonic, pushIdentityByMainMnemonic, switchIdentity } =
+        useIdentityKeys();
 
     return (
         <FusePage current_state={current_address}>
             <FusePageTransition
-                className="w-full"
+                className="relative flex h-full w-full flex-col items-center justify-center pt-[60px]"
                 setHide={setHide}
                 header={
                     <SettingsHeader
@@ -29,7 +30,7 @@ function FunctionSettingsAccountsPage() {
                     />
                 }
             >
-                <div className="flex h-[calc(100vh-60px)] flex-col justify-between">
+                <div className="flex h-full w-full flex-col justify-between">
                     <div className="flex-1 overflow-y-auto px-5">
                         {(identity_list ?? []).map((identity) => (
                             <div
@@ -38,8 +39,22 @@ function FunctionSettingsAccountsPage() {
                                 onClick={() => navigate(`/home/settings/accounts/${identity.id}`)}
                             >
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#333333] p-2 text-2xl">
+                                    <div className="flex cursor-default items-center">
+                                        <div
+                                            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#333333] p-2 text-2xl"
+                                            onClick={(e) => {
+                                                if (current_identity !== identity.id) {
+                                                    switchIdentity(identity.id).then((r) => {
+                                                        console.error('switch identity', r);
+                                                        if (r === undefined) return;
+                                                        if (r === false) throw Error('switch identity failed');
+                                                        // notice successful
+                                                    });
+                                                }
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                            }}
+                                        >
                                             {identity.icon}
                                         </div>
                                         <span className="pl-3 text-sm">{identity.name}</span>
@@ -53,8 +68,27 @@ function FunctionSettingsAccountsPage() {
                             </div>
                         ))}
                     </div>
+                    {has_main_mnemonic && (
+                        <div className="w-full p-5">
+                            <Button
+                                className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                                onPress={() => {
+                                    pushIdentityByMainMnemonic().then((r) => {
+                                        if (r === undefined) return;
+                                        if (r === false) return;
+                                        // notice successful
+                                    });
+                                }}
+                            >
+                                Add wallet by main seed
+                            </Button>
+                        </div>
+                    )}
                     <div className="w-full p-5">
-                        <Button className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black">
+                        <Button
+                            className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                            onPress={() => navigate('/home/settings/accounts/extra')}
+                        >
                             Add wallet
                         </Button>
                     </div>

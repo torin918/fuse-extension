@@ -75,12 +75,12 @@ function RestoreMnemonicPage({
                     ></Icon>
                     <span className="text-base font-semibold text-[#FFCF13]">Seed Phrase</span>
                 </div>
-                <div>
+                {/* <div>
                     <Icon
                         name="icon-close"
                         className="h-[20px] w-[20px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
                     ></Icon>
-                </div>
+                </div> */}
             </div>
             <div className="mt-5 w-full flex-1 overflow-y-auto">
                 <div className="flex w-full items-center gap-x-5">

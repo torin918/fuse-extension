@@ -26,7 +26,7 @@ export const useCurrentAddressBy = (
 
 export const inner_get_current_address = (current: IdentityKey) => {
     const current_address = match_combined_identity_key(current.key, {
-        mnemonic: (mnemonic) => get_address_by_mnemonic(mnemonic.mnemonic),
+        mnemonic: (mnemonic) => get_address_by_mnemonic(mnemonic.mnemonic, mnemonic.subaccount, mnemonic.parsed),
         private_key: () => {
             throw new Error(`Unimplemented identity type: private_key`);
         },

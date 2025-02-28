@@ -35,7 +35,7 @@ const InnerMainPage = ({ wt }: { wt: WindowType }) => {
 
     if (!current_address) return <></>;
     return (
-        <div className="h-full w-full">
+        <div className="flex h-full w-full items-center justify-center">
             {state === 'home' && <HomePage setState={setState} current_address={current_address}></HomePage>}
             <TransitionGroup component={null}>
                 {state === 'search' && (
