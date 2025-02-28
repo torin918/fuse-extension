@@ -17,6 +17,11 @@ import {
 
 import { inner_get_current_address } from './current_address';
 
+export const useIdentityKeysCountBy = (private_keys: PrivateKeys | undefined): number => {
+    const count = useMemo(() => private_keys?.keys.length ?? 0, [private_keys]);
+    return count;
+};
+
 export const useIdentityKeysBy = (
     password_hashed: string,
     private_keys: PrivateKeys | undefined,

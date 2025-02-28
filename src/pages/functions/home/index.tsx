@@ -6,6 +6,7 @@ import ic_svg from '~assets/svg/chains/ic.min.svg';
 import default_wallet from '~assets/svg/common/wallet.min.svg';
 import Icon from '~components/icon';
 import { showToast } from '~components/toast';
+import { useIdentityKeysCount } from '~hooks/store/local-secure';
 import { truncate_text } from '~lib/utils/text';
 import type { MainPageState } from '~pages/functions';
 import type { IdentityAddress } from '~types/identity';

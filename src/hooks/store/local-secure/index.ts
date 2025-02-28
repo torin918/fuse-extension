@@ -17,7 +17,7 @@ import {
 import { useCurrentChainNetworkInner } from './current_chain_network';
 import { useCurrentConnectedAppsInner } from './current_connected_apps';
 import { inner_get_current_address, useCurrentAddressBy } from './memo/current_address';
-import { useIdentityKeysBy } from './memo/identity';
+import { useIdentityKeysBy, useIdentityKeysCountBy } from './memo/identity';
 import { usePrivateKeysInner } from './private_keys';
 import { useSecureStorageInner } from './storage';
 
@@ -45,6 +45,12 @@ export const useCurrentAddress = () => {
     return useCurrentAddressBy(private_keys, current_chain_network);
 };
 
+export const useIdentityKeysCount = () => {
+    const [password] = usePassword();
+    const storage = useSecureStorageBy(password);
+    const [private_keys] = usePrivateKeysInner(storage);
+    return useIdentityKeysCountBy(private_keys);
+};
 export const useIdentityKeys = () => {
     const [password_hashed] = usePasswordHashed();
     const [password] = usePassword();
