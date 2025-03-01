@@ -14,8 +14,14 @@ function FunctionSettingsAccountsPage() {
 
     const { setHide, goto, navigate } = useGoto();
 
-    const { current_identity, identity_list, main_mnemonic_identity, pushIdentityByMainMnemonic, switchIdentity } =
-        useIdentityKeys();
+    const {
+        current_identity,
+        identity_list,
+        main_mnemonic_identity,
+        pushIdentityByMainMnemonic,
+        switchIdentity,
+        resortIdentityKeys,
+    } = useIdentityKeys();
 
     return (
         <FusePage current_state={current_address}>
@@ -68,6 +74,17 @@ function FunctionSettingsAccountsPage() {
                             </div>
                         ))}
                     </div>
+                    {identity_list !== undefined && 1 < identity_list.length && (
+                        <div
+                            onClick={() => {
+                                resortIdentityKeys(1, 0).then((d) => {
+                                    console.error('resort', d);
+                                });
+                            }}
+                        >
+                            resort
+                        </div>
+                    )}
                     {main_mnemonic_identity && (
                         <div className="w-full p-5">
                             <Button

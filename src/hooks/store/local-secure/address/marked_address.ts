@@ -4,7 +4,8 @@ import type { StorageWatchCallback } from '@plasmohq/storage';
 import type { SecureStorage } from '@plasmohq/storage/secure';
 
 import { same } from '~lib/utils/same';
-import type { MarkedAddresses } from '~types/address';
+import { resort_list } from '~lib/utils/sort';
+import { check_chain_address, type ChainAddress, type MarkedAddresses } from '~types/address';
 
 import { LOCAL_SECURE_KEY_MARKED_ADDRESSES } from '../keys';
 
@@ -15,7 +16,15 @@ let cached_marked_addresses: MarkedAddresses = DEFAULT_VALUE;
 // marked addresses ->  // * local secure
 export const useMarkedAddressesInner = (
     storage: SecureStorage | undefined,
-): [MarkedAddresses, (value: MarkedAddresses) => Promise<void>] => {
+): [
+    MarkedAddresses,
+    (value: MarkedAddresses) => Promise<void>,
+    {
+        pushOrUpdateMarkedAddress: (address: ChainAddress, name: string) => Promise<boolean | undefined>;
+        removeMarkedAddress: (address: ChainAddress) => Promise<boolean | undefined>;
+        resortMarkedAddresses: (source_index: number, destination_index: number) => Promise<boolean | undefined>;
+    },
+] => {
     const [marked_addresses, setMarkedAddresses] = useState<MarkedAddresses>(cached_marked_addresses); // use cached value to init
 
     // watch this key, cloud notice other hook of this
@@ -55,6 +64,66 @@ export const useMarkedAddressesInner = (
         },
         [storage],
     );
+    // push or update
+    const pushOrUpdateMarkedAddress = useCallback(
+        async (address: ChainAddress, name: string) => {
+            if (!storage || !marked_addresses) return undefined;
 
-    return [marked_addresses, updateMarkedAddress];
+            if (!check_chain_address(address)) return false;
+
+            name = name.trim();
+            if (64 < name.length) return false;
+
+            const now = Date.now();
+            const exist = marked_addresses.find((a) => same(a.address, address));
+            if (exist) {
+                exist.name = name;
+                exist.updated = now;
+                await updateMarkedAddress([...marked_addresses]);
+            } else {
+                marked_addresses.push({ created: now, updated: now, name, address });
+                await updateMarkedAddress([...marked_addresses]);
+            }
+
+            return true;
+        },
+        [storage, marked_addresses, updateMarkedAddress],
+    );
+    // remove
+    const removeMarkedAddress = useCallback(
+        async (address: ChainAddress) => {
+            if (!storage || !marked_addresses) return undefined;
+
+            if (!check_chain_address(address)) return false;
+
+            const exist = marked_addresses.find((a) => same(a.address, address));
+            if (!exist) return false;
+
+            const new_marked_addresses = marked_addresses.filter((a) => !same(a.address, address));
+            await updateMarkedAddress(new_marked_addresses);
+
+            return true;
+        },
+        [storage, marked_addresses, updateMarkedAddress],
+    );
+    // resort
+    const resortMarkedAddresses = useCallback(
+        async (source_index: number, destination_index: number) => {
+            if (!storage || !marked_addresses) return undefined;
+
+            const next = resort_list(marked_addresses, source_index, destination_index);
+            if (typeof next === 'boolean') return next;
+
+            await updateMarkedAddress(next);
+
+            return true;
+        },
+        [storage, marked_addresses, updateMarkedAddress],
+    );
+
+    return [
+        marked_addresses,
+        updateMarkedAddress,
+        { pushOrUpdateMarkedAddress, removeMarkedAddress, resortMarkedAddresses },
+    ];
 };

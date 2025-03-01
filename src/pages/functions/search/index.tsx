@@ -1,9 +1,9 @@
+import { isCanisterIdText } from '@choptop/haw';
 import { Button, Drawer, DrawerBody, DrawerContent, Select, SelectItem, Switch, useDisclosure } from '@heroui/react';
 import { useState } from 'react';
 
 import Icon from '~components/icon';
 import { cn } from '~lib/utils/cn';
-import { isCanisterIdText } from '~lib/utils/principals';
 import type { MainPageState } from '~pages/functions';
 
 const CustomToken = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) => {

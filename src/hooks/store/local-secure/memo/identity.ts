@@ -5,6 +5,7 @@ import { get_address_by_mnemonic } from '~lib/mnemonic';
 import { verify_password } from '~lib/password';
 import { random_account_icon } from '~lib/utils/account_icon';
 import { same } from '~lib/utils/same';
+import { resort_list } from '~lib/utils/sort';
 import {
     is_same_combined_identity_key,
     match_combined_identity_key,
@@ -40,6 +41,7 @@ export const useIdentityKeysBy = (
     pushIdentityByMainMnemonic: () => Promise<boolean | undefined>;
     updateIdentity: (id: IdentityId, name: string, icon: string) => Promise<boolean | undefined>;
     switchIdentity: (id: IdentityId) => Promise<boolean | undefined>;
+    resortIdentityKeys: (source_index: number, destination_index: number) => Promise<boolean | undefined>;
 } => {
     const current_identity = useMemo(() => private_keys?.current, [private_keys]);
 
@@ -247,6 +249,21 @@ export const useIdentityKeysBy = (
         [private_keys, setPrivateKeys],
     );
 
+    // resort
+    const resortIdentityKeys = useCallback(
+        async (source_index: number, destination_index: number) => {
+            if (!private_keys) return undefined;
+
+            const next = resort_list(private_keys.keys, source_index, destination_index);
+            if (typeof next === 'boolean') return next;
+
+            await setPrivateKeys({ ...private_keys, keys: next });
+
+            return true;
+        },
+        [private_keys, setPrivateKeys],
+    );
+
     return {
         current_identity,
         identity_list,
@@ -259,6 +276,7 @@ export const useIdentityKeysBy = (
         pushIdentityByMainMnemonic,
         updateIdentity,
         switchIdentity,
+        resortIdentityKeys,
     };
 };
 
