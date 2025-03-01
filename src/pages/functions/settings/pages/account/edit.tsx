@@ -7,7 +7,7 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useIdentityKeys } from '~hooks/store/local-secure';
 
-import { SettingsHeader } from '../../components/header';
+import { FunctionHeader } from '../../../components/header';
 
 function FunctionSettingsAccountsSinglePage() {
     const current_state = useCurrentState();
@@ -20,7 +20,7 @@ function FunctionSettingsAccountsSinglePage() {
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 setHide={setHide}
                 header={
-                    <SettingsHeader
+                    <FunctionHeader
                         title={'Manage Account'}
                         onBack={() => goto(-1)}
                         onClose={() => goto('/', { replace: true })}

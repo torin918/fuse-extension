@@ -5,8 +5,8 @@ import { useGoto } from '~hooks/memo/goto';
 import { useUserSettingsIdle } from '~hooks/store';
 import { useChangePassword, useIdentityKeys } from '~hooks/store/local-secure';
 
+import { FunctionHeader } from '../../../components/header';
 import { SettingsGroup } from '../../components/group';
-import { SettingsHeader } from '../../components/header';
 import { SettingsItem } from '../../components/item';
 
 function FunctionSettingsSecurityPage() {
@@ -26,7 +26,7 @@ function FunctionSettingsSecurityPage() {
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 setHide={setHide}
                 header={
-                    <SettingsHeader
+                    <FunctionHeader
                         title={'Security & Privacy'}
                         onBack={() => goto(-1)}
                         onClose={() => goto('/', { replace: true })}

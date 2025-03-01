@@ -7,7 +7,7 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useCurrentConnectedApps } from '~hooks/store/local-secure';
 
-import { SettingsHeader } from '../../components/header';
+import { FunctionHeader } from '../../../components/header';
 
 function FunctionSettingsConnectedAppPage() {
     const current_address = useCurrentState();
@@ -22,7 +22,7 @@ function FunctionSettingsConnectedAppPage() {
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 setHide={setHide}
                 header={
-                    <SettingsHeader
+                    <FunctionHeader
                         title={'Preferences Settings'}
                         onBack={() => goto(-1)}
                         onClose={() => goto('/', { replace: true })}

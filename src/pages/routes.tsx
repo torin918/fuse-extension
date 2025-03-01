@@ -18,6 +18,7 @@ import FunctionSettingsPreferencesPage from './functions/settings/pages/preferen
 import FunctionSettingsAddressesPage from './functions/settings/pages/address';
 import FunctionSettingsConnectedAppPage from './functions/settings/pages/connected';
 import FunctionSettingsAboutPage from './functions/settings/pages/about';
+import FunctionReceivePage from './functions/receive';
 
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
@@ -29,6 +30,9 @@ export const getRoutes = (wt: WindowType) => {
 
         ...(hit(wt, []) ? [{ path: '/', element: <MainPage wt={wt} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home', element: <MainPage wt={wt} /> }] : []),
+
+        // receive
+        ...(hit(wt, []) ? [{ path: '/home/receive', element: <FunctionReceivePage /> }] : []),
 
         // settings
         // settings/accounts

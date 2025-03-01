@@ -8,8 +8,8 @@ import { showToast } from '~components/toast';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 
+import { FunctionHeader } from '../../components/header';
 import { SettingsGroup } from '../components/group';
-import { SettingsHeader } from '../components/header';
 import { SettingsItem } from '../components/item';
 
 function FunctionSettingsAboutPage() {
@@ -22,7 +22,7 @@ function FunctionSettingsAboutPage() {
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 setHide={setHide}
                 header={
-                    <SettingsHeader
+                    <FunctionHeader
                         title={'Preferences Settings'}
                         onBack={() => goto(-1)}
                         onClose={() => goto('/', { replace: true })}

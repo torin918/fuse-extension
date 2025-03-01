@@ -11,7 +11,7 @@ import { useGoto } from '~hooks/memo/goto';
 import { useMarkedAddresses, useRecentAddresses } from '~hooks/store/local-secure';
 import { truncate_principal, truncate_text } from '~lib/utils/text';
 
-import { SettingsHeader } from '../../components/header';
+import { FunctionHeader } from '../../../components/header';
 import { AddAddress } from './components/modal';
 
 function FunctionSettingsAddressesPage() {
@@ -84,6 +84,7 @@ function FunctionSettingsAddressesPage() {
     }, []);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
+    console.assert(onOpen); // TODO test
 
     return (
         <FusePage current_state={current_address}>
@@ -91,7 +92,7 @@ function FunctionSettingsAddressesPage() {
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 setHide={setHide}
                 header={
-                    <SettingsHeader
+                    <FunctionHeader
                         title={'Addresses'}
                         onBack={() => goto(-1)}
                         onClose={() => goto('/', { replace: true })}

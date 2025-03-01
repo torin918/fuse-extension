@@ -7,13 +7,12 @@ import { useCurrentIdentity } from '~hooks/store/local-secure';
 import type { WindowType } from '~types/pages';
 
 import HomePage from './home';
-import ReceivePage from './receive';
 import RecordPage from './record';
 import SearchPage from './search';
 import SendPage from './send';
 import SwapPage from './swap';
 
-export type MainPageState = 'home' | 'search' | 'send' | 'receive' | 'swap' | 'record';
+export type MainPageState = 'home' | 'search' | 'send' | 'swap' | 'record';
 
 function MainPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
@@ -46,11 +45,6 @@ const InnerMainPage = ({ wt }: { wt: WindowType }) => {
                 {state === 'send' && (
                     <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
                         <SendPage setState={setState}></SendPage>
-                    </CSSTransition>
-                )}
-                {state === 'receive' && (
-                    <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
-                        <ReceivePage setState={setState}></ReceivePage>
                     </CSSTransition>
                 )}
                 {state === 'swap' && (

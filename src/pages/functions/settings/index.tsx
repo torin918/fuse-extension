@@ -6,8 +6,8 @@ import { useGoto } from '~hooks/memo/goto';
 import { useLock } from '~hooks/memo/lock';
 import { useCurrentConnectedApps, useIdentityKeysCount, useMarkedAddresses } from '~hooks/store/local-secure';
 
+import { FunctionHeader } from '../components/header';
 import { SettingsGroup } from './components/group';
-import { SettingsHeader } from './components/header';
 import { SettingsItem } from './components/item';
 
 export type SettingPageState = 'home';
@@ -26,7 +26,7 @@ function FunctionSettingsPage() {
         <FusePage current_state={current_state}>
             <FusePageTransition setHide={setHide}>
                 <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
-                    <SettingsHeader title={'Settings'} onBack={() => goto('/')} onClose={() => goto('/')} />
+                    <FunctionHeader title={'Settings'} onBack={() => goto('/')} onClose={() => goto('/')} />
 
                     <SettingsGroup className="mt-6 w-full px-5">
                         <SettingsItem

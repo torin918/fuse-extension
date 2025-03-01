@@ -1,6 +1,6 @@
 import Icon from '~components/icon';
 
-export const SettingsHeader = ({
+export const FunctionHeader = ({
     title,
     onBack,
     onClose,
