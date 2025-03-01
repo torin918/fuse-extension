@@ -29,7 +29,7 @@ export const useIdentityKeysBy = (
 ): {
     current_identity: IdentityId | undefined;
     identity_list: ShowIdentityKey[] | undefined;
-    has_main_mnemonic: boolean | undefined;
+    main_mnemonic_identity: string | undefined;
     showMnemonic: (
         id: IdentityId,
         password: string,
@@ -58,9 +58,16 @@ export const useIdentityKeysBy = (
         if (!same(new_identity_list, identity_list)) setIdentityList(new_identity_list);
     }, [private_keys, identity_list]);
 
-    const has_main_mnemonic = useMemo(() => {
+    const main_mnemonic_identity = useMemo(() => {
         if (!private_keys) return undefined;
-        return !!private_keys.mnemonic;
+        if (!private_keys.mnemonic) return undefined;
+
+        return private_keys.keys.find((key) =>
+            match_combined_identity_key(key.key, {
+                mnemonic: (m) => m.mnemonic === private_keys.mnemonic && m.subaccount === 0,
+                private_key: () => false,
+            }),
+        )?.id;
     }, [private_keys]);
 
     // query
@@ -244,7 +251,7 @@ export const useIdentityKeysBy = (
     return {
         current_identity,
         identity_list,
-        has_main_mnemonic,
+        main_mnemonic_identity,
         showMnemonic,
         showPrivateKey,
         isKeyExist,

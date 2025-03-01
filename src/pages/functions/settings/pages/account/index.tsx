@@ -14,7 +14,7 @@ function FunctionSettingsAccountsPage() {
 
     const { setHide, goto, navigate } = useGoto();
 
-    const { current_identity, identity_list, has_main_mnemonic, pushIdentityByMainMnemonic, switchIdentity } =
+    const { current_identity, identity_list, main_mnemonic_identity, pushIdentityByMainMnemonic, switchIdentity } =
         useIdentityKeys();
 
     return (
@@ -68,7 +68,7 @@ function FunctionSettingsAccountsPage() {
                             </div>
                         ))}
                     </div>
-                    {has_main_mnemonic && (
+                    {main_mnemonic_identity && (
                         <div className="w-full p-5">
                             <Button
                                 className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"

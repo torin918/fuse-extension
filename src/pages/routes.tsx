@@ -13,6 +13,7 @@ import InnerCreatePage from './initial/create';
 import CreateRestorePage from './initial/restore';
 import LockedPage from './locked';
 import WelcomePage from './welcome';
+import FunctionSettingsSecurityPage from './functions/settings/pages/security';
 
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
@@ -26,12 +27,16 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/home', element: <MainPage wt={wt} /> }] : []),
 
         // settings
+        // settings/accounts
         ...(hit(wt, []) ? [{ path: '/home/settings', element: <FunctionSettingsPage /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts', element: <SettingsAccountsPage /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/extra', element: <InitialPage wt={wt} extra={true} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/extra/create', element: <InnerCreatePage wt={wt} extra={true} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/extra/restore', element: <CreateRestorePage wt={wt} extra={true} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/:id', element: <AccountsSinglePage /> }] : []),
+        // settings/security
+        ...(hit(wt, []) ? [{ path: '/home/settings/security', element: <FunctionSettingsSecurityPage /> }] : []),
+
         // dapps
         ...(hit(wt, []) ? [{ path: '/home/dapps', element: <FunctionDappsPage wt={wt} /> }] : []),
 
