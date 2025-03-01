@@ -9,19 +9,21 @@ import type { MarkedAddresses } from '~types/address';
 import { LOCAL_SECURE_KEY_MARKED_ADDRESSES } from '../keys';
 
 // ! always try to use this value to avoid BLINK
-let cached_marked_addresses: MarkedAddresses = [];
+const DEFAULT_VALUE: MarkedAddresses = [];
+let cached_marked_addresses: MarkedAddresses = DEFAULT_VALUE;
 
 // marked addresses ->  // * local secure
 export const useMarkedAddressesInner = (
     storage: SecureStorage | undefined,
-): [MarkedAddresses | undefined, (value: MarkedAddresses) => Promise<void>] => {
-    const [marked_addresses, setMarkedAddresses] = useState<MarkedAddresses | undefined>(cached_marked_addresses); // use cached value to init
+): [MarkedAddresses, (value: MarkedAddresses) => Promise<void>] => {
+    const [marked_addresses, setMarkedAddresses] = useState<MarkedAddresses>(cached_marked_addresses); // use cached value to init
 
     // watch this key, cloud notice other hook of this
     useEffect(() => {
         if (!storage) return;
+
         const callback: StorageWatchCallback = (d) => {
-            const marked_addresses = d.newValue ?? [];
+            const marked_addresses = d.newValue ?? DEFAULT_VALUE;
             if (!same(cached_marked_addresses, marked_addresses)) cached_marked_addresses = marked_addresses;
             setMarkedAddresses(marked_addresses);
         };
@@ -33,7 +35,8 @@ export const useMarkedAddressesInner = (
 
     // init on this hook
     useEffect(() => {
-        if (!storage) return setMarkedAddresses(undefined); // reset if locked
+        if (!storage) return setMarkedAddresses((cached_marked_addresses = DEFAULT_VALUE)); // reset if locked
+
         storage.get<MarkedAddresses>(LOCAL_SECURE_KEY_MARKED_ADDRESSES).then((data) => {
             if (data === undefined) data = cached_marked_addresses;
             cached_marked_addresses = data;
@@ -45,6 +48,7 @@ export const useMarkedAddressesInner = (
     const updateMarkedAddress = useCallback(
         async (marked_addresses: MarkedAddresses) => {
             if (!storage) return;
+
             await storage.set(LOCAL_SECURE_KEY_MARKED_ADDRESSES, marked_addresses);
             cached_marked_addresses = marked_addresses;
             setMarkedAddresses(marked_addresses);

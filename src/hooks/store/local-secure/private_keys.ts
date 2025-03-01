@@ -9,7 +9,8 @@ import { type PrivateKeys } from '~types/identity';
 import { LOCAL_SECURE_KEY_PRIVATE_KEYS } from './keys';
 
 // ! always try to use this value to avoid BLINK
-let cached_private_keys: PrivateKeys | undefined = undefined;
+const DEFAULT_VALUE: PrivateKeys | undefined = undefined;
+let cached_private_keys: PrivateKeys | undefined = DEFAULT_VALUE;
 
 // private keys ->  // * local secure
 export const usePrivateKeysInner = (
@@ -20,8 +21,9 @@ export const usePrivateKeysInner = (
     // watch this key, cloud notice other hook of this
     useEffect(() => {
         if (!storage) return;
+
         const callback: StorageWatchCallback = (d) => {
-            const private_keys = d.newValue;
+            const private_keys = d.newValue ?? DEFAULT_VALUE;
             if (!same(cached_private_keys, private_keys)) cached_private_keys = private_keys;
             setPrivateKeys(private_keys);
         };
@@ -33,7 +35,8 @@ export const usePrivateKeysInner = (
 
     // init on this hook
     useEffect(() => {
-        if (!storage) return setPrivateKeys(undefined); // reset if locked
+        if (!storage) return setPrivateKeys((cached_private_keys = DEFAULT_VALUE)); // reset if locked
+
         storage.get<PrivateKeys>(LOCAL_SECURE_KEY_PRIVATE_KEYS).then((data) => {
             if (data === undefined) data = cached_private_keys;
             cached_private_keys = data;
@@ -45,6 +48,7 @@ export const usePrivateKeysInner = (
     const updatePrivateKeys = useCallback(
         async (private_keys: PrivateKeys) => {
             if (!storage) return;
+
             await storage.set(LOCAL_SECURE_KEY_PRIVATE_KEYS, private_keys);
             cached_private_keys = private_keys;
             setPrivateKeys(private_keys);

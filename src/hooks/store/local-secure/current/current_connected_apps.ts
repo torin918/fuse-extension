@@ -18,7 +18,8 @@ import type { CurrentChainNetwork } from '~types/network';
 import { LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS } from '../keys';
 
 // ! always try to use this value to avoid BLINK
-let cached_current_connected_apps: CurrentConnectedApps = DEFAULT_CURRENT_CONNECTED_APPS;
+const DEFAULT_VALUE: CurrentConnectedApps = DEFAULT_CURRENT_CONNECTED_APPS;
+let cached_current_connected_apps: CurrentConnectedApps = DEFAULT_VALUE;
 
 // current connected apps ->  // * local secure
 export const useCurrentConnectedAppsInner = (
@@ -41,8 +42,9 @@ export const useCurrentConnectedAppsInner = (
     useEffect(() => {
         if (!storage || !current_identity || !current_chain_network) return;
         if (!current_connected_apps) return; // ! MUST CHECK THEN UPDATE
+
         const current_ic_connected_apps_callback: StorageWatchCallback = (d) => {
-            const current_ic_connected_apps = d.newValue ?? [];
+            const current_ic_connected_apps = d.newValue ?? DEFAULT_VALUE;
             if (!same(current_connected_apps.ic, current_ic_connected_apps)) {
                 setCurrentConnectedApps({ ...current_connected_apps, ic: current_ic_connected_apps });
             }
@@ -57,8 +59,9 @@ export const useCurrentConnectedAppsInner = (
     // init on this hook
     useEffect(() => {
         if (!storage || !current_identity || !current_chain_network)
-            return setCurrentConnectedApps(DEFAULT_CURRENT_CONNECTED_APPS);
+            return setCurrentConnectedApps((cached_current_connected_apps = DEFAULT_VALUE));
         if (!current_connected_apps) return; // ! MUST CHECK THEN UPDATE
+
         const key_ic = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity, current_chain_network.ic);
         (async () => {
             let data_ic = await storage.get<ConnectedApps>(key_ic);
@@ -74,11 +77,12 @@ export const useCurrentConnectedAppsInner = (
     // update on this hook
     const updateCurrentConnectedApps = useCallback(
         async (connected_apps: CurrentConnectedApps) => {
-            if (!storage || !current_identity || !current_chain_network)
-                return setCurrentConnectedApps(DEFAULT_CURRENT_CONNECTED_APPS);
+            if (!storage || !current_identity || !current_chain_network) return;
+            if (!current_connected_apps) return; // ! MUST CHECK THEN UPDATE
 
             let changed = false;
 
+            // check ic
             if (!same(current_connected_apps.ic, connected_apps.ic)) {
                 const key_ic = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity, current_chain_network.ic);
                 await storage.set(key_ic, connected_apps.ic);
@@ -97,6 +101,7 @@ export const useCurrentConnectedAppsInner = (
         async (chain: Chain, app: ConnectedApp) => {
             if (!storage || !current_identity || !current_chain_network) return;
             if (!current_connected_apps) return;
+
             const new_current_connected_apps = await push_or_update_connected_app(
                 chain,
                 app,

@@ -9,7 +9,8 @@ import type { ChainNetworks } from '~types/network';
 import { LOCAL_SECURE_KEY_CHAIN_NETWORKS } from './keys';
 
 // ! always try to use this value to avoid BLINK
-let cached_chain_networks: ChainNetworks = [];
+const DEFAULT_VALUE: ChainNetworks = [];
+let cached_chain_networks: ChainNetworks = DEFAULT_VALUE;
 
 // chain networks ->  // * local secure
 export const useChainNetworksInner = (
@@ -20,8 +21,9 @@ export const useChainNetworksInner = (
     // watch this key, cloud notice other hook of this
     useEffect(() => {
         if (!storage) return;
+
         const callback: StorageWatchCallback = (d) => {
-            const chain_networks = d.newValue ?? [];
+            const chain_networks = d.newValue ?? DEFAULT_VALUE;
             if (!same(cached_chain_networks, chain_networks)) cached_chain_networks = chain_networks;
             setChainNetworks(chain_networks);
         };
@@ -33,7 +35,8 @@ export const useChainNetworksInner = (
 
     // init on this hook
     useEffect(() => {
-        if (!storage) return setChainNetworks([]);
+        if (!storage) return setChainNetworks((cached_chain_networks = DEFAULT_VALUE));
+
         storage.get<ChainNetworks>(LOCAL_SECURE_KEY_CHAIN_NETWORKS).then((data) => {
             if (data === undefined) data = cached_chain_networks;
             cached_chain_networks = data;
@@ -45,6 +48,7 @@ export const useChainNetworksInner = (
     const updateChainNetworks = useCallback(
         async (chain_networks: ChainNetworks) => {
             if (!storage) return;
+
             await storage.set(LOCAL_SECURE_KEY_CHAIN_NETWORKS, chain_networks);
             cached_chain_networks = chain_networks;
             setChainNetworks(chain_networks);

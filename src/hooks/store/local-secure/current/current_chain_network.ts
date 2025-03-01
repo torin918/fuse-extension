@@ -10,7 +10,8 @@ import { DEFAULT_CURRENT_CHAIN_NETWORK, type CurrentChainNetwork } from '~types/
 import { LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK } from '../keys';
 
 // ! always try to use this value to avoid BLINK
-let cached_current_chain_network: CurrentChainNetwork = DEFAULT_CURRENT_CHAIN_NETWORK;
+const DEFAULT_VALUE: CurrentChainNetwork = DEFAULT_CURRENT_CHAIN_NETWORK;
+let cached_current_chain_network: CurrentChainNetwork = DEFAULT_VALUE;
 
 // current chain network ->  // * local secure
 export const useCurrentChainNetworkInner = (
@@ -22,8 +23,9 @@ export const useCurrentChainNetworkInner = (
     // watch this key, cloud notice other hook of this
     useEffect(() => {
         if (!storage || !current_identity) return;
+
         const callback: StorageWatchCallback = (d) => {
-            const current_chain_network = d.newValue ?? DEFAULT_CURRENT_CHAIN_NETWORK;
+            const current_chain_network = d.newValue ?? DEFAULT_VALUE;
             if (!same(cached_current_chain_network, current_chain_network)) {
                 cached_current_chain_network = current_chain_network;
             }
@@ -38,7 +40,8 @@ export const useCurrentChainNetworkInner = (
 
     // init on this hook
     useEffect(() => {
-        if (!storage || !current_identity) return setCurrentChaiNetwork(DEFAULT_CURRENT_CHAIN_NETWORK);
+        if (!storage || !current_identity) return setCurrentChaiNetwork((cached_current_chain_network = DEFAULT_VALUE));
+
         const key = LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK(current_identity);
         storage.get<CurrentChainNetwork>(key).then((data) => {
             if (data === undefined) data = cached_current_chain_network;
@@ -51,6 +54,7 @@ export const useCurrentChainNetworkInner = (
     const updateCurrentChainNetwork = useCallback(
         async (current_chain_network: CurrentChainNetwork) => {
             if (!storage || !current_identity) return;
+
             const key = LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK(current_identity);
             await storage.set(key, current_chain_network);
             cached_current_chain_network = current_chain_network;
