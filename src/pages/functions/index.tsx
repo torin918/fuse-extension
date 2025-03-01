@@ -9,9 +9,8 @@ import type { WindowType } from '~types/pages';
 import HomePage from './home';
 import RecordPage from './record';
 import SearchPage from './search';
-import SendPage from './send';
 
-export type MainPageState = 'home' | 'search' | 'send' | 'record';
+export type MainPageState = 'home' | 'search' | 'record';
 
 function MainPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
@@ -39,11 +38,6 @@ const InnerMainPage = ({ wt }: { wt: WindowType }) => {
                 {state === 'search' && (
                     <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
                         <SearchPage setState={setState}></SearchPage>
-                    </CSSTransition>
-                )}
-                {state === 'send' && (
-                    <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
-                        <SendPage setState={setState}></SendPage>
                     </CSSTransition>
                 )}
                 {state === 'record' && (

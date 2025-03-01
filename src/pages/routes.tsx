@@ -20,6 +20,8 @@ import FunctionSettingsConnectedAppPage from './functions/settings/pages/connect
 import FunctionSettingsAboutPage from './functions/settings/pages/about';
 import FunctionReceivePage from './functions/receive';
 import FunctionSwapPage from './functions/swap';
+import FunctionSendTokenPage from './functions/send/token';
+import FunctionSendTokenToPage from './functions/send/token/to';
 
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
@@ -34,6 +36,11 @@ export const getRoutes = (wt: WindowType) => {
 
         // receive
         ...(hit(wt, []) ? [{ path: '/home/receive', element: <FunctionReceivePage /> }] : []),
+
+        // send
+        // send token
+        ...(hit(wt, []) ? [{ path: '/home/send/token/:token', element: <FunctionSendTokenPage   /> }] : []), // choose to
+        ...(hit(wt, []) ? [{ path: '/home/send/token/:token/to/:to', element: <FunctionSendTokenToPage   /> }] : []), // do send
 
         // settings
         // settings/accounts
