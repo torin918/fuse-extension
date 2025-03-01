@@ -9,9 +9,8 @@ import { useGoto } from '~hooks/memo/goto';
 import AboutPage from './components/about';
 import { SettingsHeader } from './components/header';
 import SettingsHome from './components/home';
-import LockPage from './components/lock';
 
-export type SettingPageState = 'home' | 'lock' | 'about';
+export type SettingPageState = 'home' | 'about';
 
 function FunctionSettingsPage() {
     const current_state = useCurrentState();
@@ -24,8 +23,6 @@ function FunctionSettingsPage() {
         switch (settingState) {
             case 'home':
                 return 'Settings';
-            case 'lock':
-                return 'Lock Wallet';
             case 'about':
                 return 'About Fuse';
             default:
@@ -43,11 +40,6 @@ function FunctionSettingsPage() {
                         {settingState === 'home' && (
                             <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
                                 <SettingsHome setSettingState={setSettingState} />
-                            </CSSTransition>
-                        )}
-                        {settingState === 'lock' && (
-                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
-                                <LockPage />
                             </CSSTransition>
                         )}
                         {settingState === 'about' && (

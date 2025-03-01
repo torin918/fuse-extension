@@ -1,4 +1,5 @@
 import Icon from '~components/icon';
+import { useLock } from '~hooks/memo/lock';
 import { useCurrentConnectedApps, useIdentityKeysCount, useMarkedAddresses } from '~hooks/store/local-secure';
 
 import type { SettingPageState } from '..';
@@ -9,6 +10,7 @@ function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPag
     const account_count = useIdentityKeysCount();
     const [markedAddresses] = useMarkedAddresses();
     const [apps] = useCurrentConnectedApps();
+    const lock = useLock();
 
     return (
         <>
@@ -50,7 +52,7 @@ function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPag
             <SettingsGroup>
                 <SettingsItem
                     icon={<Icon name="icon-locked" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
-                    path={() => setSettingState('lock')}
+                    path={() => lock()}
                     title="Lock Wallet"
                     arrow={false}
                 />
