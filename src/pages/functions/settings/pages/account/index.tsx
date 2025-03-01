@@ -10,7 +10,7 @@ import { useIdentityKeys } from '~hooks/store/local-secure';
 import { SettingsHeader } from '../../components/header';
 
 function FunctionSettingsAccountsPage() {
-    const current_address = useCurrentState();
+    const current_state = useCurrentState();
 
     const { setHide, goto, navigate } = useGoto();
 
@@ -24,7 +24,7 @@ function FunctionSettingsAccountsPage() {
     } = useIdentityKeys();
 
     return (
-        <FusePage current_state={current_address}>
+        <FusePage current_state={current_state}>
             <FusePageTransition
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[60px]"
                 setHide={setHide}

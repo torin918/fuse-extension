@@ -71,7 +71,7 @@ export const useRecentAddressesInner = (
 
             // ? Remove previous addresses
 
-            await updateRecentAddress(recent_addresses);
+            await updateRecentAddress(new_recent_addresses);
             return true;
         },
         [storage, recent_addresses, updateRecentAddress],

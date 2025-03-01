@@ -10,7 +10,7 @@ import { SettingsHeader } from '../../components/header';
 import { SettingsItem } from '../../components/item';
 
 function FunctionSettingsSecurityPage() {
-    const current_address = useCurrentState();
+    const current_state = useCurrentState();
 
     const { setHide, goto } = useGoto();
 
@@ -21,7 +21,7 @@ function FunctionSettingsSecurityPage() {
     const changePassword = useChangePassword();
 
     return (
-        <FusePage current_state={current_address}>
+        <FusePage current_state={current_state}>
             <FusePageTransition
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[60px]"
                 setHide={setHide}

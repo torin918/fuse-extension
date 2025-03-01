@@ -7,16 +7,15 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 
 import AboutPage from './components/about';
-import AddressPage from './components/address';
 import ApplicationsPage from './components/applications';
 import { SettingsHeader } from './components/header';
 import SettingsHome from './components/home';
 import LockPage from './components/lock';
 
-export type SettingPageState = 'home' | 'address' | 'applications' | 'lock' | 'about';
+export type SettingPageState = 'home' | 'applications' | 'lock' | 'about';
 
 function FunctionSettingsPage() {
-    const current_address = useCurrentState();
+    const current_state = useCurrentState();
 
     const { setHide, goto } = useGoto();
 
@@ -26,8 +25,6 @@ function FunctionSettingsPage() {
         switch (settingState) {
             case 'home':
                 return 'Settings';
-            case 'address':
-                return 'Address';
             case 'applications':
                 return 'Linked Applications';
             case 'lock':
@@ -40,7 +37,7 @@ function FunctionSettingsPage() {
     }, [settingState]);
 
     return (
-        <FusePage current_state={current_address}>
+        <FusePage current_state={current_state}>
             <FusePageTransition setHide={setHide}>
                 <div className="relative flex h-full w-full flex-col items-center justify-center pt-[60px]">
                     <SettingsHeader title={title} onBack={() => goto('/')} onClose={() => goto('/')} />
@@ -49,11 +46,6 @@ function FunctionSettingsPage() {
                         {settingState === 'home' && (
                             <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
                                 <SettingsHome setSettingState={setSettingState} />
-                            </CSSTransition>
-                        )}
-                        {settingState === 'address' && (
-                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
-                                <AddressPage />
                             </CSSTransition>
                         )}
                         {settingState === 'applications' && (

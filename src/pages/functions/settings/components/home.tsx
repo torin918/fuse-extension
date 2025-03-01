@@ -1,5 +1,5 @@
 import Icon from '~components/icon';
-import { useIdentityKeysCount } from '~hooks/store/local-secure';
+import { useIdentityKeysCount, useMarkedAddresses } from '~hooks/store/local-secure';
 
 import type { SettingPageState } from '..';
 import { SettingsGroup } from './group';
@@ -7,6 +7,7 @@ import { SettingsItem } from './item';
 
 function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPageState) => void }) {
     const account_count = useIdentityKeysCount();
+    const [markedAddresses] = useMarkedAddresses();
 
     return (
         <>
@@ -33,9 +34,9 @@ function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPag
             <SettingsGroup>
                 <SettingsItem
                     icon={<Icon name="icon-address" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
-                    path={() => setSettingState('address')}
+                    path={'/home/settings/addresses'}
                     title="Address Book"
-                    tip="2"
+                    tip={`${markedAddresses.length}`}
                 />
 
                 <SettingsItem

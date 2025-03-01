@@ -19,6 +19,8 @@ import {
 } from '..';
 import { agent_refresh_unique_identity } from '../agent';
 import { SESSION_KEY_PASSWORD } from '../keys';
+import { useMarkedAddressesInner } from './address/marked_address';
+import { useRecentAddressesInner } from './address/recent_address';
 import { useCurrentChainNetworkInner } from './current/current_chain_network';
 import { useCurrentConnectedAppsInner } from './current/current_connected_apps';
 import {
@@ -103,6 +105,16 @@ export const useIdentityKeys = () => {
     return useIdentityKeysBy(password_hashed, private_keys, setPrivateKeys);
 };
 
+export const useRecentAddresses = () => {
+    const [password] = usePassword();
+    const storage = useSecureStorageBy(password);
+    return useRecentAddressesInner(storage);
+};
+export const useMarkedAddresses = () => {
+    const [password] = usePassword();
+    const storage = useSecureStorageBy(password);
+    return useMarkedAddressesInner(storage);
+};
 // ================ set directly by storage ================
 
 // ############### LOCAL SECURE ###############

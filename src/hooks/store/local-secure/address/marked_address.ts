@@ -77,11 +77,11 @@ export const useMarkedAddressesInner = (
             const now = Date.now();
             const exist = marked_addresses.find((a) => same(a.address, address));
             if (exist) {
-                exist.name = name;
-                exist.updated = now;
+                exist.name = name; // update
+                exist.updated = now; // update
                 await updateMarkedAddress([...marked_addresses]);
             } else {
-                marked_addresses.push({ created: now, updated: now, name, address });
+                marked_addresses.push({ created: now, updated: now, name, address }); // push
                 await updateMarkedAddress([...marked_addresses]);
             }
 
