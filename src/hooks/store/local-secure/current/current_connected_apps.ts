@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { StorageWatchCallback } from '@plasmohq/storage';
 import type { SecureStorage } from '@plasmohq/storage/secure';
 
+import { revoke_current_session_connected_app } from '~hooks/store';
 import { same } from '~lib/utils/same';
 import { match_chain, match_chain_async, type Chain } from '~types/chain';
 import {
@@ -33,6 +34,8 @@ export const useCurrentConnectedAppsInner = (
         current_identity: IdentityId | undefined;
         current_chain_network: CurrentChainNetwork;
         pushOrUpdateConnectedApp: (chain: Chain, app: ConnectedApp) => Promise<void>;
+        removeConnectedApp: (chain: Chain, app: ConnectedApp) => Promise<void>;
+        removeAllConnectedApps: (chain: Chain) => Promise<void>;
     },
 ] => {
     const [current_connected_apps, setCurrentConnectedApps] =
@@ -116,11 +119,56 @@ export const useCurrentConnectedAppsInner = (
         },
         [storage, current_identity, current_chain_network, current_connected_apps, updateCurrentConnectedApps],
     );
+    // remove single
+    const removeConnectedApp = useCallback(
+        async (chain: Chain, app: ConnectedApp) => {
+            if (!storage || !current_identity || !current_chain_network) return;
+            if (!current_connected_apps) return;
+
+            const new_current_connected_apps = await remove_connected_app(
+                chain,
+                app,
+                storage,
+                current_identity,
+                current_chain_network,
+                current_connected_apps,
+            );
+            if (new_current_connected_apps && !same(new_current_connected_apps, current_connected_apps)) {
+                await updateCurrentConnectedApps(new_current_connected_apps);
+            }
+        },
+        [storage, current_identity, current_chain_network, current_connected_apps, updateCurrentConnectedApps],
+    );
+    // remove all
+    const removeAllConnectedApps = useCallback(
+        async (chain: Chain) => {
+            if (!storage || !current_identity || !current_chain_network) return;
+            if (!current_connected_apps) return;
+
+            const new_current_connected_apps = await remove_all_connected_app(
+                chain,
+                storage,
+                current_identity,
+                current_chain_network,
+                current_connected_apps,
+            );
+            if (new_current_connected_apps && !same(new_current_connected_apps, current_connected_apps)) {
+                await updateCurrentConnectedApps(new_current_connected_apps);
+            }
+        },
+        [storage, current_identity, current_chain_network, current_connected_apps, updateCurrentConnectedApps],
+    );
 
     return [
         current_connected_apps,
         updateCurrentConnectedApps,
-        { current_identity, current_chain_network, pushOrUpdateConnectedApp },
+        {
+            current_identity,
+            current_chain_network,
+            pushOrUpdateConnectedApp,
+            removeConnectedApp,
+            removeAllConnectedApps,
+        },
     ];
 };
 
@@ -132,6 +180,7 @@ const push_or_update_connected_app = async (
     current_chain_network: CurrentChainNetwork,
     current_connected_apps: CurrentConnectedApps,
 ): Promise<CurrentConnectedApps> => {
+    // find apps
     const apps = [
         ...match_chain(chain, {
             ic: () => current_connected_apps.ic,
@@ -140,6 +189,73 @@ const push_or_update_connected_app = async (
     const a = apps.find((a) => a.origin === app.origin);
     if (a !== undefined) update_connected_app(a, app);
     else apps.push(app);
+
+    return await match_chain_async(chain, {
+        ic: async () => {
+            const key_ic = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity, current_chain_network.ic);
+            await storage.set(key_ic, apps);
+            const new_current_connected_apps: CurrentConnectedApps = { ...current_connected_apps, ic: apps };
+            return new_current_connected_apps;
+        },
+    });
+};
+
+const remove_connected_app = async (
+    chain: Chain,
+    app: ConnectedApp,
+    storage: SecureStorage,
+    current_identity: IdentityId,
+    current_chain_network: CurrentChainNetwork,
+    current_connected_apps: CurrentConnectedApps,
+): Promise<CurrentConnectedApps | undefined> => {
+    // find apps
+    let apps = [
+        ...match_chain(chain, {
+            ic: () => current_connected_apps.ic,
+        }),
+    ];
+    const a = apps.find((a) => a.origin === app.origin);
+    if (!a) return undefined;
+
+    // also remove temp access maybe exist this time
+    await revoke_current_session_connected_app(current_identity, current_chain_network, chain, app.origin);
+
+    apps = apps.filter((a) => a.origin !== app.origin);
+
+    return await match_chain_async(chain, {
+        ic: async () => {
+            const key_ic = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity, current_chain_network.ic);
+            await storage.set(key_ic, apps);
+            const new_current_connected_apps: CurrentConnectedApps = { ...current_connected_apps, ic: apps };
+            return new_current_connected_apps;
+        },
+    });
+};
+
+const remove_all_connected_app = async (
+    chain: Chain,
+    storage: SecureStorage,
+    current_identity: IdentityId,
+    current_chain_network: CurrentChainNetwork,
+    current_connected_apps: CurrentConnectedApps,
+): Promise<CurrentConnectedApps | undefined> => {
+    // find apps
+    let apps = [
+        ...match_chain(chain, {
+            ic: () => current_connected_apps.ic,
+        }),
+    ];
+    if (apps.length === 0) return undefined;
+
+    // also remove temp access maybe exist this time
+    await Promise.all(
+        apps.map((app) =>
+            revoke_current_session_connected_app(current_identity, current_chain_network, chain, app.origin),
+        ),
+    );
+
+    apps = [];
+
     return await match_chain_async(chain, {
         ic: async () => {
             const key_ic = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity, current_chain_network.ic);

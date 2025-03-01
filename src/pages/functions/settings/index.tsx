@@ -7,12 +7,11 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 
 import AboutPage from './components/about';
-import ApplicationsPage from './components/applications';
 import { SettingsHeader } from './components/header';
 import SettingsHome from './components/home';
 import LockPage from './components/lock';
 
-export type SettingPageState = 'home' | 'applications' | 'lock' | 'about';
+export type SettingPageState = 'home' | 'lock' | 'about';
 
 function FunctionSettingsPage() {
     const current_state = useCurrentState();
@@ -25,8 +24,6 @@ function FunctionSettingsPage() {
         switch (settingState) {
             case 'home':
                 return 'Settings';
-            case 'applications':
-                return 'Linked Applications';
             case 'lock':
                 return 'Lock Wallet';
             case 'about':
@@ -46,11 +43,6 @@ function FunctionSettingsPage() {
                         {settingState === 'home' && (
                             <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
                                 <SettingsHome setSettingState={setSettingState} />
-                            </CSSTransition>
-                        )}
-                        {settingState === 'applications' && (
-                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
-                                <ApplicationsPage />
                             </CSSTransition>
                         )}
                         {settingState === 'lock' && (

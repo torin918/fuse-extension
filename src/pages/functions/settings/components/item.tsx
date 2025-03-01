@@ -13,7 +13,7 @@ export const SettingsItem = ({
     icon?: React.ReactNode;
     path: string | (() => void);
     title: string;
-    tip?: string;
+    tip?: string | number;
     arrow?: boolean;
     right?: React.ReactNode;
 }) => {
@@ -31,7 +31,7 @@ export const SettingsItem = ({
                 <span className="px-3 text-sm text-[#EEEEEE]">{title}</span>
             </div>
             <div className="flex items-center">
-                {tip && <span className="pr-2 text-sm text-[#999999]">{tip}</span>}
+                {tip !== undefined && <span className="pr-2 text-sm text-[#999999]">{tip}</span>}
                 {arrow && <Icon name="icon-arrow-right" className="h-[9px] w-[14px] cursor-pointer text-[#999999]" />}
                 {right}
             </div>

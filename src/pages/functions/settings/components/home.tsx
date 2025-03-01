@@ -1,5 +1,5 @@
 import Icon from '~components/icon';
-import { useIdentityKeysCount, useMarkedAddresses } from '~hooks/store/local-secure';
+import { useCurrentConnectedApps, useIdentityKeysCount, useMarkedAddresses } from '~hooks/store/local-secure';
 
 import type { SettingPageState } from '..';
 import { SettingsGroup } from './group';
@@ -8,6 +8,7 @@ import { SettingsItem } from './item';
 function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPageState) => void }) {
     const account_count = useIdentityKeysCount();
     const [markedAddresses] = useMarkedAddresses();
+    const [apps] = useCurrentConnectedApps();
 
     return (
         <>
@@ -41,9 +42,9 @@ function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPag
 
                 <SettingsItem
                     icon={<Icon name="icon-dapps" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
-                    path={() => setSettingState('applications')}
+                    path={'/home/settings/connected'}
                     title="Linked Applications"
-                    tip="18"
+                    tip={apps.ic.length}
                 />
             </SettingsGroup>
             <SettingsGroup>
