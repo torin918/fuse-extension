@@ -23,7 +23,7 @@ function FunctionSettingsSecurityPage() {
     return (
         <FusePage current_state={current_state}>
             <FusePageTransition
-                className="relative flex h-full w-full flex-col items-center justify-center pt-[60px]"
+                className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 setHide={setHide}
                 header={
                     <SettingsHeader
