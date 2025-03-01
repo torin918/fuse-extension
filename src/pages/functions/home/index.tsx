@@ -156,7 +156,7 @@ function HomePage({
                         <span className="pt-1 text-xs text-[#EEEEEE]">Receive</span>
                     </div>
                     <div
-                        onClick={() => setState('swap')}
+                        onClick={() => navigate('/home/swap')}
                         className="flex h-[70px] w-[70px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-[#333333] transition duration-300 hover:border-[#FFCF13]"
                     >
                         <Icon
