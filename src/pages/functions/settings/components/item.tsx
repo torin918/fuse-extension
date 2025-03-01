@@ -6,14 +6,16 @@ export const SettingsItem = ({
     icon,
     path,
     title,
-    right,
+    tip,
     arrow = true,
+    right,
 }: {
     icon?: React.ReactNode;
     path: string | (() => void);
     title: string;
-    right?: string;
+    tip?: string;
     arrow?: boolean;
+    right?: React.ReactNode;
 }) => {
     const navigate = useNavigate();
     return (
@@ -29,8 +31,9 @@ export const SettingsItem = ({
                 <span className="px-3 text-sm text-[#EEEEEE]">{title}</span>
             </div>
             <div className="flex items-center">
-                {right && <span className="pr-2 text-sm text-[#999999]">{right}</span>}
+                {tip && <span className="pr-2 text-sm text-[#999999]">{tip}</span>}
                 {arrow && <Icon name="icon-arrow-right" className="h-[9px] w-[14px] cursor-pointer text-[#999999]" />}
+                {right}
             </div>
         </div>
     );

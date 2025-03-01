@@ -50,7 +50,7 @@ function FunctionSettingsSecurityPage() {
                             // show modal
                         }}
                         title="Screen Lock"
-                        right={`${idle}ms`}
+                        tip={`${idle}ms`}
                     />
                 </SettingsGroup>
 

@@ -59,7 +59,7 @@ function CreateMnemonicPage({
                         <div
                             className={cn(
                                 'absolute bottom-0 left-0 top-0 flex w-full transform-none items-center justify-center rounded-xl duration-300',
-                                isHovered ? 'bg-transparent' : 'bg-[#333333]',
+                                isHovered ? 'bg-transparent' : 'bg-[#333333] opacity-30',
                             )}
                         >
                             {!isHovered && (
@@ -73,6 +73,7 @@ function CreateMnemonicPage({
                                     `styled-word flex h-[52px] items-center border-[#333333] text-base text-[#EEEEEE]`,
                                     index % 2 === 1 ? 'border-b border-r-0' : 'border-b border-r',
                                     index + 1 > 10 ? 'border-b-0' : '',
+                                    isHovered ? '' : 'blur-[4px]',
                                 )}
                             >
                                 <i className="ml-3 mr-2 flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-full bg-[#333333] text-center text-xs not-italic text-[#999999]">

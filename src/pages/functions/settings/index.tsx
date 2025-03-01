@@ -12,9 +12,8 @@ import ApplicationsPage from './components/applications';
 import { SettingsHeader } from './components/header';
 import SettingsHome from './components/home';
 import LockPage from './components/lock';
-import PreferencesPage from './components/preferences';
 
-export type SettingPageState = 'home' | 'preferences' | 'address' | 'applications' | 'lock' | 'about';
+export type SettingPageState = 'home' | 'address' | 'applications' | 'lock' | 'about';
 
 function FunctionSettingsPage() {
     const current_address = useCurrentState();
@@ -27,8 +26,6 @@ function FunctionSettingsPage() {
         switch (settingState) {
             case 'home':
                 return 'Settings';
-            case 'preferences':
-                return 'Preferences Settings';
             case 'address':
                 return 'Address';
             case 'applications':
@@ -52,11 +49,6 @@ function FunctionSettingsPage() {
                         {settingState === 'home' && (
                             <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
                                 <SettingsHome setSettingState={setSettingState} />
-                            </CSSTransition>
-                        )}
-                        {settingState === 'preferences' && (
-                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
-                                <PreferencesPage />
                             </CSSTransition>
                         )}
                         {settingState === 'address' && (

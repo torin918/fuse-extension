@@ -15,7 +15,7 @@ function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPag
                     icon={<Icon name="icon-wallet" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
                     path={'/home/settings/accounts'}
                     title="Manage Account"
-                    right={`${account_count}`}
+                    tip={`${account_count}`}
                 />
 
                 <SettingsItem
@@ -26,7 +26,7 @@ function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPag
 
                 <SettingsItem
                     icon={<Icon name="icon-preferences" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
-                    path={() => setSettingState('preferences')}
+                    path={'/home/settings/preferences'}
                     title="Preferences Settings"
                 />
             </SettingsGroup>
@@ -35,14 +35,14 @@ function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPag
                     icon={<Icon name="icon-address" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
                     path={() => setSettingState('address')}
                     title="Address Book"
-                    right="2"
+                    tip="2"
                 />
 
                 <SettingsItem
                     icon={<Icon name="icon-dapps" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
                     path={() => setSettingState('applications')}
                     title="Linked Applications"
-                    right="18"
+                    tip="18"
                 />
             </SettingsGroup>
             <SettingsGroup>
@@ -58,7 +58,7 @@ function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPag
                     icon={<Icon name="icon-tips" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
                     path={() => setSettingState('about')}
                     title="About Fuse"
-                    right="V1.1"
+                    tip="V1.1"
                 />
             </SettingsGroup>
         </>
