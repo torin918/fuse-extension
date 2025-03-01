@@ -29,6 +29,7 @@ export const FusePageTransition = ({
     }, [pathname, setPathname, location]);
 
     const [show, setShow] = useState<boolean>(_show);
+    // console.error('_show', pathname, '->', location.pathname, '->', _show, show);
     useTimeout(() => setShow(true), 11);
     useEffect(() => {
         if (!setHide) return;

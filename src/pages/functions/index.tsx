@@ -19,7 +19,7 @@ function MainPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
 
     return (
-        <FusePage current_state={current_state}>
+        <FusePage current_state={current_state} pathname={true}>
             <InnerMainPage wt={wt} />
         </FusePage>
     );

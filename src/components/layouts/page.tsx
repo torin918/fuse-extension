@@ -1,18 +1,32 @@
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import { useNavigatePages } from '~hooks/navigate';
+import { usePathname } from '~hooks/store';
 import { CurrentState } from '~types/state';
 
 export const FusePage = ({
     current_state,
     states = CurrentState.ALIVE,
     replace = false,
+    pathname = false,
     children,
 }: {
     current_state: CurrentState;
     states?: CurrentState | CurrentState[] | null;
     replace?: boolean; // can go back or not
+    pathname?: boolean;
     children: React.ReactNode;
 }) => {
     useNavigatePages(current_state, replace); // ! always check state and page
+
+    const location = useLocation();
+    const [, setPathname] = usePathname();
+    useEffect(() => {
+        if (!pathname) return;
+        const path = location.pathname;
+        setPathname(path);
+    }, [pathname, location, setPathname]);
 
     if (states !== undefined && states !== null) {
         if (Array.isArray(states)) {
