@@ -3,7 +3,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
-import { useCurrentAddress } from '~hooks/store/local-secure';
+import { useCurrentIdentity } from '~hooks/store/local-secure';
 import type { WindowType } from '~types/pages';
 
 import HomePage from './home';
@@ -28,15 +28,15 @@ function MainPage({ wt }: { wt: WindowType }) {
 export default MainPage;
 
 const InnerMainPage = ({ wt }: { wt: WindowType }) => {
-    const current_address = useCurrentAddress();
-    console.debug(`🚀 ~ MainPage ~ current_address:`, wt, current_address);
+    const current_identity = useCurrentIdentity();
+    console.debug(`🚀 ~ MainPage ~ current_identity:`, wt, current_identity);
 
     const [state, setState] = useState<MainPageState>('home');
 
-    if (!current_address) return <></>;
+    if (!current_identity) return <></>;
     return (
         <div className="flex h-full w-full items-center justify-center">
-            {state === 'home' && <HomePage setState={setState} current_address={current_address}></HomePage>}
+            {state === 'home' && <HomePage setState={setState} current_address={current_identity.address}></HomePage>}
             <TransitionGroup component={null}>
                 {state === 'search' && (
                     <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>

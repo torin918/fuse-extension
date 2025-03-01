@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
 
+import { same } from '~lib/utils/same';
+
 import { SESSION_KEY_RESTORE } from '../keys';
 
 // ! always try to use this value to avoid BLINK
@@ -15,7 +17,7 @@ export const useRestoreInner = (storage: Storage): [boolean, (value: boolean) =>
     useEffect(() => {
         const callback: StorageWatchCallback = (d) => {
             const restore = d.newValue ?? false;
-            if (cached_restore !== restore) cached_restore = restore;
+            if (!same(cached_restore, restore)) cached_restore = restore;
             setRestore(restore);
         };
         storage.watch({ [SESSION_KEY_RESTORE]: callback });

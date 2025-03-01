@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
 
+import { same } from '~lib/utils/same';
+
 import { LOCAL_KEY_PASSWORD_HASHED } from '../keys';
 
 // ! always try to use this value to avoid BLINK
@@ -15,7 +17,7 @@ export const usePasswordHashedInner = (storage: Storage): [string, (value: strin
     useEffect(() => {
         const callback: StorageWatchCallback = (d) => {
             const password_hashed = d.newValue ?? '';
-            if (cached_password_hashed !== password_hashed) cached_password_hashed = password_hashed;
+            if (!same(cached_password_hashed, password_hashed)) cached_password_hashed = password_hashed;
             setPasswordHashed(password_hashed);
         };
         storage.watch({ [LOCAL_KEY_PASSWORD_HASHED]: callback });

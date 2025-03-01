@@ -3,7 +3,6 @@ import { get_chain_network_key, type ChainNetwork } from '~types/network';
 
 // prefix
 const SYNC_KEY_PREFIX = ':fuse';
-const LOCAL_SECURE_KEY_PREFIX = ':fuse:secure';
 const LOCAL_KEY_PREFIX = ':fuse';
 const SESSION_KEY_PREFIX = ':fuse';
 
@@ -12,15 +11,6 @@ const SESSION_KEY_PREFIX = ':fuse';
 // user settings
 const SYNC_KEY_PREFIX_USER_SETTINGS = `${SYNC_KEY_PREFIX}:user:settings`;
 export const SYNC_KEY_USER_SETTINGS_IDLE = `${SYNC_KEY_PREFIX_USER_SETTINGS}:idle`; // * sync
-
-// ############### LOCAL SECURE ###############
-
-export const LOCAL_SECURE_KEY_PRIVATE_KEYS = `${LOCAL_SECURE_KEY_PREFIX}:private_keys`; // * local secure
-export const LOCAL_SECURE_KEY_CHAIN_NETWORKS = `${LOCAL_SECURE_KEY_PREFIX}:chain:networks`; // * local secure
-export const LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK = (id: IdentityId) =>
-    `${LOCAL_SECURE_KEY_PREFIX}:${id}:chain:network`; // * local secure
-export const LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS = (id: IdentityId, network: ChainNetwork) =>
-    `${LOCAL_SECURE_KEY_PREFIX}:${id}:${get_chain_network_key(network)}:connected:apps`; // * local secure
 
 // ############### LOCAL ###############
 

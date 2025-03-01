@@ -18,16 +18,16 @@ import {
     usePasswordHashed,
 } from '..';
 import { agent_refresh_unique_identity } from '../agent';
+import { SESSION_KEY_PASSWORD } from '../keys';
+import { useCurrentChainNetworkInner } from './current/current_chain_network';
+import { useCurrentConnectedAppsInner } from './current/current_connected_apps';
 import {
     LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK,
     LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS,
     LOCAL_SECURE_KEY_PRIVATE_KEYS,
-    SESSION_KEY_PASSWORD,
-} from '../keys';
-import { useCurrentChainNetworkInner } from './current_chain_network';
-import { useCurrentConnectedAppsInner } from './current_connected_apps';
-import { inner_get_current_address, useCurrentAddressBy } from './memo/current_address';
-import { useIdentityKeysBy, useIdentityKeysCountBy } from './memo/identity';
+} from './keys';
+import { useCurrentIdentityBy } from './memo/current';
+import { inner_get_identity_address, useIdentityKeysBy, useIdentityKeysCountBy } from './memo/identity';
 import { usePrivateKeysInner } from './private_keys';
 import { useSecureStorageInner } from './storage';
 
@@ -81,12 +81,12 @@ export const useCurrentConnectedApps = () => {
     return useCurrentConnectedAppsInner(storage, private_keys?.current, current_chain_network);
 };
 
-export const useCurrentAddress = () => {
+export const useCurrentIdentity = () => {
     const [password] = usePassword();
     const storage = useSecureStorageBy(password);
     const [private_keys] = usePrivateKeysInner(storage);
     const [current_chain_network] = useCurrentChainNetworkInner(storage, private_keys?.current);
-    return useCurrentAddressBy(private_keys, current_chain_network);
+    return useCurrentIdentityBy(private_keys, current_chain_network);
 };
 
 export const useIdentityKeysCount = () => {
@@ -129,7 +129,7 @@ export const get_current_identity_address = async (): Promise<IdentityAddress | 
     const current = private_keys.keys.find((i) => i.id === private_keys.current);
     if (!current) throw new Error('can not find current identity');
 
-    const current_address = inner_get_current_address(current);
+    const current_address = inner_get_identity_address(current);
 
     return current_address;
 };

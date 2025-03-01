@@ -3,9 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import type { StorageWatchCallback } from '@plasmohq/storage';
 import type { SecureStorage } from '@plasmohq/storage/secure';
 
+import { same } from '~lib/utils/same';
 import { type PrivateKeys } from '~types/identity';
 
-import { LOCAL_SECURE_KEY_PRIVATE_KEYS } from '../keys';
+import { LOCAL_SECURE_KEY_PRIVATE_KEYS } from './keys';
 
 // ! always try to use this value to avoid BLINK
 let cached_private_keys: PrivateKeys | undefined = undefined;
@@ -19,14 +20,14 @@ export const usePrivateKeysInner = (
     // watch this key, cloud notice other hook of this
     useEffect(() => {
         if (!storage) return;
-        const private_keys_callback: StorageWatchCallback = (d) => {
+        const callback: StorageWatchCallback = (d) => {
             const private_keys = d.newValue;
-            if (cached_private_keys !== private_keys) cached_private_keys = private_keys;
+            if (!same(cached_private_keys, private_keys)) cached_private_keys = private_keys;
             setPrivateKeys(private_keys);
         };
-        storage.watch({ [LOCAL_SECURE_KEY_PRIVATE_KEYS]: private_keys_callback });
+        storage.watch({ [LOCAL_SECURE_KEY_PRIVATE_KEYS]: callback });
         return () => {
-            storage.unwatch({ [LOCAL_SECURE_KEY_PRIVATE_KEYS]: private_keys_callback });
+            storage.unwatch({ [LOCAL_SECURE_KEY_PRIVATE_KEYS]: callback });
         };
     }, [storage]);
 
@@ -50,8 +51,6 @@ export const usePrivateKeysInner = (
         },
         [storage],
     );
-
-    // memo
 
     return [private_keys, updatePrivateKeys];
 };

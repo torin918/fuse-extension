@@ -6,7 +6,7 @@ import type { SecureStorage } from '@plasmohq/storage/secure';
 import { same } from '~lib/utils/same';
 import type { ChainNetworks } from '~types/network';
 
-import { LOCAL_SECURE_KEY_CHAIN_NETWORKS } from '../keys';
+import { LOCAL_SECURE_KEY_CHAIN_NETWORKS } from './keys';
 
 // ! always try to use this value to avoid BLINK
 let cached_chain_networks: ChainNetworks = [];
@@ -20,14 +20,14 @@ export const useChainNetworksInner = (
     // watch this key, cloud notice other hook of this
     useEffect(() => {
         if (!storage) return;
-        const chain_networks_callback: StorageWatchCallback = (d) => {
+        const callback: StorageWatchCallback = (d) => {
             const chain_networks = d.newValue ?? [];
             if (!same(cached_chain_networks, chain_networks)) cached_chain_networks = chain_networks;
             setChainNetworks(chain_networks);
         };
-        storage.watch({ [LOCAL_SECURE_KEY_CHAIN_NETWORKS]: chain_networks_callback });
+        storage.watch({ [LOCAL_SECURE_KEY_CHAIN_NETWORKS]: callback });
         return () => {
-            storage.unwatch({ [LOCAL_SECURE_KEY_CHAIN_NETWORKS]: chain_networks_callback });
+            storage.unwatch({ [LOCAL_SECURE_KEY_CHAIN_NETWORKS]: callback });
         };
     }, [storage]);
 

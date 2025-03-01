@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
 
+import { same } from '~lib/utils/same';
+
 import { SESSION_KEY_PASSWORD_ALIVE } from '../keys';
 
 // ! always try to use this value to avoid BLINK
@@ -15,7 +17,7 @@ export const usePasswordAliveInner = (storage: Storage): [number, (value: number
     useEffect(() => {
         const callback: StorageWatchCallback = (d) => {
             const password_alive = d.newValue ?? 0;
-            if (cached_password_alive !== password_alive) cached_password_alive = password_alive;
+            if (!same(cached_password_alive, password_alive)) cached_password_alive = password_alive;
             setPasswordAlive(password_alive);
         };
         storage.watch({ [SESSION_KEY_PASSWORD_ALIVE]: callback });

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
 
+import { same } from '~lib/utils/same';
+
 import { SESSION_KEY_PATHNAME } from '../keys';
 
 // ! always try to use this value to avoid BLINK
@@ -15,7 +17,7 @@ export const usePathnameInner = (storage: Storage): [string, (value: string) => 
     useEffect(() => {
         const callback: StorageWatchCallback = (d) => {
             const pathname = d.newValue ?? '';
-            if (cached_pathname !== pathname) cached_pathname = pathname;
+            if (!same(cached_pathname, pathname)) cached_pathname = pathname;
             setPathname(pathname);
         };
         storage.watch({ [SESSION_KEY_PATHNAME]: callback });

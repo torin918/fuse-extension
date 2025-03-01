@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
+import { get_address_by_mnemonic } from '~lib/mnemonic';
 import { verify_password } from '~lib/password';
 import { random_account_icon } from '~lib/utils/account_icon';
 import { same } from '~lib/utils/same';
@@ -14,8 +15,6 @@ import {
     type PrivateKeys,
     type ShowIdentityKey,
 } from '~types/identity';
-
-import { inner_get_current_address } from './current_address';
 
 export const useIdentityKeysCountBy = (private_keys: PrivateKeys | undefined): number => {
     const count = useMemo(() => private_keys?.keys.length ?? 0, [private_keys]);
@@ -53,7 +52,7 @@ export const useIdentityKeysBy = (
     useEffect(() => {
         const new_identity_list = (() => {
             if (!private_keys) return undefined;
-            return private_keys.keys.map((key) => show_identity_key(private_keys, key));
+            return private_keys.keys.map((key) => inner_show_identity_key(private_keys, key));
         })();
         if (!same(new_identity_list, identity_list)) setIdentityList(new_identity_list);
     }, [private_keys, identity_list]);
@@ -173,7 +172,7 @@ export const useIdentityKeysBy = (
         for (const key of private_keys.keys) {
             match_combined_identity_key(key.key, {
                 mnemonic: (m) => {
-                    if (m.mnemonic !== private_keys.mnemonic) return;
+                    if (!same(m.mnemonic, private_keys.mnemonic)) return;
                     if (max_subaccount < m.subaccount) max_subaccount = m.subaccount;
                 },
                 private_key: () => {
@@ -206,11 +205,11 @@ export const useIdentityKeysBy = (
             if (!identity) return undefined; // can not find account
 
             let changed = false;
-            if (identity.name !== name) {
+            if (!same(identity.name, name)) {
                 identity.name = name;
                 changed = true;
             }
-            if (identity.icon !== icon) {
+            if (!same(identity.icon, icon)) {
                 identity.icon = icon;
                 changed = true;
             }
@@ -263,12 +262,12 @@ export const useIdentityKeysBy = (
     };
 };
 
-const show_identity_key = (private_keys: PrivateKeys, identity_key: IdentityKey): ShowIdentityKey => ({
+export const inner_show_identity_key = (private_keys: PrivateKeys, identity_key: IdentityKey): ShowIdentityKey => ({
     id: identity_key.id,
     created: identity_key.created,
     name: identity_key.name,
     icon: identity_key.icon,
-    address: inner_get_current_address(identity_key),
+    address: inner_get_identity_address(identity_key),
     key: match_combined_identity_key<CombinedShowIdentityKey>(identity_key.key, {
         mnemonic: (mnemonic) => ({ type: 'mnemonic', parsed: mnemonic.parsed }),
         private_key: (private_key) => ({ type: 'private_key', chain: private_key.chain }),
@@ -282,3 +281,13 @@ const show_identity_key = (private_keys: PrivateKeys, identity_key: IdentityKey)
             private_key: () => true,
         }),
 });
+
+export const inner_get_identity_address = (current: IdentityKey) => {
+    const current_address = match_combined_identity_key(current.key, {
+        mnemonic: (mnemonic) => get_address_by_mnemonic(mnemonic.mnemonic, mnemonic.subaccount, mnemonic.parsed),
+        private_key: () => {
+            throw new Error(`Unimplemented identity type: private_key`);
+        },
+    });
+    return current_address;
+};

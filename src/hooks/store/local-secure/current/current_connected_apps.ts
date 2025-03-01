@@ -42,8 +42,9 @@ export const useCurrentConnectedAppsInner = (
         if (!storage || !current_identity || !current_chain_network) return;
         if (!current_connected_apps) return; // ! MUST CHECK THEN UPDATE
         const current_ic_connected_apps_callback: StorageWatchCallback = (d) => {
-            if (!same(current_connected_apps.ic, d.newValue)) {
-                setCurrentConnectedApps({ ...current_connected_apps, ic: d.newValue });
+            const current_ic_connected_apps = d.newValue ?? [];
+            if (!same(current_connected_apps.ic, current_ic_connected_apps)) {
+                setCurrentConnectedApps({ ...current_connected_apps, ic: current_ic_connected_apps });
             }
         };
         const key_ic = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity, current_chain_network.ic);

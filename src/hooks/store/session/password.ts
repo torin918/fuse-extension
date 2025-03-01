@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
 
+import { same } from '~lib/utils/same';
+
 import { SESSION_KEY_PASSWORD } from '../keys';
 
 // ! always try to use this value to avoid BLINK
@@ -15,7 +17,7 @@ export const usePasswordInner = (storage: Storage): [string, (value: string) => 
     useEffect(() => {
         const callback: StorageWatchCallback = (d) => {
             const password = d.newValue ?? '';
-            if (cached_password !== password) cached_password = password;
+            if (!same(cached_password, password)) cached_password = password;
             setPassword(password);
         };
         storage.watch({ [SESSION_KEY_PASSWORD]: callback });

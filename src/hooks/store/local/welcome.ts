@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
 
+import { same } from '~lib/utils/same';
+
 import { LOCAL_KEY_WELCOMED } from '../keys';
 
 // ! always try to use this value to avoid BLINK
@@ -15,7 +17,7 @@ export const useWelcomedInner = (storage: Storage): [boolean, (value: boolean) =
     useEffect(() => {
         const callback: StorageWatchCallback = (d) => {
             const welcomed = d.newValue ?? false;
-            if (cached_welcomed !== welcomed) cached_welcomed = welcomed;
+            if (!same(cached_welcomed, welcomed)) cached_welcomed = welcomed;
             setWelcomed(welcomed);
         };
         storage.watch({ [LOCAL_KEY_WELCOMED]: callback });

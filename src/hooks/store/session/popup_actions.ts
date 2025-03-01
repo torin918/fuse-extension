@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
 
+import { same } from '~lib/utils/same';
 import { is_same_popup_action, type PopupAction, type PopupActions } from '~types/actions';
 
 import { SESSION_KEY_POPUP_ACTIONS } from '../keys';
@@ -25,7 +26,7 @@ export const usePopupActionsInner = (
     useEffect(() => {
         const callback: StorageWatchCallback = (d) => {
             const popup_actions = d.newValue ?? [];
-            if (cached_popup_actions !== popup_actions) cached_popup_actions = popup_actions;
+            if (!same(cached_popup_actions, popup_actions)) cached_popup_actions = popup_actions;
             setPopupActions(popup_actions);
         };
         storage.watch({ [SESSION_KEY_POPUP_ACTIONS]: callback });

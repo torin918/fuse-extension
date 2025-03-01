@@ -22,7 +22,7 @@ export const useCurrentChainNetworkInner = (
     // watch this key, cloud notice other hook of this
     useEffect(() => {
         if (!storage || !current_identity) return;
-        const current_chain_network_callback: StorageWatchCallback = (d) => {
+        const callback: StorageWatchCallback = (d) => {
             const current_chain_network = d.newValue ?? DEFAULT_CURRENT_CHAIN_NETWORK;
             if (!same(cached_current_chain_network, current_chain_network)) {
                 cached_current_chain_network = current_chain_network;
@@ -30,9 +30,9 @@ export const useCurrentChainNetworkInner = (
             setCurrentChaiNetwork(current_chain_network);
         };
         const key = LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK(current_identity);
-        storage.watch({ [key]: current_chain_network_callback });
+        storage.watch({ [key]: callback });
         return () => {
-            storage.unwatch({ [key]: current_chain_network_callback });
+            storage.unwatch({ [key]: callback });
         };
     }, [storage, current_identity]);
 
