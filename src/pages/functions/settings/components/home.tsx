@@ -60,7 +60,7 @@ function SettingsHome({ setSettingState }: { setSettingState: (state: SettingPag
             <SettingsGroup>
                 <SettingsItem
                     icon={<Icon name="icon-tips" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
-                    path={() => setSettingState('about')}
+                    path={'/home/settings/about'}
                     title="About Fuse"
                     tip="V1.1"
                 />

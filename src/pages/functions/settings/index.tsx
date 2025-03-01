@@ -6,11 +6,10 @@ import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 
-import AboutPage from './components/about';
 import { SettingsHeader } from './components/header';
 import SettingsHome from './components/home';
 
-export type SettingPageState = 'home' | 'about';
+export type SettingPageState = 'home';
 
 function FunctionSettingsPage() {
     const current_state = useCurrentState();
@@ -23,8 +22,6 @@ function FunctionSettingsPage() {
         switch (settingState) {
             case 'home':
                 return 'Settings';
-            case 'about':
-                return 'About Fuse';
             default:
                 return 'Setting';
         }
@@ -40,11 +37,6 @@ function FunctionSettingsPage() {
                         {settingState === 'home' && (
                             <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
                                 <SettingsHome setSettingState={setSettingState} />
-                            </CSSTransition>
-                        )}
-                        {settingState === 'about' && (
-                            <CSSTransition key={settingState} classNames="slide" timeout={300} unmountOnExit>
-                                <AboutPage />
                             </CSSTransition>
                         )}
                     </TransitionGroup>

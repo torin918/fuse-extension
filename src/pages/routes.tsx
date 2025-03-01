@@ -17,6 +17,7 @@ import FunctionSettingsSecurityPage from './functions/settings/pages/security';
 import FunctionSettingsPreferencesPage from './functions/settings/pages/preferences';
 import FunctionSettingsAddressesPage from './functions/settings/pages/address';
 import FunctionSettingsConnectedAppPage from './functions/settings/pages/connected';
+import FunctionSettingsAboutPage from './functions/settings/pages/about';
 
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
@@ -45,6 +46,8 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/home/settings/addresses', element: <FunctionSettingsAddressesPage /> }] : []),
         // settings/connected
         ...(hit(wt, []) ? [{ path: '/home/settings/connected', element: <FunctionSettingsConnectedAppPage /> }] : []),
+        // settings/about
+        ...(hit(wt, []) ? [{ path: '/home/settings/about', element: <FunctionSettingsAboutPage /> }] : []),
 
         // dapps
         ...(hit(wt, []) ? [{ path: '/home/dapps', element: <FunctionDappsPage wt={wt} /> }] : []),
