@@ -31,8 +31,10 @@
         "secp256k",
         "Sidepanel",
         "solana",
+        "sonner",
         "subaccount",
-        "usehooks"
+        "usehooks",
+        "vaul"
     ],
     "nuxt.isNuxtApp": false
 }
