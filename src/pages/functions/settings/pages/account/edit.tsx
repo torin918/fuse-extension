@@ -291,6 +291,7 @@ const ShowSeedPhrase = ({
             return verify_password(password_hashed, password1);
         })().then(setValid);
     }, [password1, password_hashed]);
+
     return (
         <Drawer isOpen={isOpen} placement="bottom" onOpenChange={onOpenChange}>
             <DrawerContent>
@@ -310,7 +311,7 @@ const ShowSeedPhrase = ({
                                 <div className="mb-4 mt-2 block rounded-xl bg-[#2E1D01] px-4 py-3 text-sm text-[#FFCF13]">
                                     For security, we recommend that you manually back it up and store it safely.
                                 </div>
-                                <div className="bordermt-5 grid w-full grid-cols-2 rounded-xl border border-[#333333]">
+                                <div className="mt-5 grid w-full grid-cols-2 rounded-xl border border-[#333333]">
                                     {mnemonic.split(' ').map((word, index) => (
                                         <span
                                             key={index}
