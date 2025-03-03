@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Drawer as DrawerPrimitive } from 'vaul';
 
-import { cn } from '~/lib/utils/cn';
+import { cn } from '~lib/utils/cn';
 
 function Drawer({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
     return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
@@ -32,14 +32,33 @@ function DrawerOverlay({ className, ...props }: React.ComponentProps<typeof Draw
     );
 }
 
-function DrawerContent({ className, children, ...props }: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+function DrawerContent({
+    className,
+    children,
+    anchor = false,
+    overlayClassName,
+    overlayProps,
+    ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Content> & {
+    anchor?: boolean;
+    overlayClassName?: string;
+    overlayProps?: React.ComponentProps<typeof DrawerPrimitive.Overlay>;
+}) {
     return (
         <DrawerPortal data-slot="drawer-portal">
-            <DrawerOverlay />
+            <DrawerPrimitive.Overlay
+                data-slot="drawer-overlay"
+                className={cn(
+                    'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 absolute inset-0 z-50 bg-black/80',
+                    overlayClassName,
+                )}
+                {...overlayProps}
+            />
             <DrawerPrimitive.Content
                 data-slot="drawer-content"
                 className={cn(
-                    'group/drawer-content fixed z-50 flex h-auto flex-col bg-background',
+                    // 'group/drawer-content fixed z-50 flex h-auto flex-col bg-background',
+                    'group/drawer-content absolute z-50 flex h-auto flex-col bg-background',
                     'data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-lg',
                     'data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-lg',
                     'data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:sm:max-w-sm',
@@ -48,7 +67,9 @@ function DrawerContent({ className, children, ...props }: React.ComponentProps<t
                 )}
                 {...props}
             >
-                <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+                {anchor && (
+                    <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+                )}
                 {children}
             </DrawerPrimitive.Content>
         </DrawerPortal>

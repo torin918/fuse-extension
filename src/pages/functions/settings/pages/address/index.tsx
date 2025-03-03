@@ -1,5 +1,5 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@heroui/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
 import Icon from '~components/icon';
@@ -12,7 +12,7 @@ import { useMarkedAddresses, useRecentAddresses } from '~hooks/store/local-secur
 import { truncate_principal, truncate_text } from '~lib/utils/text';
 
 import { FunctionHeader } from '../../../components/header';
-import { AddAddress } from './components/modal';
+import { AddAddressDrawer } from './components/drawer';
 
 function FunctionSettingsAddressesPage() {
     const current_address = useCurrentState();
@@ -86,174 +86,179 @@ function FunctionSettingsAddressesPage() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     console.assert(onOpen); // TODO test
 
+    const ref = useRef<HTMLDivElement>(null);
     return (
         <FusePage current_state={current_address}>
-            <FusePageTransition
-                className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
-                setHide={setHide}
-                header={
-                    <FunctionHeader
-                        title={'Addresses'}
-                        onBack={() => goto(-1)}
-                        onClose={() => goto('/', { replace: true })}
-                    />
-                }
-            >
-                <button onClick={pushRandomMarked}>push marked</button>
-                <button onClick={pushRandomRecent}>push recent</button>
+            <div ref={ref} className="relative h-full w-full overflow-hidden">
+                <FusePageTransition
+                    className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
+                    setHide={setHide}
+                    header={
+                        <FunctionHeader
+                            title={'Addresses'}
+                            onBack={() => goto(-1)}
+                            onClose={() => goto('/', { replace: true })}
+                        />
+                    }
+                >
+                    <button onClick={pushRandomMarked}>push marked</button>
+                    <button onClick={pushRandomRecent}>push recent</button>
 
-                <div className="flex h-full flex-col justify-between">
-                    <div className="flex-1 overflow-y-auto">
-                        <div className="w-full px-5">
-                            {markedAddresses.map((item) => (
-                                <div
-                                    key={`${JSON.stringify(item.address)}`}
-                                    className="mt-3 block w-full cursor-pointer rounded-xl bg-[#181818] p-3"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center">
-                                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#333333] p-2 text-xl font-bold">
-                                                {item.address.address.charAt(0)}
-                                            </div>
-                                            <div className="pl-3">
-                                                <span className="block text-sm font-semibold">{item.name}</span>
-                                                <span className="block text-xs text-[#999999]">
-                                                    {item.address.address.includes('-')
-                                                        ? truncate_principal(item.address.address)
-                                                        : truncate_text(item.address.address)}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div
-                                            className="dropdown-container relative flex h-8 w-8 items-center justify-center rounded-lg duration-300 hover:bg-[#2B2B2B]"
-                                            onClick={() => {
-                                                // const updatedAddresses = [...addresses];
-                                                // updatedAddresses[index].isVisible = !updatedAddresses[index].isVisible;
-                                                // setAddresses(updatedAddresses);
-                                            }}
-                                        >
-                                            <span className="h-[3px] w-[3px] rounded-full bg-[#999999]"></span>
-                                            <span className="mx-[2px] h-[3px] w-[3px] rounded-full bg-[#999999]"></span>
-                                            <span className="h-[3px] w-[3px] rounded-full bg-[#999999]"></span>
-                                            {
-                                                <div className="absolute right-0 top-9 z-50 w-[120px] rounded-xl bg-[#222222] p-2">
-                                                    <CopyToClipboard
-                                                        text={item.address.address}
-                                                        onCopy={() => {
-                                                            showToast('Copied', 'success');
-                                                        }}
-                                                    >
-                                                        <div className="flex items-center rounded-lg p-2 duration-300 hover:bg-[#333333]">
-                                                            <Icon
-                                                                name="icon-copy"
-                                                                className="mr-2 h-3 w-3 shrink-0 cursor-pointer text-[#999999]"
-                                                            ></Icon>
-                                                            <span>Copy</span>
-                                                        </div>
-                                                    </CopyToClipboard>
-                                                    <div
-                                                        className="flex items-center rounded-lg p-2 duration-300 hover:bg-[#333333]"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setIsOpen(true);
-                                                        }}
-                                                    >
-                                                        <Icon
-                                                            name="icon-edit"
-                                                            className="mr-2 h-4 w-4 shrink-0 cursor-pointer text-[#999999]"
-                                                        ></Icon>
-                                                        <span>Edit</span>
-                                                    </div>
-                                                    <div
-                                                        className="flex items-center rounded-lg p-2 duration-300 hover:bg-[#333333]"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            removeMarkedAddress(item.address);
-                                                        }}
-                                                    >
-                                                        <Icon
-                                                            name="icon-delete"
-                                                            className="mr-2 h-4 w-4 shrink-0 cursor-pointer text-[#999999]"
-                                                        ></Icon>
-                                                        <span>Delete</span>
-                                                    </div>
+                    <div className="flex h-full flex-col justify-between">
+                        <div className="flex-1 overflow-y-auto">
+                            <div className="w-full px-5">
+                                {markedAddresses.map((item) => (
+                                    <div
+                                        key={`${JSON.stringify(item.address)}`}
+                                        className="mt-3 block w-full cursor-pointer rounded-xl bg-[#181818] p-3"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center">
+                                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#333333] p-2 text-xl font-bold">
+                                                    {item.address.address.charAt(0)}
                                                 </div>
-                                            }
+                                                <div className="pl-3">
+                                                    <span className="block text-sm font-semibold">{item.name}</span>
+                                                    <span className="block text-xs text-[#999999]">
+                                                        {item.address.address.includes('-')
+                                                            ? truncate_principal(item.address.address)
+                                                            : truncate_text(item.address.address)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div
+                                                className="dropdown-container relative flex h-8 w-8 items-center justify-center rounded-lg duration-300 hover:bg-[#2B2B2B]"
+                                                onClick={() => {
+                                                    // const updatedAddresses = [...addresses];
+                                                    // updatedAddresses[index].isVisible = !updatedAddresses[index].isVisible;
+                                                    // setAddresses(updatedAddresses);
+                                                }}
+                                            >
+                                                <span className="h-[3px] w-[3px] rounded-full bg-[#999999]"></span>
+                                                <span className="mx-[2px] h-[3px] w-[3px] rounded-full bg-[#999999]"></span>
+                                                <span className="h-[3px] w-[3px] rounded-full bg-[#999999]"></span>
+                                                {
+                                                    <div className="absolute right-0 top-9 z-50 w-[120px] rounded-xl bg-[#222222] p-2">
+                                                        <CopyToClipboard
+                                                            text={item.address.address}
+                                                            onCopy={() => {
+                                                                showToast('Copied', 'success');
+                                                            }}
+                                                        >
+                                                            <div className="flex items-center rounded-lg p-2 duration-300 hover:bg-[#333333]">
+                                                                <Icon
+                                                                    name="icon-copy"
+                                                                    className="mr-2 h-3 w-3 shrink-0 cursor-pointer text-[#999999]"
+                                                                ></Icon>
+                                                                <span>Copy</span>
+                                                            </div>
+                                                        </CopyToClipboard>
+                                                        <div
+                                                            className="flex items-center rounded-lg p-2 duration-300 hover:bg-[#333333]"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setIsOpen(true);
+                                                            }}
+                                                        >
+                                                            <Icon
+                                                                name="icon-edit"
+                                                                className="mr-2 h-4 w-4 shrink-0 cursor-pointer text-[#999999]"
+                                                            ></Icon>
+                                                            <span>Edit</span>
+                                                        </div>
+                                                        <div
+                                                            className="flex items-center rounded-lg p-2 duration-300 hover:bg-[#333333]"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                removeMarkedAddress(item.address);
+                                                            }}
+                                                        >
+                                                            <Icon
+                                                                name="icon-delete"
+                                                                className="mr-2 h-4 w-4 shrink-0 cursor-pointer text-[#999999]"
+                                                            ></Icon>
+                                                            <span>Delete</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="w-full">
-                            <h2 className="font-xs px-5 pb-2 pt-5 text-[#999999]">Recent Address</h2>
-                            {recentAddresses.map((item, index) => (
-                                <div
-                                    key={index + JSON.stringify(item)}
-                                    className="flex items-center justify-between px-5"
-                                >
-                                    <div className="flex-1 cursor-pointer break-all py-2 text-xs text-[#EEEEEE]">
-                                        {item.address.address}
+                                ))}
+                            </div>
+                            <div className="w-full">
+                                <h2 className="font-xs px-5 pb-2 pt-5 text-[#999999]">Recent Address</h2>
+                                {recentAddresses.map((item, index) => (
+                                    <div
+                                        key={index + JSON.stringify(item)}
+                                        className="flex items-center justify-between px-5"
+                                    >
+                                        <div className="flex-1 cursor-pointer break-all py-2 text-xs text-[#EEEEEE]">
+                                            {item.address.address}
+                                        </div>
+                                        <div onClick={() => setIsOpen(true)}>
+                                            <Icon
+                                                name="icon-add"
+                                                className="ml-4 h-4 w-4 shrink-0 cursor-pointer text-[#FFCF13] duration-300 hover:opacity-80"
+                                            ></Icon>
+                                        </div>
                                     </div>
-                                    <div onClick={() => setIsOpen(true)}>
-                                        <Icon
-                                            name="icon-add"
-                                            className="ml-4 h-4 w-4 shrink-0 cursor-pointer text-[#FFCF13] duration-300 hover:opacity-80"
-                                        ></Icon>
+                                ))}
+                            </div>
+                        </div>
+
+                        <AddAddressDrawer
+                            trigger={
+                                <div className="w-full p-5">
+                                    <div className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black">
+                                        Add
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="w-full p-5">
-                        <Button
-                            className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
-                            onPress={() => setIsOpen(true)}
+                            }
+                            container={ref.current ?? undefined}
+                        />
+                        <Modal
+                            backdrop="blur"
+                            isOpen={isOpen}
+                            onClose={onClose}
+                            size="xs"
+                            placement="center"
+                            hideCloseButton={true}
                         >
-                            Add
-                        </Button>
+                            <ModalContent>
+                                {(onClose) => (
+                                    <>
+                                        <ModalBody>
+                                            <div className="flex w-full flex-col items-center justify-center pt-5">
+                                                <Icon name="icon-tips" className="h-[56px] w-[56px] text-[#FFCF13]" />
+                                                <p className="w-full pt-4 text-base">
+                                                    Are you sure you want to delete the address?
+                                                </p>
+                                            </div>
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <div className="grid w-full grid-cols-2 gap-x-4">
+                                                <Button
+                                                    className="rounded-xl bg-[#666666] py-3 text-base text-[#EEEEEE]"
+                                                    onPress={onClose}
+                                                >
+                                                    Close
+                                                </Button>
+                                                <Button
+                                                    className="rounded-xl bg-[#FFCF13] py-3 text-base font-semibold text-black"
+                                                    onPress={onClose}
+                                                >
+                                                    Confirm
+                                                </Button>
+                                            </div>
+                                        </ModalFooter>
+                                    </>
+                                )}
+                            </ModalContent>
+                        </Modal>
                     </div>
-                    <AddAddress isOpen={isAddrOpen} setIsOpen={setIsOpen} />
-                    <Modal
-                        backdrop="blur"
-                        isOpen={isOpen}
-                        onClose={onClose}
-                        size="xs"
-                        placement="center"
-                        hideCloseButton={true}
-                    >
-                        <ModalContent>
-                            {(onClose) => (
-                                <>
-                                    <ModalBody>
-                                        <div className="flex w-full flex-col items-center justify-center pt-5">
-                                            <Icon name="icon-tips" className="h-[56px] w-[56px] text-[#FFCF13]" />
-                                            <p className="w-full pt-4 text-base">
-                                                Are you sure you want to delete the address?
-                                            </p>
-                                        </div>
-                                    </ModalBody>
-                                    <ModalFooter>
-                                        <div className="grid w-full grid-cols-2 gap-x-4">
-                                            <Button
-                                                className="rounded-xl bg-[#666666] py-3 text-base text-[#EEEEEE]"
-                                                onPress={onClose}
-                                            >
-                                                Close
-                                            </Button>
-                                            <Button
-                                                className="rounded-xl bg-[#FFCF13] py-3 text-base font-semibold text-black"
-                                                onPress={onClose}
-                                            >
-                                                Confirm
-                                            </Button>
-                                        </div>
-                                    </ModalFooter>
-                                </>
-                            )}
-                        </ModalContent>
-                    </Modal>
-                </div>
-            </FusePageTransition>
+                </FusePageTransition>
+            </div>
         </FusePage>
     );
 }
