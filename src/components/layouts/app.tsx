@@ -4,9 +4,11 @@ import { HashRouter, useRoutes, type RouteObject } from 'react-router-dom';
 import logo_black from '~assets/svg/logo-black.svg';
 import Icon from '~components/icon';
 
+import '~index.css';
 import '~styles/globals.css';
 import '~assets/iconfont/iconfont.js';
 
+import { Toaster } from '~components/ui/sonner';
 import { useBackground } from '~hooks/memo/background';
 import type { WindowType } from '~types/pages';
 
@@ -39,6 +41,7 @@ export const SinglePageApp = ({
                     )}
                     {wt !== 'options' && <PageRoutes routes={routes} />}
                 </div>
+                <Toaster />
             </HeroUIProvider>
         </HashRouter>
     );

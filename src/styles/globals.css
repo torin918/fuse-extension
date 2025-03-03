@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @font-face {
     font-family: 'Rethink';
     src: url('../assets/font/Rethink-Regular.woff2') format('woff2');
