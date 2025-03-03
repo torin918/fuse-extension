@@ -2,7 +2,7 @@ import { isCanisterIdText } from '@choptop/haw';
 import { Button } from '@heroui/react';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
@@ -12,16 +12,19 @@ import { useMarkedAddresses, useRecentAddresses } from '~hooks/store/local-secur
 import { FunctionHeader } from '~pages/functions/components/header';
 import { check_chain_address, type ChainAddress } from '~types/address';
 
-function FunctionSendTokenPage() {
+function FunctionTransferTokenPage() {
     const current_state = useCurrentState();
 
     const { setHide, goto: _goto } = useGoto();
 
-    const { token } = useParams();
+    const location = useLocation();
+    const [token, setToken] = useState<string>();
 
     useEffect(() => {
-        if (!token || !isCanisterIdText(token)) _goto('/', { replace: true });
-    }, [_goto, token]);
+        const token = location.state.token;
+        if (!token || !isCanisterIdText(token)) return _goto('/', { replace: true });
+        setToken(token);
+    }, [_goto, location]);
 
     const [marked] = useMarkedAddresses();
     const [recent] = useRecentAddresses();
@@ -94,4 +97,4 @@ function FunctionSendTokenPage() {
     );
 }
 
-export default FunctionSendTokenPage;
+export default FunctionTransferTokenPage;

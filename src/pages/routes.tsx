@@ -20,8 +20,9 @@ import FunctionSettingsConnectedAppPage from './functions/settings/pages/connect
 import FunctionSettingsAboutPage from './functions/settings/pages/about';
 import FunctionReceivePage from './functions/receive';
 import FunctionSwapPage from './functions/swap';
-import FunctionSendTokenPage from './functions/send/token';
-import FunctionSendTokenToPage from './functions/send/token/to';
+import FunctionTransferTokenPage from './functions/transfer/token';
+import FunctionTransferPage from './functions/transfer';
+import FunctionTokenPage from './functions/token';
 
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
@@ -38,9 +39,15 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/home/receive', element: <FunctionReceivePage /> }] : []),
 
         // send
+        ...(hit(wt, []) ? [{ path: '/home/transfer', element: <FunctionTransferPage   /> }] : []),
         // send token
-        ...(hit(wt, []) ? [{ path: '/home/send/token/:token', element: <FunctionSendTokenPage   /> }] : []), // choose to
-        ...(hit(wt, []) ? [{ path: '/home/send/token/:token/to/:to', element: <FunctionSendTokenToPage   /> }] : []), // do send
+        ...(hit(wt, []) ? [{ path: '/home/transfer/token', element: <FunctionTransferTokenPage   /> }] : []),
+
+        // token
+        ...(hit(wt, []) ? [{ path: '/home/token', element: <FunctionTokenPage   /> }] : []),
+        // token transfer
+        ...(hit(wt, []) ? [{ path: '/home/token/transfer', element: <FunctionTransferTokenPage   /> }] : []),
+
 
         // settings
         // settings/accounts

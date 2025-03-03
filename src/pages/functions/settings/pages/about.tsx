@@ -23,7 +23,7 @@ function FunctionSettingsAboutPage() {
                 setHide={setHide}
                 header={
                     <FunctionHeader
-                        title={'Preferences Settings'}
+                        title={'About'}
                         onBack={() => goto(-1)}
                         onClose={() => goto('/', { replace: true })}
                     />

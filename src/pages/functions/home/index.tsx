@@ -136,7 +136,7 @@ function HomePage({
 
                 <div className="mt-2 flex w-full items-center justify-between px-5">
                     <div
-                        onClick={() => navigate('/home/send/token/ryjl3-tyaaa-aaaaa-aaaba-cai')}
+                        onClick={() => navigate('/home/transfer')}
                         className="flex h-[70px] w-[70px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-[#333333] transition duration-300 hover:border-[#FFCF13]"
                     >
                         <Icon
@@ -178,7 +178,10 @@ function HomePage({
                 </div>
 
                 <div className="mt-5 flex w-full flex-col gap-y-[10px] px-5">
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
+                    <div
+                        className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]"
+                        onClick={() => navigate('/home/token', { state: { token: 'ryjl3-tyaaa-aaaaa-aaaba-cai' } })}
+                    >
                         <div className="flex items-center">
                             <img
                                 src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
