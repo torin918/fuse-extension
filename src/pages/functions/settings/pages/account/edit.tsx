@@ -153,7 +153,7 @@ const InnerSingleAccountPage = ({
                 <>
                     <div
                         onClick={() => {
-                            showMnemonic(current.id, '1111qqqq1').then((m) => {
+                            showMnemonic(current.id, '1111qqqq').then((m) => {
                                 console.error('show mnemonic', m);
                                 if (m === undefined) return;
                                 if (m === false) setMnemonic('wrong password');
@@ -230,7 +230,7 @@ const RemoveAccount = ({
                             <div className="w-full py-3 text-center text-lg text-[#FF2C40]">
                                 Confirm removal of wallet1?
                             </div>
-                            <p className="text-sm text-[#FFCF13]">
+                            <p className="block text-center text-sm text-[#FFCF13]">
                                 Even if you delete this wallet, you can still restore the account using the mnemonic
                                 phrase or private key of this wallet.
                             </p>
@@ -247,6 +247,37 @@ const RemoveAccount = ({
                                 onPress={handleClose}
                             >
                                 Close
+                            </Button>
+                        </div>
+                    </div>
+                </DrawerBody>
+            </DrawerContent>
+        </Drawer>
+    );
+};
+
+const ShowSeedPhrase = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) => {
+    const { onOpenChange } = useDisclosure();
+
+    return (
+        <Drawer isOpen={isOpen} placement="bottom" onOpenChange={onOpenChange}>
+            <DrawerContent>
+                <DrawerBody>
+                    <div className="fixed bottom-0 left-0 top-[60px] z-20 flex w-full flex-col justify-between border-t border-[#333333] bg-[#0a0600] px-5 pb-5">
+                        <div className="mt-8 flex w-full flex-col items-center justify-center py-10">
+                            <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#2E1D01]">
+                                <Icon name="icon-warning" className="h-10 w-10 text-[#FFA000]" />
+                            </div>
+                            <p className="block text-center text-sm text-[#FFCF13]">
+                                Your seed phrase is the only way to recover your wallet. Do not let anyone see it.
+                            </p>
+                        </div>
+                        <div className="flex flex-col">
+                            <Button
+                                className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                                // onPress={}
+                            >
+                                Confirm
                             </Button>
                         </div>
                     </div>
