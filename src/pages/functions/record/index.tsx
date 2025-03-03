@@ -5,7 +5,7 @@ import type { MainPageState } from '~pages/functions';
 function RecordPage({ setState }: { setState: (state: MainPageState) => void }) {
     return (
         <div className="flex h-full w-full flex-col">
-            <div className="flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
+            <div className="flex h-[60px] w-full items-center justify-between bg-[#0a0600] px-5">
                 <div onClick={() => setState('home')}>
                     <Icon
                         name="icon-arrow-left"

@@ -24,7 +24,7 @@ export const SettingsItem = ({
                 if (typeof path === 'string') navigate(path);
                 else path();
             }}
-            className="flex w-full cursor-pointer items-center justify-between border-b border-[#222222] p-3 duration-300 hover:bg-[#2B2B2B]"
+            className="flex w-full cursor-pointer items-center justify-between border-b border-[#222222] p-3 duration-300 last:border-b-0 hover:bg-[#2B2B2B]"
         >
             <div className="flex items-center">
                 {icon}
