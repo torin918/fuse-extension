@@ -13,6 +13,7 @@ import { useGoto } from '~hooks/memo/goto';
 import { usePasswordHashed } from '~hooks/store';
 import { useIdentityKeys } from '~hooks/store/local-secure';
 import { verify_password } from '~lib/password';
+import { cn } from '~lib/utils/cn';
 import { truncate_text } from '~lib/utils/text';
 
 import { FunctionHeader } from '../../../components/header';
@@ -171,15 +172,11 @@ const InnerSingleAccountPage = ({
                 onDelete={() => removeAccount(current.id)}
             />
 
-            {current.key.type === 'mnemonic' && (
-                <>
-                    <div onClick={() => {}}>Show Mnemonic: {mnemonic}</div>
-                </>
-            )}
             <ShowSeedPhrase
                 isOpen={isOpenSeedPhrase}
                 setIsOpen={setIsOpenSeedPhrase}
                 onShowSeed={() => showSeedPhrase(current.id)}
+                mnemonic={mnemonic}
             />
             {current.key.type === 'private_key' && (
                 <>
@@ -276,10 +273,12 @@ const ShowSeedPhrase = ({
     isOpen,
     setIsOpen,
     onShowSeed,
+    mnemonic,
 }: {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
     onShowSeed: () => void;
+    mnemonic?: string;
 }) => {
     const { onOpenChange } = useDisclosure();
     const [valid, setValid] = useState(false);
@@ -297,41 +296,74 @@ const ShowSeedPhrase = ({
             <DrawerContent>
                 <DrawerBody>
                     <div className="fixed bottom-0 left-0 top-[60px] z-20 flex w-full flex-col justify-between border-t border-[#333333] bg-[#0a0600] px-5 pb-5">
-                        <div className="w-full">
-                            <div className="flex w-full items-center justify-between py-3">
-                                <span className="text-sm">Backup Seed Phrase</span>
-                                <span
-                                    className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
-                                    onClick={() => setIsOpen(false)}
-                                >
-                                    Close
-                                </span>
-                            </div>
-                            <div className="mt-8 flex w-full flex-col items-center justify-center">
-                                <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#2E1D01]">
-                                    <Icon name="icon-warning" className="h-10 w-10 text-[#FFA000]" />
-                                </div>
-                                <p className="block py-5 text-center text-sm text-[#FFCF13]">
-                                    Your seed phrase is the only way to recover your wallet. Do not let anyone see it.
-                                </p>
-                                <div className="mt-5 w-full">
-                                    <label className="block pb-3 text-sm">Your Password</label>
-                                    <InputPassword
-                                        placeholder="Enter your Password"
-                                        onChange={setPassword1}
-                                        errorMessage={!password1 || valid ? undefined : 'password is mismatch'}
-                                    />
-                                </div>
-                            </div>
+                        <div className="flex w-full items-center justify-between py-3">
+                            <span className="text-sm">Backup Seed Phrase</span>
+                            <span
+                                className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                Close
+                            </span>
                         </div>
-                        <div className="flex flex-col">
+                        {mnemonic && valid ? (
+                            <div className="flex-1 overflow-y-auto">
+                                <div className="mb-4 mt-2 block rounded-xl bg-[#2E1D01] px-4 py-3 text-sm text-[#FFCF13]">
+                                    For security, we recommend that you manually back it up and store it safely.
+                                </div>
+                                <div className="bordermt-5 grid w-full grid-cols-2 rounded-xl border border-[#333333]">
+                                    {mnemonic.split(' ').map((word, index) => (
+                                        <span
+                                            key={index}
+                                            className={cn(
+                                                `styled-word flex h-[52px] items-center border-[#333333] text-base text-[#EEEEEE]`,
+                                                index % 2 === 1 ? 'border-b border-r-0' : 'border-b border-r',
+                                                index + 1 > 10 ? 'border-b-0' : '',
+                                            )}
+                                        >
+                                            <i className="ml-3 mr-2 flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-full bg-[#333333] text-center text-xs not-italic text-[#999999]">
+                                                {index + 1}
+                                            </i>
+                                            {word}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="w-full flex-1">
+                                <div className="mt-8 flex w-full flex-col items-center justify-center">
+                                    <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#2E1D01]">
+                                        <Icon name="icon-warning" className="h-10 w-10 text-[#FFA000]" />
+                                    </div>
+                                    <p className="block py-5 text-center text-sm text-[#FFCF13]">
+                                        Your seed phrase is the only way to recover your wallet. Do not let anyone see
+                                        it.
+                                    </p>
+                                    <div className="mt-5 w-full">
+                                        <label className="block pb-3 text-sm">Your Password</label>
+                                        <InputPassword
+                                            placeholder="Enter your Password"
+                                            onChange={setPassword1}
+                                            errorMessage={!password1 || valid ? undefined : 'password is mismatch'}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {mnemonic && valid ? (
+                            <Button
+                                className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                                onPress={() => setIsOpen(false)}
+                            >
+                                I have recorded it
+                            </Button>
+                        ) : (
                             <Button
                                 className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
                                 onPress={onShowSeed}
                             >
                                 Confirm
                             </Button>
-                        </div>
+                        )}
                     </div>
                 </DrawerBody>
             </DrawerContent>
