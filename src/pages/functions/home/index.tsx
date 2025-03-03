@@ -125,7 +125,7 @@ function HomePage({
                 </div>
             </div>
 
-            <div className="h-full flex-1 overflow-y-auto pb-5 pt-[70px]">
+            <div className="h-full flex-1 overflow-y-auto pb-5 pt-[60px]">
                 <div className="w-full py-2">
                     <div className="block text-center text-4xl font-semibold text-[#FFCF13]">$12,879.76</div>
                     <div className="mt-2 flex w-full items-center justify-center">

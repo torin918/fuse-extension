@@ -124,7 +124,7 @@ button[aria-label='Close']:hover {
 
 /* animations.css */
 .slide-enter {
-    transform: translateX(100%);
+    transform: translateX(50%);
     opacity: 0;
 }
 .slide-enter-active {
@@ -139,7 +139,7 @@ button[aria-label='Close']:hover {
     opacity: 1;
 }
 .slide-exit-active {
-    transform: translateX(100%);
+    transform: translateX(50%);
     opacity: 0;
     transition:
         transform 300ms,
