@@ -72,6 +72,14 @@ const InnerSingleAccountPage = ({
     };
 
     const [isOpenSeedPhrase, setIsOpenSeedPhrase] = useState(false);
+    const showSeedPhrase = (id: string) => {
+        showMnemonic(id, '1111qqqq').then((m) => {
+            console.error('show mnemonic', m);
+            if (m === undefined) return;
+            if (m === false) setMnemonic('wrong password');
+            if (typeof m === 'object') setMnemonic(m.mnemonic);
+        });
+    };
 
     if (!current || !identity_list) return <></>;
     return (
@@ -130,7 +138,12 @@ const InnerSingleAccountPage = ({
             </div>
 
             <div className="mt-4 w-full overflow-hidden rounded-xl bg-[#181818]">
-                <div className="flex cursor-pointer items-center justify-between border-b border-[#222222] px-4 py-3 duration-300 hover:bg-[#333333]">
+                <div
+                    className="flex cursor-pointer items-center justify-between border-b border-[#222222] px-4 py-3 duration-300 hover:bg-[#333333]"
+                    onClick={() => {
+                        setIsOpenSeedPhrase(true);
+                    }}
+                >
                     <span className="text-sm text-[#EEEEEE]">Backup Seed Phrase</span>
                     <Icon name="icon-arrow-right" className="ml-3 h-3 w-3 text-[#999999]" />
                 </div>
@@ -160,21 +173,14 @@ const InnerSingleAccountPage = ({
 
             {current.key.type === 'mnemonic' && (
                 <>
-                    <div
-                        onClick={() => {
-                            showMnemonic(current.id, '1111qqqq').then((m) => {
-                                console.error('show mnemonic', m);
-                                if (m === undefined) return;
-                                if (m === false) setMnemonic('wrong password');
-                                if (typeof m === 'object') setMnemonic(m.mnemonic);
-                            });
-                        }}
-                    >
-                        Show Mnemonic: {mnemonic}
-                    </div>
+                    <div onClick={() => {}}>Show Mnemonic: {mnemonic}</div>
                 </>
             )}
-            <ShowSeedPhrase isOpen={isOpenSeedPhrase} setIsOpen={setIsOpenSeedPhrase} />
+            <ShowSeedPhrase
+                isOpen={isOpenSeedPhrase}
+                setIsOpen={setIsOpenSeedPhrase}
+                onShowSeed={() => showSeedPhrase(current.id)}
+            />
             {current.key.type === 'private_key' && (
                 <>
                     <div
@@ -266,7 +272,15 @@ const RemoveAccount = ({
     );
 };
 
-const ShowSeedPhrase = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) => {
+const ShowSeedPhrase = ({
+    isOpen,
+    setIsOpen,
+    onShowSeed,
+}: {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+    onShowSeed: () => void;
+}) => {
     const { onOpenChange } = useDisclosure();
     const [valid, setValid] = useState(false);
     const [password1, setPassword1] = useState('');
@@ -283,26 +297,37 @@ const ShowSeedPhrase = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (is
             <DrawerContent>
                 <DrawerBody>
                     <div className="fixed bottom-0 left-0 top-[60px] z-20 flex w-full flex-col justify-between border-t border-[#333333] bg-[#0a0600] px-5 pb-5">
-                        <div className="mt-8 flex w-full flex-col items-center justify-center py-10">
-                            <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#2E1D01]">
-                                <Icon name="icon-warning" className="h-10 w-10 text-[#FFA000]" />
+                        <div className="w-full">
+                            <div className="flex w-full items-center justify-between py-3">
+                                <span className="text-sm">Backup Seed Phrase</span>
+                                <span
+                                    className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    Close
+                                </span>
                             </div>
-                            <p className="block text-center text-sm text-[#FFCF13]">
-                                Your seed phrase is the only way to recover your wallet. Do not let anyone see it.
-                            </p>
-                            <div className="mt-9 w-full">
-                                <label className="text-sm">Your Password</label>
-                                <InputPassword
-                                    placeholder="Enter your Password"
-                                    onChange={setPassword1}
-                                    errorMessage={!password1 || valid ? undefined : 'password is mismatch'}
-                                />
+                            <div className="mt-8 flex w-full flex-col items-center justify-center">
+                                <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#2E1D01]">
+                                    <Icon name="icon-warning" className="h-10 w-10 text-[#FFA000]" />
+                                </div>
+                                <p className="block py-5 text-center text-sm text-[#FFCF13]">
+                                    Your seed phrase is the only way to recover your wallet. Do not let anyone see it.
+                                </p>
+                                <div className="mt-5 w-full">
+                                    <label className="block pb-3 text-sm">Your Password</label>
+                                    <InputPassword
+                                        placeholder="Enter your Password"
+                                        onChange={setPassword1}
+                                        errorMessage={!password1 || valid ? undefined : 'password is mismatch'}
+                                    />
+                                </div>
                             </div>
                         </div>
                         <div className="flex flex-col">
                             <Button
                                 className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
-                                // onPress={}
+                                onPress={onShowSeed}
                             >
                                 Confirm
                             </Button>
