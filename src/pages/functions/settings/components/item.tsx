@@ -32,7 +32,7 @@ export const SettingsItem = ({
             </div>
             <div className="flex items-center">
                 {tip !== undefined && <span className="pr-2 text-sm text-[#999999]">{tip}</span>}
-                {arrow && <Icon name="icon-arrow-right" className="h-[9px] w-[14px] cursor-pointer text-[#999999]" />}
+                {arrow && <Icon name="icon-arrow-right" className="h-3 w-3 cursor-pointer text-[#999999]" />}
                 {right}
             </div>
         </div>
