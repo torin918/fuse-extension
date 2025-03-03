@@ -1,15 +1,18 @@
 import { Button, Drawer, DrawerBody, DrawerContent, useDisclosure } from '@heroui/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useParams, type NavigateOptions } from 'react-router-dom';
 
 import Icon from '~components/icon';
+import InputPassword from '~components/input-password';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { showToast } from '~components/toast';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { usePasswordHashed } from '~hooks/store';
 import { useIdentityKeys } from '~hooks/store/local-secure';
+import { verify_password } from '~lib/password';
 import { truncate_text } from '~lib/utils/text';
 
 import { FunctionHeader } from '../../../components/header';
@@ -59,14 +62,16 @@ const InnerSingleAccountPage = ({
     const [private_key, setPrivateKey] = useState<string>();
 
     const [isOpenRemove, setIsOpenRemove] = useState(false);
-    const removeAccount = async () => {
-        const r = await deleteIdentity(current.id, '1111qqqq');
+    const removeAccount = async (id: string) => {
+        const r = await deleteIdentity(id, '1111qqqq');
         console.error('delete identity', r);
         if (r === undefined) return;
         if (r === false) throw new Error('can not delete');
         // notice successful
         _goto(-1);
     };
+
+    const [isOpenSeedPhrase, setIsOpenSeedPhrase] = useState(false);
 
     if (!current || !identity_list) return <></>;
     return (
@@ -147,7 +152,11 @@ const InnerSingleAccountPage = ({
                     </span>
                 </div>
             )}
-            <RemoveAccount isOpen={isOpenRemove} setIsOpen={setIsOpenRemove} onDelete={removeAccount} />
+            <RemoveAccount
+                isOpen={isOpenRemove}
+                setIsOpen={setIsOpenRemove}
+                onDelete={() => removeAccount(current.id)}
+            />
 
             {current.key.type === 'mnemonic' && (
                 <>
@@ -165,6 +174,7 @@ const InnerSingleAccountPage = ({
                     </div>
                 </>
             )}
+            <ShowSeedPhrase isOpen={isOpenSeedPhrase} setIsOpen={setIsOpenSeedPhrase} />
             {current.key.type === 'private_key' && (
                 <>
                     <div
@@ -246,7 +256,7 @@ const RemoveAccount = ({
                                 className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
                                 onPress={handleClose}
                             >
-                                Close
+                                Confirm
                             </Button>
                         </div>
                     </div>
@@ -258,7 +268,16 @@ const RemoveAccount = ({
 
 const ShowSeedPhrase = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) => {
     const { onOpenChange } = useDisclosure();
-
+    const [valid, setValid] = useState(false);
+    const [password1, setPassword1] = useState('');
+    const [password_hashed] = usePasswordHashed();
+    useEffect(() => {
+        (async () => {
+            if (!password1) return false;
+            if (!password_hashed) return false;
+            return verify_password(password_hashed, password1);
+        })().then(setValid);
+    }, [password1, password_hashed]);
     return (
         <Drawer isOpen={isOpen} placement="bottom" onOpenChange={onOpenChange}>
             <DrawerContent>
@@ -271,6 +290,14 @@ const ShowSeedPhrase = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (is
                             <p className="block text-center text-sm text-[#FFCF13]">
                                 Your seed phrase is the only way to recover your wallet. Do not let anyone see it.
                             </p>
+                            <div className="mt-9 w-full">
+                                <label className="text-sm">Your Password</label>
+                                <InputPassword
+                                    placeholder="Enter your Password"
+                                    onChange={setPassword1}
+                                    errorMessage={!password1 || valid ? undefined : 'password is mismatch'}
+                                />
+                            </div>
                         </div>
                         <div className="flex flex-col">
                             <Button
