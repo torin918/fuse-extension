@@ -30,7 +30,7 @@ const meta: DataMetadata<DataType, undefined> = {
 export const useTokenInfoIcInner = (storage: Storage): [DataType, (value: DataType) => Promise<void>] =>
     useCachedStoreData(storage, meta, undefined);
 
-const get_token_info_ic = async (canister_id: string): Promise<IcTokenInfo | undefined> => {
+export const get_token_info_ic = async (canister_id: string): Promise<IcTokenInfo | undefined> => {
     const { candid } = await get_canister_status(canister_id);
     if (candid === undefined) return;
     const standards = await get_canister_standards(candid);
@@ -55,6 +55,7 @@ export const useTokenInfoIcByInitialInner = (storage: Storage, canister_id: stri
 
     // init
     useEffect(() => {
+        if (!storage) return;
         if (canister_id === undefined) return;
         if (token !== undefined) return;
         get_token_info_ic(canister_id).then((token) => {
@@ -63,7 +64,7 @@ export const useTokenInfoIcByInitialInner = (storage: Storage, canister_id: stri
                 setTokenInfo({ ...token_info, [canister_id]: token });
             }
         });
-    }, [token, token_info, setTokenInfo, canister_id]);
+    }, [storage, token, token_info, setTokenInfo, canister_id]);
 
     return token;
 };
@@ -74,6 +75,7 @@ export const useTokenInfoIcByRefreshingInner = (storage: Storage, sleep: number)
 
     // do refresh once
     useEffect(() => {
+        if (!storage) return;
         if (sleep <= 0) return; // do nothing
         const now = Date.now();
         if (now < token_info_updated + sleep) return; // sleep
@@ -84,7 +86,7 @@ export const useTokenInfoIcByRefreshingInner = (storage: Storage, sleep: number)
                 const token = await get_token_info_ic(canister_id);
                 if (token !== undefined) new_token_info[canister_id] = token;
             }
-            setTokenInfo(new_token_info);
+            await setTokenInfo(new_token_info);
         })();
-    }, [sleep, token_info_updated, setTokenInfoUpdated, token_info, setTokenInfo]);
+    }, [storage, sleep, token_info_updated, setTokenInfoUpdated, token_info, setTokenInfo]);
 };

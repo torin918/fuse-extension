@@ -1,4 +1,4 @@
-import { match_combined_token_info, TokenTag, type CombinedTokenInfo, type TokenInfo } from ".";
+import { is_same_token_info, match_combined_token_info, TokenTag, type CombinedTokenInfo, type TokenInfo } from ".";
 import { IcTokenStandard, type IcTokenInfo } from "./ic";
 
 // IC
@@ -61,3 +61,5 @@ export const PRESET_ALL_TOKEN_INFO: TokenInfo[] = [
     { info: { ic: TOKEN_INFO_IC_SNS_CHAT }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     { info: { ic: TOKEN_INFO_IC_SNS_ICS  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
 ];
+
+export const is_known_token = (token: TokenInfo): boolean => !!PRESET_ALL_TOKEN_INFO.find(t => is_same_token_info(t, token))

@@ -8,9 +8,8 @@ import type { WindowType } from '~types/pages';
 
 import HomePage from './home';
 import RecordPage from './record';
-import SearchPage from './search';
 
-export type MainPageState = 'home' | 'search' | 'record';
+export type MainPageState = 'home' | 'record';
 
 function MainPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
@@ -35,11 +34,6 @@ const InnerMainPage = ({ wt }: { wt: WindowType }) => {
         <div className="h-full w-full">
             {state === 'home' && <HomePage setState={setState} current_address={current_identity.address}></HomePage>}
             <TransitionGroup component={null}>
-                {state === 'search' && (
-                    <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
-                        <SearchPage setState={setState}></SearchPage>
-                    </CSSTransition>
-                )}
                 {state === 'record' && (
                     <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
                         <RecordPage setState={setState}></RecordPage>

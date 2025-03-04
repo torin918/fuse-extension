@@ -28,8 +28,28 @@ export interface TokenInfo {
     tags: TokenTag[];
 }
 
+export const is_same_token_info = (a: TokenInfo, b: TokenInfo): boolean => {
+    return match_combined_token_info(a.info, {
+        ic: (ic) =>
+            match_combined_token_info(b.info, {
+                ic: (ic2) => ic.canister_id === ic2.canister_id,
+            }),
+    });
+};
+export const get_token_symbol = (token: TokenInfo): string => {
+    return match_combined_token_info(token.info, {
+        ic: (ic) => ic.symbol,
+    });
+};
+
+export interface CustomToken {
+    created: number;
+    updated: number;
+    token: TokenInfo;
+}
+
 // <prefix>:token:info:custom => TokenInfo[]
-export type CustomTokenInfo = TokenInfo[];
+export type CustomTokens = CustomToken[];
 
 // <prefix>:token:info:current => TokenInfo[]
-export type CurrentTokenInfo = TokenInfo[];
+export type CurrentTokens = TokenInfo[];

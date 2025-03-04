@@ -40,22 +40,24 @@ export const useTokenBalanceIcByRefreshingInner = (
 
     // init
     useEffect(() => {
+        if (!storage) return;
         if (balance !== undefined) return;
         if (principal === undefined) return;
         icrc1_balance_of(anonymous, canister_id, { owner: principal }).then((balance) => {
             setBalance(balance);
             setBalances({ ...balances, [canister_id]: balance });
         });
-    }, [balance, balances, setBalances, canister_id, principal]);
+    }, [storage, balance, balances, setBalances, canister_id, principal]);
 
     // refresh
     const refreshBalance = useCallback(() => {
+        if (!storage) return;
         if (!principal) return;
         icrc1_balance_of(anonymous, canister_id, { owner: principal }).then((balance) => {
             setBalance(balance);
             setBalances({ ...balances, [canister_id]: balance });
         });
-    }, [principal, balances, setBalances, canister_id]);
+    }, [storage, principal, balances, setBalances, canister_id]);
 
     // schedule
     useInterval(() => refreshBalance(), 5000);
