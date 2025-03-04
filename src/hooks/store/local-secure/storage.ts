@@ -12,9 +12,10 @@ export const useSecureStorageInner = (
 
     useEffect(() => {
         if (!password) return setStorage(undefined);
-        const storage = new_secure_storage();
-        storage.setPassword(password).then(() => setStorage((CACHED[password] = storage)));
-    }, [new_secure_storage, password]);
+        if (storage !== undefined) return; // ? already had
+        const new_storage = new_secure_storage();
+        new_storage.setPassword(password).then(() => setStorage((CACHED[password] = new_storage)));
+    }, [new_secure_storage, password, storage]);
 
     return storage;
 };

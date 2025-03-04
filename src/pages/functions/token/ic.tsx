@@ -10,7 +10,7 @@ import { FunctionHeader } from '~pages/functions/components/header';
 function FunctionTokenIcPage() {
     const current_state = useCurrentState();
 
-    const { setHide, goto: _goto } = useGoto();
+    const { setHide, goto: _goto, navigate } = useGoto();
 
     const location = useLocation();
     const [canister_id, setCanisterId] = useState<string>();
@@ -27,7 +27,7 @@ function FunctionTokenIcPage() {
             <FusePageTransition setHide={setHide}>
                 <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
                     <FunctionHeader title={'Token xxx'} onBack={() => _goto('/')} onClose={() => _goto('/')} />
-                    <div onClick={() => _goto('/home/token/ic/transfer', { state: { canister_id } })}>send icp</div>
+                    <div onClick={() => navigate('/home/token/ic/transfer', { state: { canister_id } })}>send icp</div>
                     choose tokens
                 </div>
             </FusePageTransition>

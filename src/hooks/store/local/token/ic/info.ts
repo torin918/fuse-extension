@@ -13,7 +13,7 @@ import { LOCAL_KEY_TOKEN_INFO_IC } from '../../../keys';
 import { useTokenInfoUpdatedIcInner } from './info_updated';
 
 // ! always try to use this value to avoid BLINK
-type DataType = Record<string, IcTokenInfo>;
+type DataType = Record<string, IcTokenInfo>; // ic => [canister_id => info]
 const get_key = (): string => LOCAL_KEY_TOKEN_INFO_IC;
 const get_default_value = (): DataType => ({});
 let cached_value = get_default_value();

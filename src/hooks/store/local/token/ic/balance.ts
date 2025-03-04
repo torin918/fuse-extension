@@ -10,7 +10,7 @@ import { icrc1_balance_of } from '~lib/canisters/icrc1';
 import { LOCAL_KEY_TOKEN_BALANCE_IC } from '../../../keys';
 
 // ! always try to use this value to avoid BLINK
-type DataType = Record<string, string>;
+type DataType = Record<string, string>; // key:ic:address => [canister_id => balance]
 const get_key = (principal: string): string => LOCAL_KEY_TOKEN_BALANCE_IC(principal);
 const get_default_value = (): DataType => ({});
 const cached_value: Record<string, DataType> = {};
@@ -36,7 +36,7 @@ export const useTokenBalanceIcByRefreshingInner = (
 ): [string | undefined, { refreshBalance: () => void }] => {
     const [balances, setBalances] = useTokenBalanceIcInner(storage, principal ?? '');
 
-    const [balance, setBalance] = useState<string>();
+    const [balance, setBalance] = useState<string>(balances[canister_id]);
 
     // init
     useEffect(() => {
