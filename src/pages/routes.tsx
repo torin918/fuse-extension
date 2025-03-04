@@ -14,7 +14,11 @@ import CreateRestorePage from './initial/restore';
 import LockedPage from './locked';
 import WelcomePage from './welcome';
 import FunctionSettingsSecurityPage from './functions/settings/pages/security';
+import FunctionSettingsChangePwdPage from './functions/settings/pages/security/changepwd';
+import FunctionSettingsScreenLock from './functions/settings/pages/security/screenlock'
 import FunctionSettingsPreferencesPage from './functions/settings/pages/preferences';
+import FunctionSettingsCurrency from './functions/settings/pages/preferences/currency';
+import FunctionSettingsLanguage from './functions/settings/pages/preferences/language';
 import FunctionSettingsAddressesPage from './functions/settings/pages/address';
 import FunctionSettingsConnectedAppPage from './functions/settings/pages/connected';
 import FunctionSettingsAboutPage from './functions/settings/pages/about';
@@ -59,8 +63,12 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/:id', element: <AccountsSinglePage /> }] : []),
         // settings/security
         ...(hit(wt, []) ? [{ path: '/home/settings/security', element: <FunctionSettingsSecurityPage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/security/changepwd', element: <FunctionSettingsChangePwdPage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/security/screenlock', element: <FunctionSettingsScreenLock /> }] : []),
         // settings/preferences
         ...(hit(wt, []) ? [{ path: '/home/settings/preferences', element: <FunctionSettingsPreferencesPage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/preferences/currency', element: <FunctionSettingsCurrency /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/preferences/language', element: <FunctionSettingsLanguage /> }] : []),
         // settings/addresses
         ...(hit(wt, []) ? [{ path: '/home/settings/addresses', element: <FunctionSettingsAddressesPage /> }] : []),
         // settings/connected
