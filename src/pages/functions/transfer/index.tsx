@@ -7,16 +7,18 @@ import { FunctionHeader } from '~pages/functions/components/header';
 function FunctionTransferPage() {
     const current_state = useCurrentState();
 
-    const { setHide, goto: _goto } = useGoto();
+    const { setHide, goto: _goto, navigate } = useGoto();
 
     return (
-        <FusePage current_state={current_state}>
+        <FusePage current_state={current_state} options={{ refresh_token_info_ic_sleep: 1000 * 60 * 10 }}>
             <FusePageTransition setHide={setHide}>
                 <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
                     <FunctionHeader title={'Send'} onBack={() => _goto('/')} onClose={() => _goto('/')} />
                     <div
                         onClick={() =>
-                            _goto('/home/transfer/token', { state: { token: 'ryjl3-tyaaa-aaaaa-aaaba-cai' } })
+                            navigate('/home/transfer/token/ic', {
+                                state: { canister_id: 'ryjl3-tyaaa-aaaaa-aaaba-cai' },
+                            })
                         }
                     >
                         send icp

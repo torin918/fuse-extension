@@ -20,7 +20,7 @@
         "@dfinity/principal": "^2.3.0",
         "@heroui/react": "^2.7.4",
         "@jellypack/runtime": "^0.0.4",
-        "@jellypack/wasm-react": "^0.0.3",
+        "@jellypack/wasm-react": "^0.0.6",
         "@plasmohq/messaging": "^0.7.1",
         "@plasmohq/storage": "^1.15.0",
         "@radix-ui/react-dialog": "^1.1.6",

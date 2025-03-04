@@ -180,7 +180,9 @@ function HomePage({
                 <div className="mt-5 flex w-full flex-col gap-y-[10px] px-5">
                     <div
                         className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]"
-                        onClick={() => navigate('/home/token', { state: { token: 'ryjl3-tyaaa-aaaaa-aaaba-cai' } })}
+                        onClick={() =>
+                            navigate('/home/token/ic', { state: { canister_id: 'ryjl3-tyaaa-aaaaa-aaaba-cai' } })
+                        }
                     >
                         <div className="flex items-center">
                             <img

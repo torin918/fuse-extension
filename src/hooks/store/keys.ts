@@ -20,6 +20,11 @@ export const LOCAL_KEY_PASSWORD_HASHED = `${LOCAL_KEY_PREFIX}:password_hashed`; 
 const LOCAL_KEY_PREFIX_CACHED = `${LOCAL_KEY_PREFIX}:cached`;
 export const LOCAL_KEY_CACHED_KEY = (key: string) => `${LOCAL_KEY_PREFIX_CACHED}:${key}`; // * local
 
+const LOCAL_KEY_PREFIX_TOKEN = `${LOCAL_KEY_PREFIX}:token`;
+export const LOCAL_KEY_TOKEN_INFO_IC = `${LOCAL_KEY_PREFIX_TOKEN}:info:ic`; // * local
+export const LOCAL_KEY_TOKEN_INFO_IC_UPDATED = `${LOCAL_KEY_PREFIX_TOKEN}:info:ic:updated`; // * local
+export const LOCAL_KEY_TOKEN_BALANCE_IC = (principal: string) => `${LOCAL_KEY_PREFIX_TOKEN}:balance:ic:${principal}`; // * local
+
 // ############### SESSION ###############
 
 export const SESSION_KEY_PASSWORD = `${SESSION_KEY_PREFIX}:password`; // * session
