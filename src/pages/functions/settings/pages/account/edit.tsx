@@ -129,44 +129,48 @@ const InnerSingleAccountPage = ({
                         <Icon name="icon-arrow-right" className="ml-3 h-3 w-3 text-[#999999]" />
                     </div>
                 </div>
-                <div className="flex items-center justify-between border-b border-[#222222] px-4 py-3">
-                    <span className="text-sm text-[#EEEEEE]">Principal ID</span>
-                    <CopyToClipboard
-                        text={current.address.ic?.owner}
-                        onCopy={() => {
-                            showToast('Copied', 'success');
-                        }}
-                    >
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-[#999999]">
-                                {truncate_text(current.address.ic?.owner || '')}
-                            </span>
-                            <Icon
-                                name="icon-copy"
-                                className="ml-3 h-3 w-3 cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                            />
-                        </div>
-                    </CopyToClipboard>
-                </div>
-                <div className="flex items-center justify-between px-4 py-3">
-                    <span className="text-sm text-[#EEEEEE]">Account ID</span>
-                    <CopyToClipboard
-                        text={current.address.ic?.account_id}
-                        onCopy={() => {
-                            showToast('Copied', 'success');
-                        }}
-                    >
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-[#999999]">
-                                {truncate_text(current.address.ic?.account_id || '')}
-                            </span>
-                            <Icon
-                                name="icon-copy"
-                                className="ml-3 h-3 w-3 cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                            />
-                        </div>
-                    </CopyToClipboard>
-                </div>
+                {current.address.ic?.owner && (
+                    <div className="flex items-center justify-between border-b border-[#222222] px-4 py-3">
+                        <span className="text-sm text-[#EEEEEE]">Principal ID</span>
+                        <CopyToClipboard
+                            text={current.address.ic?.owner}
+                            onCopy={() => {
+                                showToast('Copied', 'success');
+                            }}
+                        >
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-[#999999]">
+                                    {truncate_text(current.address.ic?.owner || '')}
+                                </span>
+                                <Icon
+                                    name="icon-copy"
+                                    className="ml-3 h-3 w-3 cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                                />
+                            </div>
+                        </CopyToClipboard>
+                    </div>
+                )}
+                {current.address.ic?.account_id && (
+                    <div className="flex items-center justify-between px-4 py-3">
+                        <span className="text-sm text-[#EEEEEE]">Account ID</span>
+                        <CopyToClipboard
+                            text={current.address.ic?.account_id}
+                            onCopy={() => {
+                                showToast('Copied', 'success');
+                            }}
+                        >
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-[#999999]">
+                                    {truncate_text(current.address.ic?.account_id || '')}
+                                </span>
+                                <Icon
+                                    name="icon-copy"
+                                    className="ml-3 h-3 w-3 cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                                />
+                            </div>
+                        </CopyToClipboard>
+                    </div>
+                )}
             </div>
 
             <div className="mt-4 w-full overflow-hidden rounded-xl bg-[#181818]">
