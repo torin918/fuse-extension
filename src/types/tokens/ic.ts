@@ -12,8 +12,8 @@ export interface IcTokenInfo {
     fee: string;
 }
 
-// key:ic => [canister_id => info]
+// <prefix>:token:info:ic => [canister_id => info]
 export type IcTokens = Record<string, IcTokenInfo>;
 
-// key:ic:address => [canister_id => balance]
+// <prefix>:balance:ic:address => [canister_id => balance]
 export type IcTokenBalances = Record<string, string>;

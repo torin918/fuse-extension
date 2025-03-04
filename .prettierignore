@@ -3,3 +3,4 @@
 .idea
 /dist/
 src/pages/routes.tsx
+src/types/tokens/preset.ts
