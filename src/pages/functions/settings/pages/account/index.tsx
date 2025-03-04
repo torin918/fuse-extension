@@ -4,14 +4,24 @@ import { useState } from 'react';
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
+import { showToast } from '~components/toast';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useIdentityKeys } from '~hooks/store/local-secure';
 
 import { FunctionHeader } from '../../../components/header';
 
-const AddWallet = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) => {
+const AddWallet = ({
+    isOpen,
+    setIsOpen,
+    onAddWallet,
+}: {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+    onAddWallet: () => void;
+}) => {
     const { onOpenChange } = useDisclosure();
+    const { navigate } = useGoto();
 
     return (
         <Drawer isOpen={isOpen} placement="bottom" onOpenChange={onOpenChange}>
@@ -29,7 +39,10 @@ const AddWallet = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen:
                                 </span>
                             </div>
                             <div className="mt-5 flex w-full flex-col gap-4">
-                                <div className="flex cursor-pointer items-center rounded-xl bg-[#181818] px-4 py-3 duration-300 hover:bg-[#333333]">
+                                <div
+                                    className="flex cursor-pointer items-center rounded-xl bg-[#181818] px-4 py-3 duration-300 hover:bg-[#333333]"
+                                    onClick={() => onAddWallet()}
+                                >
                                     <div className="mr-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#2B2B2B]">
                                         <Icon name="icon-add" className="h-6 w-6 text-[#999]" />
                                     </div>
@@ -38,7 +51,10 @@ const AddWallet = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen:
                                         <p className="text-xs text-[#999999]">Add a new multi-chain account</p>
                                     </div>
                                 </div>
-                                <div className="flex cursor-pointer items-center rounded-xl bg-[#181818] px-4 py-3 duration-300 hover:bg-[#333333]">
+                                <div
+                                    className="flex cursor-pointer items-center rounded-xl bg-[#181818] px-4 py-3 duration-300 hover:bg-[#333333]"
+                                    onClick={() => navigate(`/home/settings/accounts/import/mnemonic`)}
+                                >
                                     <div className="mr-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#2B2B2B]">
                                         <Icon name="icon-file" className="h-5 w-5 text-[#999]" />
                                     </div>
@@ -47,7 +63,10 @@ const AddWallet = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen:
                                         <p className="text-xs text-[#999999]">Import accounts from another wallet</p>
                                     </div>
                                 </div>
-                                <div className="flex cursor-pointer items-center rounded-xl bg-[#181818] px-4 py-3 duration-300 hover:bg-[#333333]">
+                                <div
+                                    className="flex cursor-pointer items-center rounded-xl bg-[#181818] px-4 py-3 duration-300 hover:bg-[#333333]"
+                                    onClick={() => navigate(`/home/settings/accounts/import/private_key`)}
+                                >
                                     <div className="mr-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#2B2B2B]">
                                         <Icon name="icon-import" className="h-5 w-5 text-[#999]" />
                                     </div>
@@ -148,7 +167,7 @@ function FunctionSettingsAccountsPage() {
                         </div>
                     )}
                     {main_mnemonic_identity && (
-                        <div className="w-full p-5">
+                        <div className="p-5 w-full">
                             <Button
                                 className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
                                 onPress={() => {
@@ -163,18 +182,33 @@ function FunctionSettingsAccountsPage() {
                             </Button>
                         </div>
                     )} */}
-                    <div className="w-full p-5">
-                        <Button
-                            className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
-                            onPress={() => setIsOpen(true)}
-                        >
-                            Add / Connect wallet
-                        </Button>
-                    </div>
+                    {main_mnemonic_identity && (
+                        <div className="w-full p-5">
+                            <Button
+                                className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                                onPress={() => setIsOpen(true)}
+                            >
+                                Add / Connect wallet
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </FusePageTransition>
 
-            <AddWallet isOpen={isOpen} setIsOpen={setIsOpen} />
+            <AddWallet
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+                onAddWallet={() => {
+                    pushIdentityByMainMnemonic().then((r) => {
+                        if (r === undefined) return;
+                        if (r === false) return;
+                        // notice successful
+                        showToast('Create Account Success', 'success');
+                        setIsOpen(false);
+                        navigate(-2); // back 2 pages
+                    });
+                }}
+            />
         </FusePage>
     );
 }

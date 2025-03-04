@@ -11,6 +11,7 @@ import AccountsSinglePage from './functions/settings/pages/account/edit';
 import InitialPage from './initial';
 import InnerCreatePage from './initial/create';
 import CreateRestorePage from './initial/restore';
+import CreateImportPage from './initial/create_import';
 import LockedPage from './locked';
 import WelcomePage from './welcome';
 import FunctionSettingsSecurityPage from './functions/settings/pages/security';
@@ -60,6 +61,7 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/extra', element: <InitialPage wt={wt} extra={true} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/extra/create', element: <InnerCreatePage wt={wt} extra={true} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/extra/restore', element: <CreateRestorePage wt={wt} extra={true} /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/accounts/import/:type', element: <CreateImportPage wt={wt} extra={true} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/:id', element: <AccountsSinglePage /> }] : []),
         // settings/security
         ...(hit(wt, []) ? [{ path: '/home/settings/security', element: <FunctionSettingsSecurityPage /> }] : []),
