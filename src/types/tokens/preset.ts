@@ -9,6 +9,7 @@ import TOKEN_IC_CK_ETH_SVG from "data-base64:~assets/svg/tokens/ic/ck/ckETH.min.
 import TOKEN_IC_CK_USDT_SVG from "data-base64:~assets/svg/tokens/ic/ck/ckUSDT.min.svg";
 import TOKEN_IC_CK_USDC_SVG from "data-base64:~assets/svg/tokens/ic/ck/ckUSDC.min.svg";
 // SNS
+import TOKEN_IC_SNS_CHAT_PNG from "data-base64:~assets/svg/tokens/ic/sns/CHAT.png";
 import TOKEN_IC_SNS_ICS_PNG from "data-base64:~assets/svg/tokens/ic/sns/ICS.png";
 
 
@@ -20,7 +21,7 @@ const PRESET_LOGO: Record<string, string> = {
     'ic#cngnf-vqaaa-aaaar-qag4q-cai': TOKEN_IC_CK_USDT_SVG,
     'ic#xevnm-gaaaa-aaaar-qafnq-cai': TOKEN_IC_CK_USDC_SVG,
     // SNS
-    // 'ic#2ouva-viaaa-aaaaq-aaamq-cai': "",
+    'ic#2ouva-viaaa-aaaaq-aaamq-cai': TOKEN_IC_SNS_CHAT_PNG,
     'ic#ca6gz-lqaaa-aaaaq-aacwa-cai': TOKEN_IC_SNS_ICS_PNG,
 }
 

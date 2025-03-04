@@ -36,6 +36,16 @@ export const is_same_token_info = (a: TokenInfo, b: TokenInfo): boolean => {
             }),
     });
 };
+export const get_token_unique_id = (token: TokenInfo): string => {
+    return match_combined_token_info(token.info, {
+        ic: (ic) => `ic#${ic.canister_id}`,
+    });
+};
+export const get_token_name = (token: TokenInfo): string => {
+    return match_combined_token_info(token.info, {
+        ic: (ic) => ic.name,
+    });
+};
 export const get_token_symbol = (token: TokenInfo): string => {
     return match_combined_token_info(token.info, {
         ic: (ic) => ic.symbol,
