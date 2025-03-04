@@ -34,7 +34,7 @@ function FunctionSettingsSecurityPage() {
                 }
             >
                 <SettingsGroup className="mt-6 w-full px-5">
-                    <SettingsItem
+                    {/* <SettingsItem
                         path={() => {
                             changePassword('1111qqqq', 'qqqq1111').then((r) => {
                                 if (r === undefined) return;
@@ -43,15 +43,17 @@ function FunctionSettingsSecurityPage() {
                             });
                         }}
                         title="Change Password"
-                    />
-                    <SettingsItem
+                    /> */}
+                    <SettingsItem path={'/home/settings/security/changepwd'} title="Change Password" />
+                    {/* <SettingsItem
                         path={() => {
                             setIdle(1000 * 60 * 15);
                             // show modal
                         }}
                         title="Screen Lock"
                         tip={`${idle}ms`}
-                    />
+                    /> */}
+                    <SettingsItem path={'/home/settings/security/screenlock'} title="Screen Lock" tip={`${idle}ms`} />
                 </SettingsGroup>
 
                 {main_mnemonic_identity && (
