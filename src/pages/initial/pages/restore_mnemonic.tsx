@@ -10,11 +10,13 @@ function RestoreMnemonicPage({
     mnemonic,
     setMnemonic,
     onNext,
+    isLoading = false,
 }: {
     onBack: () => void;
     mnemonic: string;
     setMnemonic: (mnemonic: string) => void;
     onNext: () => void;
+    isLoading?: boolean; // button loading status
 }) {
     const valid = useMemo(() => {
         if (!mnemonic) return false;
@@ -152,6 +154,7 @@ function RestoreMnemonicPage({
             </div>
             <div className="w-full py-5">
                 <Button
+                    isLoading={isLoading}
                     className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
                     isDisabled={
                         (mnemonicCount === 12

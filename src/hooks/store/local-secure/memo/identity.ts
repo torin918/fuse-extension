@@ -159,7 +159,7 @@ export const useIdentityKeysBy = (
             ];
             await setPrivateKeys({
                 mnemonic: private_keys.mnemonic,
-                current: private_keys.current, // ? change to current ?
+                current: id, // ? change to current ?
                 keys: new_keys,
             });
             return true;
