@@ -82,18 +82,47 @@ const InnerSingleAccountPage = ({
         });
     };
 
+    const [isOpenPrivatekey, setIsOpenPrivateKey] = useState(false);
+    const showPrivate = (id: string) => {
+        showPrivateKey(id, '1111qqqq').then((pk) => {
+            console.error('show private key', pk);
+            if (pk === undefined) return;
+            if (pk === false) setPrivateKey('wrong password');
+            if (typeof pk === 'string') setPrivateKey(pk);
+        });
+    };
+
+    const [isOpenAvatar, setIsOpenAvatar] = useState(false);
+    const [isOpenAccountName, setIsOpenAccountName] = useState(false);
+
     if (!current || !identity_list) return <></>;
     return (
         <div className="w-full px-5">
             <div className="flex items-center justify-center py-7">
-                <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#333333] text-4xl">
+                <div className="relative flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#333333] text-4xl">
                     {current.icon}
+                    <div
+                        className="absolute -right-2 bottom-0 flex h-6 w-6 items-center justify-center rounded-full border border-[#0A0600] bg-[#333333]"
+                        onClick={() => {
+                            setIsOpenAvatar(true);
+                        }}
+                    >
+                        <Icon
+                            name="icon-edit"
+                            className="h-3 w-3 cursor-pointer text-[#EEEEEE] duration-300 hover:text-[#FFCF13]"
+                        />
+                    </div>
                 </div>
             </div>
             <div className="w-full overflow-hidden rounded-xl bg-[#181818]">
                 <div className="flex cursor-pointer items-center justify-between border-b border-[#222222] px-4 py-3 duration-300 hover:bg-[#333333]">
                     <span className="text-sm text-[#EEEEEE]">Account Name</span>
-                    <div className="flex items-center justify-between">
+                    <div
+                        className="flex items-center justify-between"
+                        onClick={() => {
+                            setIsOpenAccountName(true);
+                        }}
+                    >
                         <span className="text-sm text-[#999999]">{current.name}</span>
                         <Icon name="icon-arrow-right" className="ml-3 h-3 w-3 text-[#999999]" />
                     </div>
@@ -148,7 +177,12 @@ const InnerSingleAccountPage = ({
                     <span className="text-sm text-[#EEEEEE]">Backup Seed Phrase</span>
                     <Icon name="icon-arrow-right" className="ml-3 h-3 w-3 text-[#999999]" />
                 </div>
-                <div className="flex cursor-pointer items-center justify-between px-4 py-3 duration-300 hover:bg-[#333333]">
+                <div
+                    className="flex cursor-pointer items-center justify-between px-4 py-3 duration-300 hover:bg-[#333333]"
+                    onClick={() => {
+                        setIsOpenPrivateKey(true);
+                    }}
+                >
                     <span className="text-sm text-[#EEEEEE]">Backup Private Key</span>
                     <Icon name="icon-arrow-right" className="ml-3 h-3 w-3 text-[#999999]" />
                 </div>
@@ -172,13 +206,22 @@ const InnerSingleAccountPage = ({
                 onDelete={() => removeAccount(current.id)}
             />
 
-            <ShowSeedPhrase
+            <Backup
                 isOpen={isOpenSeedPhrase}
                 setIsOpen={setIsOpenSeedPhrase}
                 onShowSeed={() => showSeedPhrase(current.id)}
                 mnemonic={mnemonic}
+                type="seed"
             />
-            {current.key.type === 'private_key' && (
+
+            <Backup
+                isOpen={isOpenPrivatekey}
+                setIsOpen={setIsOpenPrivateKey}
+                onShowSeed={() => showPrivate(current.id)}
+                mnemonic={private_key}
+                type="private"
+            />
+            {/* {current.key.type === 'private_key' && (
                 <>
                     <div
                         onClick={() => {
@@ -193,9 +236,9 @@ const InnerSingleAccountPage = ({
                         Show Private Key: {private_key}
                     </div>
                 </>
-            )}
-
-            <div
+            )} */}
+            <SetName isOpen={isOpenAccountName} setIsOpen={setIsOpenAccountName} />
+            {/* <div
                 onClick={() => {
                     updateIdentity(current.id, current.name + '1', current.icon).then((r) => {
                         console.error('update identity', r);
@@ -206,7 +249,8 @@ const InnerSingleAccountPage = ({
                 }}
             >
                 Set Name
-            </div>
+            </div> */}
+            <SetAvatar isOpen={isOpenAvatar} setIsOpen={setIsOpenAvatar} />
         </div>
     );
 };
@@ -269,16 +313,19 @@ const RemoveAccount = ({
     );
 };
 
-const ShowSeedPhrase = ({
+type BackupType = 'seed' | 'private';
+const Backup = ({
     isOpen,
     setIsOpen,
     onShowSeed,
     mnemonic,
+    type,
 }: {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
     onShowSeed: () => void;
     mnemonic?: string;
+    type: BackupType;
 }) => {
     const { onOpenChange } = useDisclosure();
     const [valid, setValid] = useState(false);
@@ -298,7 +345,9 @@ const ShowSeedPhrase = ({
                 <DrawerBody>
                     <div className="fixed bottom-0 left-0 top-[60px] z-20 flex w-full flex-col justify-between border-t border-[#333333] bg-[#0a0600] px-5 pb-5">
                         <div className="flex w-full items-center justify-between py-3">
-                            <span className="text-sm">Backup Seed Phrase</span>
+                            <span className="text-sm">
+                                {type === 'seed' ? 'Backup Seed Phrase' : 'Backup Private Key'}
+                            </span>
                             <span
                                 className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
                                 onClick={() => setIsOpen(false)}
@@ -311,23 +360,40 @@ const ShowSeedPhrase = ({
                                 <div className="mb-4 mt-2 block rounded-xl bg-[#2E1D01] px-4 py-3 text-sm text-[#FFCF13]">
                                     For security, we recommend that you manually back it up and store it safely.
                                 </div>
-                                <div className="mt-5 grid w-full grid-cols-2 rounded-xl border border-[#333333]">
-                                    {mnemonic.split(' ').map((word, index) => (
-                                        <span
-                                            key={index}
-                                            className={cn(
-                                                `styled-word flex h-[52px] items-center border-[#333333] text-base text-[#EEEEEE]`,
-                                                index % 2 === 1 ? 'border-b border-r-0' : 'border-b border-r',
-                                                index + 1 > 10 ? 'border-b-0' : '',
-                                            )}
+                                {type === 'seed' ? (
+                                    <div className="mt-5 grid w-full grid-cols-2 rounded-xl border border-[#333333]">
+                                        {mnemonic.split(' ').map((word, index) => (
+                                            <span
+                                                key={index}
+                                                className={cn(
+                                                    `styled-word flex h-[52px] items-center border-[#333333] text-base text-[#EEEEEE]`,
+                                                    index % 2 === 1 ? 'border-b border-r-0' : 'border-b border-r',
+                                                    index + 1 > 10 ? 'border-b-0' : '',
+                                                )}
+                                            >
+                                                <i className="ml-3 mr-2 flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-full bg-[#333333] text-center text-xs not-italic text-[#999999]">
+                                                    {index + 1}
+                                                </i>
+                                                {word}
+                                            </span>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="mt-5 w-full rounded-xl border border-[#333333]">
+                                        <p className="block h-[120px] break-words p-3 text-sm">{mnemonic}</p>
+                                        <CopyToClipboard
+                                            text={mnemonic}
+                                            onCopy={() => {
+                                                showToast('Copied', 'success');
+                                            }}
                                         >
-                                            <i className="ml-3 mr-2 flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-full bg-[#333333] text-center text-xs not-italic text-[#999999]">
-                                                {index + 1}
-                                            </i>
-                                            {word}
-                                        </span>
-                                    ))}
-                                </div>
+                                            <div className="flex w-full cursor-pointer items-center justify-center border-t border-[#333333] py-3 duration-300 hover:opacity-85">
+                                                <Icon name="icon-copy" className="mr-2 h-3 w-3 text-[#FFCF13]" />
+                                                <span className="text-sm text-[#FFCF13]">Copy</span>
+                                            </div>
+                                        </CopyToClipboard>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="w-full flex-1">
@@ -365,6 +431,83 @@ const ShowSeedPhrase = ({
                                 Confirm
                             </Button>
                         )}
+                    </div>
+                </DrawerBody>
+            </DrawerContent>
+        </Drawer>
+    );
+};
+
+const SetName = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) => {
+    const { onOpenChange } = useDisclosure();
+    const [name, setName] = useState('');
+    return (
+        <Drawer isOpen={isOpen} placement="bottom" onOpenChange={onOpenChange}>
+            <DrawerContent>
+                <DrawerBody>
+                    <div className="fixed bottom-0 left-0 top-[60px] z-20 flex w-full flex-col justify-between border-t border-[#333333] bg-[#0a0600] px-5 pb-5">
+                        <div className="flex w-full items-center justify-between py-3">
+                            <span className="text-sm">Account Name</span>
+                            <span
+                                className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                Close
+                            </span>
+                        </div>
+                        <div className="flex-1 overflow-y-auto pt-8">
+                            <input
+                                type="text"
+                                placeholder="Wallet Name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="h-[48px] w-full rounded-xl border border-[#333333] bg-transparent px-3 text-sm text-[#EEEEEE] outline-none duration-300 hover:border-[#FFCF13] focus:border-[#FFCF13]"
+                            />
+                        </div>
+                        <Button
+                            className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                            isDisabled={name.length < 1}
+                        >
+                            Confirm
+                        </Button>
+                    </div>
+                </DrawerBody>
+            </DrawerContent>
+        </Drawer>
+    );
+};
+
+const SetAvatar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) => {
+    const { onOpenChange } = useDisclosure();
+    const [name, setName] = useState('');
+    return (
+        <Drawer isOpen={isOpen} placement="bottom" onOpenChange={onOpenChange}>
+            <DrawerContent>
+                <DrawerBody>
+                    <div className="fixed bottom-0 left-0 top-[60px] z-20 flex w-full flex-col justify-between border-t border-[#333333] bg-[#0a0600] px-5 pb-5">
+                        <div className="flex w-full items-center justify-between py-3">
+                            <span className="text-sm">Account Name</span>
+                            <span
+                                className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                Close
+                            </span>
+                        </div>
+                        <div className="flex-1 overflow-y-auto">
+                            <div className="flex items-center justify-center py-6">
+                                <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#333333] text-4xl">
+                                    😄
+                                </div>
+                            </div>
+                            <p className="block w-full text-center text-sm">Choose Your Favorite Emoji</p>
+                            <div className="pt-5">emoji</div>
+                        </div>
+                        <div className="w-full pt-5">
+                            <Button className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black">
+                                Confirm
+                            </Button>
+                        </div>
                     </div>
                 </DrawerBody>
             </DrawerContent>

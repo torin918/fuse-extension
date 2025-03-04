@@ -193,7 +193,7 @@ function HomePage({
                                 <span className="pl-2 text-xs text-[#00C431]">+2.8%</span>
                             </div>
                         </div>
-                        <div className="shrink-0">
+                        <div className="flex-end flex shrink-0 flex-col">
                             <strong className="block text-right text-base text-[#EEEEEE]">800.12</strong>
                             <span className="text-right text-xs text-[#999999]">$8,160.91</span>
                         </div>
@@ -210,7 +210,7 @@ function HomePage({
                                 <span className="pl-2 text-xs text-[#FF2C40]">-2.87%</span>
                             </div>
                         </div>
-                        <div className="shrink-0">
+                        <div className="flex-end flex shrink-0 flex-col">
                             <strong className="block text-right text-base text-[#EEEEEE]">9,237,834</strong>
                             <span className="text-right text-xs text-[#999999]">$1,205.35</span>
                         </div>
@@ -227,7 +227,7 @@ function HomePage({
                                 <span className="pl-2 text-xs text-[#00C431]">+2.8%</span>
                             </div>
                         </div>
-                        <div className="shrink-0">
+                        <div className="flex-end flex shrink-0 flex-col">
                             <strong className="block text-right text-base text-[#EEEEEE]">800.12</strong>
                             <span className="text-right text-xs text-[#999999]">$8,160.91</span>
                         </div>
@@ -244,7 +244,7 @@ function HomePage({
                                 <span className="pl-2 text-xs text-[#FF2C40]">-2.87%</span>
                             </div>
                         </div>
-                        <div className="shrink-0">
+                        <div className="flex-end flex shrink-0 flex-col">
                             <strong className="block text-right text-base text-[#EEEEEE]">9,237,834</strong>
                             <span className="text-right text-xs text-[#999999]">$1,205.35</span>
                         </div>
@@ -261,7 +261,7 @@ function HomePage({
                                 <span className="pl-2 text-xs text-[#00C431]">+2.8%</span>
                             </div>
                         </div>
-                        <div className="shrink-0">
+                        <div className="flex-end flex shrink-0 flex-col">
                             <strong className="block text-right text-base text-[#EEEEEE]">800.12</strong>
                             <span className="text-right text-xs text-[#999999]">$8,160.91</span>
                         </div>
@@ -278,7 +278,7 @@ function HomePage({
                                 <span className="pl-2 text-xs text-[#FF2C40]">-2.87%</span>
                             </div>
                         </div>
-                        <div className="shrink-0">
+                        <div className="flex-end flex shrink-0 flex-col">
                             <strong className="block text-right text-base text-[#EEEEEE]">9,237,834</strong>
                             <span className="text-right text-xs text-[#999999]">$1,205.35</span>
                         </div>
