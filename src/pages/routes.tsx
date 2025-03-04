@@ -15,15 +15,19 @@ import CreateImportPage from './initial/create_import';
 import LockedPage from './locked';
 import WelcomePage from './welcome';
 import FunctionSettingsSecurityPage from './functions/settings/pages/security';
+import FunctionSettingsChangePwdPage from './functions/settings/pages/security/changepwd';
+import FunctionSettingsScreenLock from './functions/settings/pages/security/screenlock'
 import FunctionSettingsPreferencesPage from './functions/settings/pages/preferences';
+import FunctionSettingsCurrency from './functions/settings/pages/preferences/currency';
+import FunctionSettingsLanguage from './functions/settings/pages/preferences/language';
 import FunctionSettingsAddressesPage from './functions/settings/pages/address';
 import FunctionSettingsConnectedAppPage from './functions/settings/pages/connected';
 import FunctionSettingsAboutPage from './functions/settings/pages/about';
 import FunctionReceivePage from './functions/receive';
 import FunctionSwapPage from './functions/swap';
-import FunctionTransferTokenPage from './functions/transfer/token';
+import FunctionTransferTokenIcPage from './functions/transfer/token/ic';
 import FunctionTransferPage from './functions/transfer';
-import FunctionTokenPage from './functions/token';
+import FunctionTokenIcPage from './functions/token/ic';
 
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
@@ -42,12 +46,12 @@ export const getRoutes = (wt: WindowType) => {
         // send
         ...(hit(wt, []) ? [{ path: '/home/transfer', element: <FunctionTransferPage   /> }] : []),
         // send token
-        ...(hit(wt, []) ? [{ path: '/home/transfer/token', element: <FunctionTransferTokenPage   /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/transfer/token/ic', element: <FunctionTransferTokenIcPage   /> }] : []),
 
         // token
-        ...(hit(wt, []) ? [{ path: '/home/token', element: <FunctionTokenPage   /> }] : []),
-        // token transfer
-        ...(hit(wt, []) ? [{ path: '/home/token/transfer', element: <FunctionTransferTokenPage   /> }] : []),
+        // token ic
+        ...(hit(wt, []) ? [{ path: '/home/token/ic', element: <FunctionTokenIcPage   /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/token/ic/transfer', element: <FunctionTransferTokenIcPage   /> }] : []),
 
 
         // settings
@@ -61,8 +65,12 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/:id', element: <AccountsSinglePage /> }] : []),
         // settings/security
         ...(hit(wt, []) ? [{ path: '/home/settings/security', element: <FunctionSettingsSecurityPage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/security/changepwd', element: <FunctionSettingsChangePwdPage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/security/screenlock', element: <FunctionSettingsScreenLock /> }] : []),
         // settings/preferences
         ...(hit(wt, []) ? [{ path: '/home/settings/preferences', element: <FunctionSettingsPreferencesPage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/preferences/currency', element: <FunctionSettingsCurrency /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/preferences/language', element: <FunctionSettingsLanguage /> }] : []),
         // settings/addresses
         ...(hit(wt, []) ? [{ path: '/home/settings/addresses', element: <FunctionSettingsAddressesPage /> }] : []),
         // settings/connected

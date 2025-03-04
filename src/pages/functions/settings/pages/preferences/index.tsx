@@ -28,20 +28,8 @@ function FunctionSettingsPreferencesPage() {
                 }
             >
                 <SettingsGroup className="mt-6 w-full px-5">
-                    <SettingsItem
-                        path={() => {
-                            showToast('not implemented');
-                        }}
-                        title="Currency"
-                        tip="USD"
-                    />
-                    <SettingsItem
-                        path={() => {
-                            showToast('not implemented');
-                        }}
-                        title="Language"
-                        tip={`English`}
-                    />
+                    <SettingsItem path={'/home/settings/preferences/currency'} title="Currency" tip="USD" />
+                    <SettingsItem path={'/home/settings/preferences/language'} title="Language" tip={`English`} />
                 </SettingsGroup>
 
                 <SettingsGroup>
