@@ -1,5 +1,5 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@heroui/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
 import Icon from '~components/icon';
@@ -10,9 +10,10 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useMarkedAddresses, useRecentAddresses } from '~hooks/store/local-secure';
 import { truncate_principal, truncate_text } from '~lib/utils/text';
+import type { ChainAddress, MarkedAddress } from '~types/address';
 
 import { FunctionHeader } from '../../../components/header';
-import { AddAddressDrawer } from './components/drawer';
+import { AddAddressDrawer, EditAddressDrawer } from './components/drawer';
 
 function FunctionSettingsAddressesPage() {
     const current_address = useCurrentState();
@@ -21,53 +22,12 @@ function FunctionSettingsAddressesPage() {
 
     const [markedAddresses, , { pushOrUpdateMarkedAddress, removeMarkedAddress }] = useMarkedAddresses();
     const [recentAddresses, , { pushRecentAddress }] = useRecentAddresses();
+    console.debug('🚀 ~ FunctionSettingsAddressesPage ~ pushRecentAddress:', pushRecentAddress);
 
-    // TODO test
-    const pushRandomMarked = useCallback(() => {
-        const initialAddresses = [
-            {
-                id: '1',
-                name: 'Mac Chrome',
-                addr: 'aaaaa-aa',
-                isVisible: false,
-            },
-            {
-                id: '2',
-                name: 'Windows Chrome',
-                addr: '64ufaa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c74fe341a',
-                isVisible: false,
-            },
-            {
-                id: '3',
-                name: 'Linux Chrome',
-                addr: '73jdfa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c7483he0a',
-                isVisible: false,
-            },
-        ];
-        const address = initialAddresses[Math.floor(Math.random() * initialAddresses.length)];
-        pushOrUpdateMarkedAddress({ type: 'ic', address: address.addr }, address.name).then((d) => {
-            console.error('push marked address', d);
-        });
-    }, [pushOrUpdateMarkedAddress]);
-
-    // TODO test
-    const pushRandomRecent = useCallback(() => {
-        const history_address = [
-            '87bbaa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c74fe3413',
-            'uyrhg-t23vc-bl6pv-6obcp-dyhpe-pajbm-3ssmz-kn4u4-rrois-3kqsj-cqe',
-            '87bbaa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c74fe3413',
-            'uyrhg-t23vc-bl6pv-6obcp-dyhpe-pajbm-3ssmz-kn4u4-rrois-3kqsj-cqe',
-            '87bbaa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c74fe3413',
-            'uyrhg-t23vc-bl6pv-6obcp-dyhpe-pajbm-3ssmz-kn4u4-rrois-3kqsj-cqe',
-            '87bbaa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c74fe3413',
-        ];
-        const address = history_address[Math.floor(Math.random() * history_address.length)];
-        pushRecentAddress({ type: 'ic', address }).then((d) => {
-            console.error('push recent address', d);
-        });
-    }, [pushRecentAddress]);
-
-    const [isAddrOpen, setIsOpen] = useState(false);
+    const [isEditOpen, setIsOpen] = useState(false);
+    const [isRecentEdit, setIsRecent] = useState(false);
+    const [removeAddress, setRemoveAddress] = useState<ChainAddress>();
+    const [editAddress, setEditAddress] = useState<MarkedAddress>();
 
     const handleClickOutside = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
@@ -90,6 +50,12 @@ function FunctionSettingsAddressesPage() {
     const [addressesWithShow, setAddressesWithShow] = useState(
         markedAddresses.map((item) => ({ ...item, isShow: false })),
     );
+
+    useEffect(() => {
+        if (!markedAddresses || markedAddresses.length === 0) return;
+        setAddressesWithShow(markedAddresses.map((item) => ({ ...item, isShow: false })));
+    }, [markedAddresses]);
+
     const handleToggleShow = (index: number) => {
         setAddressesWithShow((prev) =>
             prev.map((item, i) => ({
@@ -100,6 +66,7 @@ function FunctionSettingsAddressesPage() {
     };
 
     const ref = useRef<HTMLDivElement>(null);
+
     return (
         <FusePage current_state={current_address}>
             <div ref={ref} className="relative h-full w-full overflow-hidden">
@@ -169,6 +136,7 @@ function FunctionSettingsAddressesPage() {
                                                             className="flex items-center rounded-lg p-2 duration-300 hover:bg-[#333333]"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
+                                                                setEditAddress(item);
                                                                 setIsOpen(true);
                                                             }}
                                                         >
@@ -182,7 +150,9 @@ function FunctionSettingsAddressesPage() {
                                                             className="flex items-center rounded-lg p-2 duration-300 hover:bg-[#333333]"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                removeMarkedAddress(item.address);
+                                                                onOpen();
+                                                                setRemoveAddress(item.address);
+                                                                // removeMarkedAddress(item.address);
                                                             }}
                                                         >
                                                             <Icon
@@ -208,7 +178,17 @@ function FunctionSettingsAddressesPage() {
                                         <div className="flex-1 cursor-pointer break-all py-2 text-xs text-[#EEEEEE]">
                                             {item.address.address}
                                         </div>
-                                        <div onClick={() => setIsOpen(true)}>
+                                        <div
+                                            onClick={() => {
+                                                setEditAddress({
+                                                    ...item,
+                                                    name: '',
+                                                    updated: item.created,
+                                                });
+                                                setIsRecent(true);
+                                                setIsOpen(true);
+                                            }}
+                                        >
                                             <Icon
                                                 name="icon-add"
                                                 className="ml-4 h-4 w-4 shrink-0 cursor-pointer text-[#FFCF13] duration-300 hover:opacity-80"
@@ -220,20 +200,42 @@ function FunctionSettingsAddressesPage() {
                         </div>
 
                         <AddAddressDrawer
-                            trigger={
-                                <div className="w-full p-5">
-                                    <Button className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black">
-                                        Add
-                                    </Button>
-                                </div>
-                            }
+                            // trigger={}
                             container={ref.current ?? undefined}
+                            onAddAddress={pushOrUpdateMarkedAddress}
                         />
+
+                        {editAddress && (
+                            <EditAddressDrawer
+                                isOpen={isEditOpen}
+                                isRecent={isRecentEdit}
+                                initAddress={editAddress}
+                                onEditAddress={pushOrUpdateMarkedAddress}
+                                container={ref.current ?? undefined}
+                                onClose={() => {
+                                    setIsOpen(false);
+                                    setIsRecent(false);
+                                    setEditAddress(undefined);
+                                }}
+                                onOpenDelete={() => {
+                                    setIsOpen(false);
+                                    setIsRecent(false);
+                                    setEditAddress(undefined);
+                                    setRemoveAddress(editAddress.address);
+                                    onOpen();
+                                }}
+                            />
+                        )}
                         <Modal
                             backdrop="blur"
                             isOpen={isOpen}
                             onClose={onClose}
                             size="xs"
+                            classNames={{
+                                wrapper: '!z-[51]',
+                                backdrop: '!z-[51]',
+                                base: '!z-[52]',
+                            }}
                             placement="center"
                             hideCloseButton={true}
                         >
@@ -258,7 +260,14 @@ function FunctionSettingsAddressesPage() {
                                                 </Button>
                                                 <Button
                                                     className="rounded-xl bg-[#FFCF13] py-3 text-base font-semibold text-black"
-                                                    onPress={onClose}
+                                                    onPress={() => {
+                                                        if (!removeAddress) return;
+
+                                                        removeMarkedAddress(removeAddress);
+                                                        onClose();
+                                                        setRemoveAddress(undefined);
+                                                        setIsOpen(false);
+                                                    }}
                                                 >
                                                     Confirm
                                                 </Button>

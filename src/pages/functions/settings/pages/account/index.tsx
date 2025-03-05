@@ -102,7 +102,7 @@ function FunctionSettingsAccountsPage() {
         main_mnemonic_identity,
         pushIdentityByMainMnemonic,
         switchIdentity,
-        resortIdentityKeys,
+        // resortIdentityKeys,
     } = useIdentityKeys();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -166,22 +166,7 @@ function FunctionSettingsAccountsPage() {
                             resort
                         </div>
                     )}
-                    {main_mnemonic_identity && (
-                        <div className="p-5 w-full">
-                            <Button
-                                className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
-                                onPress={() => {
-                                    pushIdentityByMainMnemonic().then((r) => {
-                                        if (r === undefined) return;
-                                        if (r === false) return;
-                                        // notice successful
-                                    });
-                                }}
-                            >
-                                Add wallet by main seed
-                            </Button>
-                        </div>
-                    )} */}
+                    */}
                     {main_mnemonic_identity && (
                         <div className="w-full p-5">
                             <Button
