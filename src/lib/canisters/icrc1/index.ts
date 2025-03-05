@@ -118,3 +118,14 @@ export const transfer = async (
         throw new Error(unwrapVariantKey(e));
     });
 };
+
+export const icrc1_logo = async (identity: ConnectedIdentity, canister_id: string): Promise<string | undefined> => {
+    const { creator } = identity;
+    const actor: _SERVICE = await creator(idlFactory, canister_id);
+    const metadata = await actor.icrc1_metadata();
+    const logo = metadata.find(([name]) => name === 'icrc1:logo');
+    if (logo === undefined) return undefined;
+    const data = logo[1];
+    if ('Text' in data) return data.Text;
+    return undefined;
+};

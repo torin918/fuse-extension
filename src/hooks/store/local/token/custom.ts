@@ -12,10 +12,10 @@ import {
     type CustomTokens,
     type TokenInfo,
 } from '~types/tokens';
+import type { IcTokenInfo } from '~types/tokens/ic';
 import { is_known_token } from '~types/tokens/preset';
 
 import { LOCAL_KEY_TOKEN_INFO_CUSTOM } from '../../keys';
-import { get_token_info_ic } from './ic/info';
 
 // ! always try to use this value to avoid BLINK
 type DataType = CustomTokens;
@@ -40,7 +40,7 @@ export const useTokenInfoCustomInner2 = (
 ): [
     DataType,
     {
-        pushCustomIcToken: (canister_id: string) => Promise<void>;
+        pushCustomIcToken: (token: IcTokenInfo) => Promise<void>;
         removeCustomToken: (token: CustomToken) => Promise<void>;
         resortCustomToken: ResortFunction;
     },
@@ -49,11 +49,8 @@ export const useTokenInfoCustomInner2 = (
 
     // push
     const pushCustomIcToken = useCallback(
-        async (canister_id: string): Promise<void> => {
+        async (token: IcTokenInfo): Promise<void> => {
             if (!storage) return;
-
-            const token = await get_token_info_ic(canister_id);
-            if (!token) throw new Error(`canister ${canister_id} is not supported.`);
 
             const combined: TokenInfo = { info: { ic: token }, tags: [TokenTag.ChainIcCustom] };
             if (is_known_token(combined) || !!custom.find((c) => is_same_token_info(c.token, combined)))

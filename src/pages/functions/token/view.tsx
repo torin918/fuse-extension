@@ -1,7 +1,6 @@
-import { isCanisterIdText } from '@choptop/haw';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
-import { Button, Drawer, DrawerBody, DrawerContent, Select, SelectItem, Switch, useDisclosure } from '@heroui/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Switch } from '@heroui/react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BsArrowsMove } from 'react-icons/bs';
 import { GrSort } from 'react-icons/gr';
 
@@ -25,79 +24,7 @@ import {
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 
 import { FunctionHeader } from '../components/header';
-
-const CustomToken = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) => {
-    const { onOpenChange } = useDisclosure();
-
-    const standards = [
-        { key: 'ICRC-2', label: 'ICRC-2' },
-        { key: 'ICRC-1', label: 'ICRC-1' },
-        { key: 'DIP20', label: 'DIP20' },
-        { key: 'DRC20', label: 'DRC20' },
-    ];
-
-    const [canisterID, setCanisterId] = useState<string>('');
-
-    return (
-        <Drawer isOpen={isOpen} placement="bottom" onOpenChange={onOpenChange}>
-            <DrawerContent>
-                <DrawerBody>
-                    <div className="fixed bottom-0 left-0 top-[60px] z-20 flex w-full flex-col justify-between border-t border-[#333333] bg-[#0a0600] px-5 pb-5">
-                        <div className="w-full">
-                            <div className="flex w-full items-center justify-between py-3">
-                                <span className="text-sm">Add Custom Token</span>
-                                <span
-                                    className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
-                                    onClick={() => setIsOpen(false)}
-                                >
-                                    Close
-                                </span>
-                            </div>
-                            <div className="mt-5 w-full">
-                                <div className="w-full">
-                                    <label className="block py-3 text-sm">Canister ID</label>
-                                    <input
-                                        type="text"
-                                        className="h-[48px] w-full rounded-xl border border-[#333333] bg-transparent px-3 text-sm outline-none transition duration-300 hover:border-[#FFCF13] focus:border-[#FFCF13]"
-                                        placeholder="Enter canister id"
-                                        onChange={(e) => setCanisterId(e.target.value)}
-                                        value={canisterID}
-                                    />
-                                </div>
-                                <div className="mt-4 w-full">
-                                    <label className="block py-3 text-sm">Standard</label>
-                                    <Select
-                                        key="outside"
-                                        classNames={{
-                                            base: 'max-w-xs',
-                                            trigger: 'border-[#333333] border bg-transparent h-12 hover:!bg-[#181818]',
-                                        }}
-                                        labelPlacement="outside"
-                                        placeholder="Select  Standard"
-                                    >
-                                        {standards.map((s) => (
-                                            <SelectItem className="bg-transparent hover:bg-[#333333]" key={s.key}>
-                                                {s.label}
-                                            </SelectItem>
-                                        ))}
-                                    </Select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <Button
-                            className="h-[48px] bg-[#FFCF13] text-lg font-semibold text-black"
-                            isDisabled={!isCanisterIdText(canisterID)}
-                            onPress={() => setIsOpen(false)}
-                        >
-                            Add Token
-                        </Button>
-                    </div>
-                </DrawerBody>
-            </DrawerContent>
-        </Drawer>
-    );
-};
+import CustomTokenDrawer from './components/custom-token-drawer';
 
 type Tab = 'current' | 'all' | 'ck' | 'sns' | 'custom';
 const TabNames: Record<Tab, string> = {
@@ -150,12 +77,25 @@ function FunctionTokenViewPage() {
         });
     }, [search, tab, currentTokens, allTokens, ckTokens, snsTokens, customTokens]);
 
+    const [logo_map, setLogoMap] = useState<Record<string, string>>({});
+    useEffect(() => {
+        const loads = tokens.filter((t) => !logo_map[t.id]);
+        Promise.all(
+            loads.map(
+                async (token): Promise<[string, string | undefined]> => [token.id, await get_token_logo(token.info)],
+            ),
+        ).then((items) => {
+            for (const [id, icon] of items) if (icon !== undefined) logo_map[id] = icon;
+            setLogoMap({ ...logo_map });
+        });
+    }, [tokens, logo_map]);
+
     const [sort, setSort] = useState(false);
 
     const onSwitchToken = useCallback(
         (token: TokenInfo & { current: boolean }, selected: boolean) => {
             if (token.current === selected) return;
-            if (selected) pushToken(token);
+            if (selected) pushToken({ info: token.info, tags: token.tags });
             else removeToken(token);
         },
         [pushToken, removeToken],
@@ -185,108 +125,132 @@ function FunctionTokenViewPage() {
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
 
-    const [isOpen, setIsOpen] = useState(false);
+    const isTokenExist = useCallback(
+        (token: { ic: string }) => {
+            const found = allTokens.find((t) =>
+                match_combined_token_info(t.info, {
+                    ic: (ic) => {
+                        if ('ic' in token) return ic.canister_id === token.ic;
+                        return false;
+                    },
+                }),
+            );
+            return found !== undefined;
+        },
+        [allTokens],
+    );
 
+    const ref = useRef<HTMLDivElement>(null);
     return (
         <FusePage current_state={current_state} options={{ refresh_token_info_ic_sleep: 1000 * 60 * 5 }}>
-            <FusePageTransition setHide={setHide}>
-                <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
-                    <FunctionHeader title={'Search'} onBack={() => _goto('/')} onClose={() => _goto('/')} />
+            <div ref={ref} className="relative h-full w-full overflow-hidden">
+                <FusePageTransition setHide={setHide}>
+                    <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
+                        <FunctionHeader title={'Search'} onBack={() => _goto('/')} onClose={() => _goto('/')} />
 
-                    <div className="w-full px-5">
-                        <div className="flex h-12 w-full items-center rounded-xl border border-[#333333] px-3 transition duration-300 hover:border-[#FFCF13]">
-                            <Icon name="icon-search" className="h-[16px] w-[16px] text-[#999999]"></Icon>
-                            <input
-                                type="text"
-                                className="h-full w-full border-transparent bg-transparent pl-3 text-base outline-none placeholder:text-sm"
-                                placeholder="Search token or canister"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
+                        <div className="w-full px-5">
+                            <div className="flex h-12 w-full items-center rounded-xl border border-[#333333] px-3 transition duration-300 hover:border-[#FFCF13]">
+                                <Icon name="icon-search" className="h-[16px] w-[16px] text-[#999999]"></Icon>
+                                <input
+                                    type="text"
+                                    className="h-full w-full border-transparent bg-transparent pl-3 text-base outline-none placeholder:text-sm"
+                                    placeholder="Search token or canister"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex w-full items-center justify-between px-5 py-3">
-                        <div className="flex items-center text-sm">
-                            {TABS.map((t) => (
-                                <span
-                                    key={t}
-                                    className={cn(
-                                        'cursor-pointer rounded-full px-3 py-1',
-                                        tab === t ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
-                                    )}
-                                    onClick={() => {
-                                        setSort(false);
-                                        setTab(t);
-                                    }}
-                                >
-                                    {TabNames[t]}
-                                </span>
-                            ))}
-                        </div>
-                        <div
-                            className="flex cursor-pointer items-center text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
-                            onClick={() => setIsOpen(true)}
-                        >
-                            {tab === 'current' ? (
-                                <>
-                                    <GrSort
-                                        className={sort ? '' : 'text-gray-400'}
-                                        onClick={() => setSort((s) => !s)}
-                                    />
-                                </>
-                            ) : (
-                                <>
-                                    <span className="pr-1">Add</span>
-                                    <Icon name="icon-arrow-right" className="h-[6px] w-[11px] text-[#FFCF13]" />
-                                </>
-                            )}
-                        </div>
-                    </div>
-
-                    {mounted && (
-                        <DragDropContext onDragEnd={onDragEnd}>
-                            <Droppable droppableId="droppable">
-                                {(provided) => (
-                                    <div
-                                        {...provided.droppableProps}
-                                        ref={provided.innerRef}
-                                        className="flex w-full flex-1 flex-col gap-y-[10px] overflow-y-auto px-5 pb-5"
+                        <div className="flex w-full items-center justify-between px-5 py-3">
+                            <div className="flex items-center text-sm">
+                                {TABS.map((t) => (
+                                    <span
+                                        key={t}
+                                        className={cn(
+                                            'cursor-pointer rounded-full px-3 py-1',
+                                            tab === t ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
+                                        )}
+                                        onClick={() => {
+                                            setSort(false);
+                                            setTab(t);
+                                        }}
                                     >
-                                        {wrapped.map((token, index) => (
-                                            <Draggable
-                                                key={token.id}
-                                                draggableId={token.id}
-                                                index={index}
-                                                isDragDisabled={tab !== 'current' || !sort}
-                                            >
-                                                {(provided) => (
-                                                    <div
-                                                        ref={provided.innerRef}
-                                                        {...provided.draggableProps}
-                                                        {...provided.dragHandleProps}
-                                                        className="h-auto w-full"
-                                                    >
-                                                        <ShowTokenItem
-                                                            tab={tab}
-                                                            sort={sort}
-                                                            token={token}
-                                                            onSwitchToken={onSwitchToken}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </Draggable>
-                                        ))}
-                                        {provided.placeholder}
-                                    </div>
+                                        {TabNames[t]}
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="flex cursor-pointer items-center text-sm text-[#FFCF13] transition duration-300 hover:opacity-85">
+                                {tab === 'current' ? (
+                                    <>
+                                        <GrSort
+                                            className={sort ? '' : 'text-gray-400'}
+                                            onClick={() => setSort((s) => !s)}
+                                        />
+                                    </>
+                                ) : (
+                                    <CustomTokenDrawer
+                                        trigger={
+                                            <>
+                                                <span className="pr-1">Add</span>
+                                                <Icon
+                                                    name="icon-arrow-right"
+                                                    className="h-[6px] w-[11px] text-[#FFCF13]"
+                                                />
+                                            </>
+                                        }
+                                        container={ref.current ?? undefined}
+                                        isTokenExist={isTokenExist}
+                                        pushIcToken={pushCustomIcToken}
+                                    />
                                 )}
-                            </Droppable>
-                        </DragDropContext>
-                    )}
+                            </div>
+                        </div>
 
-                    {/* <CustomToken isOpen={isOpen} setIsOpen={setIsOpen} /> */}
-                </div>
-            </FusePageTransition>
+                        {mounted && (
+                            <DragDropContext onDragEnd={onDragEnd}>
+                                <Droppable droppableId="droppable">
+                                    {(provided) => (
+                                        <div
+                                            {...provided.droppableProps}
+                                            ref={provided.innerRef}
+                                            className="flex w-full flex-1 flex-col gap-y-[10px] overflow-y-auto px-5 pb-5"
+                                        >
+                                            {wrapped.map((token, index) => (
+                                                <Draggable
+                                                    key={token.id}
+                                                    draggableId={token.id}
+                                                    index={index}
+                                                    isDragDisabled={tab !== 'current' || !sort}
+                                                >
+                                                    {(provided) => (
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            className="h-auto w-full"
+                                                        >
+                                                            <ShowTokenItem
+                                                                tab={tab}
+                                                                sort={sort}
+                                                                token={token}
+                                                                icon={logo_map[token.id]}
+                                                                onSwitchToken={onSwitchToken}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            ))}
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
+                        )}
+
+                        {/* <CustomToken isOpen={isOpen} setIsOpen={setIsOpen} /> */}
+                    </div>
+                </FusePageTransition>
+            </div>
         </FusePage>
     );
 }
@@ -297,17 +261,19 @@ const ShowTokenItem = ({
     tab,
     sort,
     token,
+    icon,
     onSwitchToken,
 }: {
     tab: Tab;
     sort: boolean;
     token: TokenInfo & { id: string; current: boolean };
+    icon: string | undefined;
     onSwitchToken: (token: TokenInfo & { current: boolean }, selected: boolean) => void;
 }) => {
     return (
         <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
             <div className="flex items-center">
-                <img src={get_token_logo(token.info)} className="h-10 w-10 rounded-full" />
+                <img src={icon} className="h-10 w-10 rounded-full" />
                 <div className="ml-[10px]">
                     <strong className="block text-base text-[#EEEEEE]">{get_token_symbol(token)}</strong>
                     <span className="text-xs text-[#999999]"> {get_token_name(token)}</span>

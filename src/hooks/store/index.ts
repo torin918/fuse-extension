@@ -82,9 +82,9 @@ export const is_current_initial = async (): Promise<boolean> => {
 // cached data
 export const get_cached_data = async (
     key: string,
-    produce: () => Promise<string>,
+    produce: () => Promise<string | undefined>,
     alive = 86400000,
-): Promise<string> => {
+): Promise<string | undefined> => {
     const cache_key = LOCAL_KEY_CACHED_KEY(key);
     let cached = await LOCAL_STORAGE.get<{
         value: string;
@@ -93,6 +93,7 @@ export const get_cached_data = async (
     const now = Date.now();
     if (!cached || cached.created + alive < now) {
         const value = await produce();
+        if (value === undefined) return undefined;
         cached = { value, created: now };
         await LOCAL_STORAGE.set(cache_key, cached);
     }

@@ -1,5 +1,6 @@
 import { is_same_token_info, match_combined_token_info, TokenTag, type CombinedTokenInfo, type TokenInfo } from ".";
 import { IcTokenStandard, type IcTokenInfo } from "./ic";
+import { get_cached_data } from "~hooks/store";
 
 // IC
 import TOKEN_IC_ICP_SVG from "data-base64:~assets/svg/tokens/ic/ICP.min.svg";
@@ -25,10 +26,18 @@ const PRESET_LOGO: Record<string, string> = {
     'ic#ca6gz-lqaaa-aaaaq-aacwa-cai': TOKEN_IC_SNS_ICS_PNG,
 }
 
-export const get_token_logo = (info: CombinedTokenInfo): string | undefined => {
-    return match_combined_token_info(info, {
+export const get_token_logo_key = (token: {ic: {canister_id: string}}): string => {
+    if ('ic' in token) return `token:ic:${token.ic.canister_id}:logo`;
+    return ''
+}
+
+export const get_token_logo = async (info: CombinedTokenInfo): Promise<string | undefined> => {
+     const preset = match_combined_token_info(info, {
         ic: (ic) => PRESET_LOGO[`ic#${ic.canister_id}`],
     });
+    if (preset) return preset;
+    const key = get_token_logo_key(info)
+    return get_cached_data(key, async () => undefined, 1000 * 60 * 60 * 24  * 365 * 100)
 }
 
 const TOKEN_INFO_IC_ICP : IcTokenInfo = { canister_id: 'ryjl3-tyaaa-aaaaa-aaaba-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Internet Computer', symbol: 'ICP', decimals:  8, fee: '10000' }; // fee 0.0001 ICP

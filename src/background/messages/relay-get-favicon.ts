@@ -17,7 +17,7 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
 
     // console.debug(`🚀 ~ handle get favicon from background ~ url:`, url);
 
-    (async (): Promise<string> => {
+    (async (): Promise<string | undefined> => {
         const data = await get_cached_data(`favicon:${origin}`, async () => {
             const response = await fetch(url);
             const blob = await response.blob();
@@ -30,7 +30,10 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
         });
         return data;
     })()
-        .then((data) => res.send({ ok: data }))
+        .then((data) => {
+            if (data !== undefined) res.send({ ok: data });
+            else res.send({ err: 'favicon not found' });
+        })
         .catch((e) => res.send({ err: `${e}` }));
 };
 
