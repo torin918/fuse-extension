@@ -1,5 +1,5 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@heroui/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
 import Icon from '~components/icon';
@@ -22,51 +22,7 @@ function FunctionSettingsAddressesPage() {
 
     const [markedAddresses, , { pushOrUpdateMarkedAddress, removeMarkedAddress }] = useMarkedAddresses();
     const [recentAddresses, , { pushRecentAddress }] = useRecentAddresses();
-
-    // TODO test
-    const pushRandomMarked = useCallback(() => {
-        const initialAddresses = [
-            {
-                id: '1',
-                name: 'Mac Chrome',
-                addr: 'aaaaa-aa',
-                isVisible: false,
-            },
-            {
-                id: '2',
-                name: 'Windows Chrome',
-                addr: '64ufaa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c74fe341a',
-                isVisible: false,
-            },
-            {
-                id: '3',
-                name: 'Linux Chrome',
-                addr: '73jdfa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c7483he0a',
-                isVisible: false,
-            },
-        ];
-        const address = initialAddresses[Math.floor(Math.random() * initialAddresses.length)];
-        pushOrUpdateMarkedAddress({ type: 'ic', address: address.addr }, address.name).then((d) => {
-            console.error('push marked address', d);
-        });
-    }, [pushOrUpdateMarkedAddress]);
-
-    // TODO test
-    const pushRandomRecent = useCallback(() => {
-        const history_address = [
-            '87bbaa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c74fe3413',
-            'uyrhg-t23vc-bl6pv-6obcp-dyhpe-pajbm-3ssmz-kn4u4-rrois-3kqsj-cqe',
-            '87bbaa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c74fe3413',
-            'uyrhg-t23vc-bl6pv-6obcp-dyhpe-pajbm-3ssmz-kn4u4-rrois-3kqsj-cqe',
-            '87bbaa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c74fe3413',
-            'uyrhg-t23vc-bl6pv-6obcp-dyhpe-pajbm-3ssmz-kn4u4-rrois-3kqsj-cqe',
-            '87bbaa4b0a2683a6cfa80cc6594a0b8605b61950ec3f6b7360eb569c74fe3413',
-        ];
-        const address = history_address[Math.floor(Math.random() * history_address.length)];
-        pushRecentAddress({ type: 'ic', address }).then((d) => {
-            console.error('push recent address', d);
-        });
-    }, [pushRecentAddress]);
+    console.debug('🚀 ~ FunctionSettingsAddressesPage ~ pushRecentAddress:', pushRecentAddress);
 
     const [isEditOpen, setIsOpen] = useState(false);
     const [isRecentEdit, setIsRecent] = useState(false);
@@ -113,7 +69,7 @@ function FunctionSettingsAddressesPage() {
 
     return (
         <FusePage current_state={current_address}>
-            <div ref={ref} className="overflow-hidden relative w-full h-full">
+            <div ref={ref} className="relative h-full w-full overflow-hidden">
                 <FusePageTransition
                     className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                     setHide={setHide}
@@ -128,15 +84,15 @@ function FunctionSettingsAddressesPage() {
                     {/* <button onClick={pushRandomMarked}>push marked</button>
                     <button onClick={pushRandomRecent}>push recent</button> */}
 
-                    <div className="flex flex-col justify-between h-full">
-                        <div className="overflow-y-auto flex-1">
-                            <div className="px-5 w-full">
+                    <div className="flex h-full flex-col justify-between">
+                        <div className="flex-1 overflow-y-auto">
+                            <div className="w-full px-5">
                                 {addressesWithShow.map((item, index) => (
                                     <div
                                         key={`${JSON.stringify(item.address)}`}
                                         className="mt-3 block w-full cursor-pointer rounded-xl bg-[#181818] p-3"
                                     >
-                                        <div className="flex justify-between items-center">
+                                        <div className="flex items-center justify-between">
                                             <div className="flex items-center">
                                                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#333333] p-2 text-xl font-bold">
                                                     {item.address.address.charAt(0)}
@@ -217,7 +173,7 @@ function FunctionSettingsAddressesPage() {
                                 {recentAddresses.map((item, index) => (
                                     <div
                                         key={index + JSON.stringify(item)}
-                                        className="flex justify-between items-center px-5"
+                                        className="flex items-center justify-between px-5"
                                     >
                                         <div className="flex-1 cursor-pointer break-all py-2 text-xs text-[#EEEEEE]">
                                             {item.address.address}
@@ -287,15 +243,15 @@ function FunctionSettingsAddressesPage() {
                                 {(onClose) => (
                                     <>
                                         <ModalBody>
-                                            <div className="flex flex-col justify-center items-center pt-5 w-full">
+                                            <div className="flex w-full flex-col items-center justify-center pt-5">
                                                 <Icon name="icon-tips" className="h-[56px] w-[56px] text-[#FFCF13]" />
-                                                <p className="pt-4 w-full text-base">
+                                                <p className="w-full pt-4 text-base">
                                                     Are you sure you want to delete the address?
                                                 </p>
                                             </div>
                                         </ModalBody>
                                         <ModalFooter>
-                                            <div className="grid grid-cols-2 gap-x-4 w-full">
+                                            <div className="grid w-full grid-cols-2 gap-x-4">
                                                 <Button
                                                     className="rounded-xl bg-[#666666] py-3 text-base text-[#EEEEEE]"
                                                     onPress={onClose}

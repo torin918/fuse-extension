@@ -226,22 +226,6 @@ const InnerSingleAccountPage = ({
                 mnemonic={private_key}
                 type="private"
             />
-            {/* {current.key.type === 'private_key' && (
-                <>
-                    <div
-                        onClick={() => {
-                            showPrivateKey(current.id, '1111qqqq').then((pk) => {
-                                console.error('show private key', pk);
-                                if (pk === undefined) return;
-                                if (pk === false) setPrivateKey('wrong password');
-                                if (typeof pk === 'string') setPrivateKey(pk);
-                            });
-                        }}
-                    >
-                        Show Private Key: {private_key}
-                    </div>
-                </>
-            )} */}
             <SetName
                 isOpen={isOpenAccountName}
                 initName={current.name}
