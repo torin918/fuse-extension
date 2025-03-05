@@ -23,7 +23,10 @@ function HomePage({
         <div className="relative h-full w-full">
             <div className="absolute top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
                 <div className="flex items-center">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#333333] text-lg font-semibold text-[#999999]">
+                    <div
+                        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#333333] text-lg font-semibold text-[#999999]"
+                        onClick={() => setState('switch')}
+                    >
                         <img src={default_wallet} className="w-5" />
                     </div>
                     <span className="px-2 text-base text-[#EEEEEE]">Wallet 1</span>
