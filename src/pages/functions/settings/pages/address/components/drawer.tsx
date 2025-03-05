@@ -22,7 +22,7 @@ export const AddAddressDrawer = ({
     const [customAddress, setCustomAddress] = useState<string>('');
     return (
         <Drawer open={open} onOpenChange={setOpen} container={container}>
-            <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+            <DrawerTrigger>{trigger}</DrawerTrigger>
             <DrawerContent>
                 <DrawerHeader className="border-t bg-[#0a0600] text-left">
                     <DrawerTitle>

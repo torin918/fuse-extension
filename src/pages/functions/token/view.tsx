@@ -80,6 +80,7 @@ function FunctionTokenViewPage() {
     const [logo_map, setLogoMap] = useState<Record<string, string>>({});
     useEffect(() => {
         const loads = tokens.filter((t) => !logo_map[t.id]);
+        if (loads.length === 0) return;
         Promise.all(
             loads.map(
                 async (token): Promise<[string, string | undefined]> => [token.id, await get_token_logo(token.info)],
@@ -246,8 +247,6 @@ function FunctionTokenViewPage() {
                                 </Droppable>
                             </DragDropContext>
                         )}
-
-                        {/* <CustomToken isOpen={isOpen} setIsOpen={setIsOpen} /> */}
                     </div>
                 </FusePageTransition>
             </div>
