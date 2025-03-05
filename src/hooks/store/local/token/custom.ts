@@ -4,14 +4,7 @@ import type { Storage } from '@plasmohq/storage';
 
 import { useCachedStoreData, type DataMetadata } from '~hooks/store/metadata';
 import { resort_list, type ResortFunction } from '~lib/utils/sort';
-import {
-    get_token_symbol,
-    is_same_token_info,
-    TokenTag,
-    type CustomToken,
-    type CustomTokens,
-    type TokenInfo,
-} from '~types/tokens';
+import { get_token_symbol, is_same_token_info, TokenTag, type CustomTokens, type TokenInfo } from '~types/tokens';
 import type { IcTokenInfo } from '~types/tokens/ic';
 import { is_known_token } from '~types/tokens/preset';
 
@@ -41,7 +34,7 @@ export const useTokenInfoCustomInner2 = (
     DataType,
     {
         pushCustomIcToken: (token: IcTokenInfo) => Promise<TokenInfo | undefined>;
-        removeCustomToken: (token: CustomToken) => Promise<void>;
+        removeCustomToken: (token: TokenInfo) => Promise<void>;
         resortCustomToken: ResortFunction;
     },
 ] => {
@@ -68,11 +61,11 @@ export const useTokenInfoCustomInner2 = (
 
     // delete
     const removeCustomToken = useCallback(
-        async (token: CustomToken): Promise<void> => {
+        async (token: TokenInfo): Promise<void> => {
             if (!storage) return;
 
-            const index = custom.findIndex((c) => is_same_token_info(token.token, c.token));
-            if (index === -1) throw new Error(`Token ${get_token_symbol(token.token)} is not exist`);
+            const index = custom.findIndex((c) => is_same_token_info(token, c.token));
+            if (index === -1) throw new Error(`Token ${get_token_symbol(token)} is not exist`);
 
             const new_custom: CustomTokens = [...custom];
             new_custom.splice(index, 1);

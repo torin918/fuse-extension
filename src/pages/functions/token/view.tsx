@@ -1,12 +1,14 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { Switch } from '@heroui/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AiOutlineMinusCircle } from 'react-icons/ai';
 import { BsArrowsMove } from 'react-icons/bs';
 import { GrSort } from 'react-icons/gr';
 
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
+import { ConfirmModal } from '~components/modals/confirm';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store';
@@ -234,6 +236,17 @@ function FunctionTokenViewPage() {
                                                                 token={token}
                                                                 icon={logo_map[token.id]}
                                                                 onSwitchToken={onSwitchToken}
+                                                                onDeleteCustomToken={(token) => {
+                                                                    if (
+                                                                        currentTokens.find((t) =>
+                                                                            is_same_token_info(t, token),
+                                                                        )
+                                                                    ) {
+                                                                        removeToken(token);
+                                                                    }
+                                                                    removeCustomToken(token);
+                                                                }}
+                                                                container={ref.current ?? undefined}
                                                             />
                                                         </div>
                                                     )}
@@ -260,12 +273,16 @@ const ShowTokenItem = ({
     token,
     icon,
     onSwitchToken,
+    onDeleteCustomToken,
+    container,
 }: {
     tab: Tab;
     sort: boolean;
     token: TokenInfo & { id: string; current: boolean };
     icon: string | undefined;
     onSwitchToken: (token: TokenInfo & { current: boolean }, selected: boolean) => void;
+    onDeleteCustomToken: (token: TokenInfo) => void;
+    container?: HTMLElement | null;
 }) => {
     return (
         <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
@@ -278,17 +295,24 @@ const ShowTokenItem = ({
             </div>
             <div className="flex items-center">
                 {tab === 'current' && sort ? (
-                    <>
-                        <BsArrowsMove size={16} className="mr-2" />
-                    </>
+                    <BsArrowsMove size={16} className="mr-2" />
                 ) : (
                     <>
-                        {/* <div className="mr-3">
-                            <Icon
-                                name="icon-sswap"
-                                className="h-[14px] w-[16px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                            ></Icon>
-                        </div> */}
+                        {tab === 'custom' && (
+                            <ConfirmModal
+                                container={container}
+                                trigger={<AiOutlineMinusCircle size={14} className="text-[#FF0000]" />}
+                                title={'Delete this token?'}
+                                description={
+                                    'Once the Token is removed, it must be added again in order to be displayed.'
+                                }
+                                confirm={
+                                    <div className="h-full w-full" onClick={() => onDeleteCustomToken(token)}>
+                                        <span>Confirm</span>
+                                    </div>
+                                }
+                            />
+                        )}
                         <div className="scale-[0.6]">
                             <Switch
                                 isSelected={token.current}
