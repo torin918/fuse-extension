@@ -1,7 +1,7 @@
 import { ProxyMessageKind, ProxyStubAgent, type ProxyMessage, type ProxyMessageError } from '@dfinity/agent';
 import { IDL, type JsonValue } from '@dfinity/candid';
 import { mapping_func } from '@jellypack/runtime/lib/wasm/candid';
-import { parse_func_candid } from '@jellypack/wasm-react';
+import { parse_func_candid } from '@jellypack/wasm-react'; // ! dynamic import module if necessary
 
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 

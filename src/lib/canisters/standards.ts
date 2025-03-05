@@ -1,5 +1,3 @@
-import { parse_candid_type_to_text, parse_service_candid } from '@jellypack/wasm-react';
-
 import { IcTokenStandard } from '~types/tokens/ic';
 
 const IC_STANDARDS: Record<IcTokenStandard, [string, string][]> = {
@@ -55,6 +53,9 @@ const is_methods_match_standards = (methods: [string, string][], required: [stri
 };
 
 export const get_canister_standards = async (candid: string): Promise<IcTokenStandard[]> => {
+    // ! The dynamic import module avoids page stalling caused by loading large files
+    const { parse_candid_type_to_text, parse_service_candid } = await import('@jellypack/wasm-react');
+
     const service = await parse_service_candid(candid, (s) => s, false);
     // console.error(`🚀 ~ const get_canister_standards= ~ service:`, service);
     const methods = await Promise.all(

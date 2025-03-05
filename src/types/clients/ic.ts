@@ -290,3 +290,48 @@ const display_candid = (ty: IDL.Type): string => {
     }
     throw new Error(`Unknown candid type: ${name}`);
 };
+
+const wrapped_key_word = (name: string): string => {
+    if (
+        (() => {
+            switch (name) {
+                case 'bool':
+                case 'nat':
+                case 'int':
+                case 'nat8':
+                case 'nat16':
+                case 'nat32':
+                case 'nat64':
+                case 'int8':
+                case 'int16':
+                case 'int32':
+                case 'int64':
+                case 'float32':
+                case 'float64':
+                case 'null':
+                case 'text':
+                case 'principal':
+                case 'vec':
+                case 'opt':
+                case 'record':
+                case 'variant':
+                // case  "tuple": // not key world
+                // eslint-disable-next-line no-fallthrough
+                case 'unknown':
+                case 'empty':
+                case 'reserved':
+                case 'func':
+                case 'service':
+                case 'rec': // maybe
+                    return true;
+            }
+            return false;
+        })() ||
+        name.includes(' ') ||
+        name.includes('-') ||
+        name.includes('\\')
+    ) {
+        return `"${name}"`;
+    }
+    return name;
+};
