@@ -40,7 +40,7 @@ export const useTokenInfoCustomInner2 = (
 ): [
     DataType,
     {
-        pushCustomIcToken: (token: IcTokenInfo) => Promise<void>;
+        pushCustomIcToken: (token: IcTokenInfo) => Promise<TokenInfo | undefined>;
         removeCustomToken: (token: CustomToken) => Promise<void>;
         resortCustomToken: ResortFunction;
     },
@@ -49,8 +49,8 @@ export const useTokenInfoCustomInner2 = (
 
     // push
     const pushCustomIcToken = useCallback(
-        async (token: IcTokenInfo): Promise<void> => {
-            if (!storage) return;
+        async (token: IcTokenInfo): Promise<TokenInfo | undefined> => {
+            if (!storage) return undefined;
 
             const combined: TokenInfo = { info: { ic: token }, tags: [TokenTag.ChainIcCustom] };
             if (is_known_token(combined) || !!custom.find((c) => is_same_token_info(c.token, combined)))
@@ -60,6 +60,8 @@ export const useTokenInfoCustomInner2 = (
             const new_custom: CustomTokens = [...custom, { created: now, updated: now, token: combined }];
 
             await setCustom(new_custom);
+
+            return combined;
         },
         [storage, custom, setCustom],
     );

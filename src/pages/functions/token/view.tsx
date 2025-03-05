@@ -180,31 +180,29 @@ function FunctionTokenViewPage() {
                                     </span>
                                 ))}
                             </div>
-                            <div className="flex cursor-pointer items-center text-sm text-[#FFCF13] transition duration-300 hover:opacity-85">
-                                {tab === 'current' ? (
-                                    <>
-                                        <GrSort
-                                            className={sort ? '' : 'text-gray-400'}
-                                            onClick={() => setSort((s) => !s)}
-                                        />
-                                    </>
-                                ) : (
-                                    <CustomTokenDrawer
-                                        trigger={
-                                            <>
-                                                <span className="pr-1">Add</span>
-                                                <Icon
-                                                    name="icon-arrow-right"
-                                                    className="h-[6px] w-[11px] text-[#FFCF13]"
-                                                />
-                                            </>
-                                        }
-                                        container={ref.current ?? undefined}
-                                        isTokenExist={isTokenExist}
-                                        pushIcToken={pushCustomIcToken}
-                                    />
-                                )}
-                            </div>
+
+                            {tab === 'current' ? (
+                                <GrSort
+                                    className={cn('cursor-pointer text-sm', sort ? 'text-[#FFCF13]' : 'text-[#999999]')}
+                                    onClick={() => setSort((s) => !s)}
+                                />
+                            ) : (
+                                <CustomTokenDrawer
+                                    trigger={
+                                        <div className="flex cursor-pointer items-center text-sm text-[#FFCF13] transition duration-300 hover:opacity-85">
+                                            <span className="pr-1">Add</span>
+                                            <Icon name="icon-arrow-right" className="h-[6px] w-[11px] text-[#FFCF13]" />
+                                        </div>
+                                    }
+                                    container={ref.current ?? undefined}
+                                    isTokenExist={isTokenExist}
+                                    pushIcToken={async (ic_token) => {
+                                        pushCustomIcToken(ic_token).then((token) => {
+                                            if (token) pushToken(token);
+                                        });
+                                    }}
+                                />
+                            )}
                         </div>
 
                         {mounted && (

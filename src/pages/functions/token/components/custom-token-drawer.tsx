@@ -1,5 +1,6 @@
 import { anonymous, isCanisterIdText } from '@choptop/haw';
 import { Button } from '@heroui/react';
+import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useState } from 'react';
 
 import {
@@ -46,11 +47,14 @@ const CustomTokenDrawer = ({
     return (
         <Drawer open={open} onOpenChange={setOpen} container={container}>
             <DrawerTrigger>{trigger}</DrawerTrigger>
-            <DrawerContent>
-                <DrawerHeader className="border-t bg-[#0a0600] text-left">
+            <DrawerContent
+                className="flex h-full !max-h-full w-full flex-col items-center justify-between border-0 bg-transparent pt-[50px]"
+                overlayClassName="bg-black/50"
+            >
+                <DrawerHeader className="w-full shrink-0 border-t border-[#333333] bg-[#0a0600] px-5 pb-0 pt-1 text-left">
                     <DrawerTitle>
                         <div className="flex w-full items-center justify-between py-3">
-                            <span className="text-sm">Add Custom Token</span>
+                            <span className="text-sm text-white">Add Custom Token</span>
                             <DrawerClose>
                                 <span className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85">
                                     Close
@@ -58,33 +62,32 @@ const CustomTokenDrawer = ({
                             </DrawerClose>
                         </div>
                     </DrawerTitle>
-                    <DrawerDescription></DrawerDescription>
+                    <DrawerDescription className="hidden"></DrawerDescription>
                 </DrawerHeader>
-                <div className="fixed bottom-0 left-0 top-[60px] z-20 flex w-full flex-col justify-between border-t border-[#333333] bg-[#0a0600] px-5 pb-5">
-                    <div className="w-full">
-                        <div className="mt-5 w-full">
-                            <div className="w-full">
-                                <label className="block py-3 text-sm">Canister ID</label>
-                                <input
-                                    type="text"
-                                    className="h-[48px] w-full rounded-xl border border-[#333333] bg-transparent px-3 text-sm outline-none transition duration-300 hover:border-[#FFCF13] focus:border-[#FFCF13]"
-                                    placeholder="Enter canister id"
-                                    onChange={(e) => setAddress(e.target.value)}
-                                    value={address}
-                                />
-                            </div>
-                            <div className="mt-4 w-full">
-                                {!isCanisterId && !address && <div> </div>}
-                                {!isCanisterId && address && <div> Wrong Canister Id </div>}
-                                {isCanisterId && (
-                                    <LoadCanisterInfo canister_id={address} token={ic_token} setToken={setIcToken} />
-                                )}
-                            </div>
+
+                <div className="flex h-full w-full shrink flex-col justify-between bg-[#0a0600] px-5 pb-5">
+                    <div className="mt-3 h-full w-full">
+                        <div className="w-full">
+                            <label className="block py-3 text-sm">Canister ID</label>
+                            <input
+                                type="text"
+                                className="h-[48px] w-full rounded-xl border border-[#333333] bg-transparent px-3 text-sm outline-none transition duration-300 hover:border-[#FFCF13] focus:border-[#FFCF13]"
+                                placeholder="Enter canister id"
+                                onChange={(e) => setAddress(e.target.value)}
+                                value={address}
+                            />
+                        </div>
+                        <div className="mt-4 w-full">
+                            {!isCanisterId && !address && <div> </div>}
+                            {!isCanisterId && address && <div className="text-red-500"> Wrong Canister Id </div>}
+                            {isCanisterId && (
+                                <LoadCanisterInfo canister_id={address} token={ic_token} setToken={setIcToken} />
+                            )}
                         </div>
                     </div>
 
                     <Button
-                        className="h-[48px] bg-[#FFCF13] text-lg font-semibold text-black"
+                        className="h-[48px] shrink-0 bg-[#FFCF13] text-lg font-semibold text-black"
                         isDisabled={!isCanisterId || !ic_token || isExist}
                         onPress={() => {
                             if (isCanisterId && !ic_token) return;
@@ -142,16 +145,32 @@ const LoadCanisterInfo = ({
     }, [token, canister_id, setToken]);
     return (
         <div className="text-sm">
-            {loading && <div className="text-sm">Loading...</div>}
-            {error && <div className="text-sm">{error}</div>}
+            {loading && <div className="flex w-full items-center justify-center text-sm opacity-50">Loading...</div>}
+            {error && <div className="text-sm text-red-500">{error}</div>}
             {token && (
-                <div>
+                <div className="w-full">
                     {logo && (
                         <div className="text-sm">
-                            <img src={logo} />
+                            <img src={logo} className="h-10 w-10 rounded-full" />
                         </div>
                     )}
                     <div className="text-sm">Name: {token.name}</div>
+                    <div className="text-sm">Symbol: {token.symbol}</div>
+                    <div className="text-sm">Decimals: {token.decimals}</div>
+                    <div className="text-sm">
+                        Fee:
+                        {BigNumber(token.fee)
+                            .dividedBy(BigNumber(10 ** token.decimals))
+                            .toFixed()}
+                    </div>
+                    {0 < token.standards.length && (
+                        <div className="flex flex-row justify-start gap-1 text-sm">
+                            Standards:
+                            {token.standards.map((s) => (
+                                <span key={s}>{s.toUpperCase()}</span>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
         </div>
