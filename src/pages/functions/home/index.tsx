@@ -1,130 +1,86 @@
-import { Tooltip } from '@heroui/react';
-import CopyToClipboard from 'react-copy-to-clipboard';
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import ic_svg from '~assets/svg/chains/ic.min.svg';
-import default_wallet from '~assets/svg/common/wallet.min.svg';
 import Icon from '~components/icon';
-import { showToast } from '~components/toast';
 import { truncate_text } from '~lib/utils/text';
 import type { MainPageState } from '~pages/functions';
-import type { IdentityAddress } from '~types/identity';
+import type { ShowIdentityKey } from '~types/identity';
+
+import { AddressTooltip } from './components/address-tooltip';
+import { ShowSingleAddress } from './components/show-address';
 
 function HomePage({
     setState,
-    current_address,
+    current_identity,
 }: {
     setState: (state: MainPageState) => void;
-    current_address: IdentityAddress;
+    current_identity: ShowIdentityKey;
 }) {
     const navigate = useNavigate();
 
+    const ref = useRef<HTMLDivElement>(null);
     return (
-        <div className="relative h-full w-full">
+        <div ref={ref} className="relative h-full w-full">
             <div className="absolute top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
                 <div className="flex items-center">
                     <div
                         className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#333333] text-lg font-semibold text-[#999999]"
                         onClick={() => setState('switch')}
                     >
-                        <img src={default_wallet} className="w-5" />
+                        <div
+                            style={{
+                                lineHeight: '30px',
+                                fontSize: '30px',
+                            }}
+                        >
+                            {current_identity.icon}
+                        </div>
                     </div>
-                    <span className="px-2 text-base text-[#EEEEEE]">Wallet 1</span>
 
-                    <Tooltip
-                        classNames={{
-                            content: ['bg-[#181818]'],
-                        }}
+                    <AddressTooltip
+                        container={ref.current ?? undefined}
+                        trigger={
+                            <div className="flex flex-row items-center justify-center text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]">
+                                <span className="cursor-pointer px-2 text-base">{current_identity.name}</span>
+                                <Icon name="icon-copy" className="h-[14px] w-[14px] cursor-pointer" />
+                            </div>
+                        }
                         content={
                             <div className="flex flex-col gap-y-2 p-[10px]">
-                                {current_address.ic?.owner && (
-                                    <CopyToClipboard
-                                        text={current_address?.ic?.owner}
-                                        onCopy={() => {
-                                            showToast('Copied', 'success');
-                                        }}
-                                    >
-                                        <div className="flex items-center">
-                                            <div className="h-6 w-6 overflow-hidden rounded-full">
-                                                <img src={ic_svg} className="h-full w-full" />
-                                            </div>
-                                            <div className="ml-2 flex items-center justify-between">
-                                                <span className="pr-3 text-sm font-semibold text-[#eeeeee]">
-                                                    Principal ID
-                                                </span>
-                                                <div className="flex cursor-pointer items-center text-[#999999] transition duration-300 hover:text-[#FFCF13]">
-                                                    <span className="pr-2 text-sm font-normal">
-                                                        {truncate_text(current_address?.ic?.owner || '')}
-                                                    </span>
-                                                    <Icon
-                                                        name="icon-copy"
-                                                        className="h-[14px] w-[14px] text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"
-                                                    ></Icon>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </CopyToClipboard>
+                                {current_identity.address.ic?.owner && (
+                                    <ShowSingleAddress
+                                        address={current_identity.address.ic.owner}
+                                        truncated={truncate_text(current_identity.address.ic.owner)}
+                                        icon={ic_svg}
+                                        name="Principal ID"
+                                    />
                                 )}
-
-                                {current_address.ic?.account_id && (
-                                    <CopyToClipboard
-                                        text={current_address?.ic?.account_id}
-                                        onCopy={() => {
-                                            showToast('Copied', 'success');
-                                        }}
-                                    >
-                                        <div className="flex items-center">
-                                            <div className="h-6 w-6 overflow-hidden rounded-full">
-                                                <img src={ic_svg} className="h-full w-full" />
-                                            </div>
-                                            <div className="ml-2 flex items-center justify-between">
-                                                <span className="pr-3 text-sm font-semibold text-[#eeeeee]">
-                                                    Account ID
-                                                </span>
-                                                <div className="flex cursor-pointer items-center text-[#999999] transition duration-300 hover:text-[#FFCF13]">
-                                                    <span className="pr-2 text-sm font-normal">
-                                                        {truncate_text(current_address?.ic?.account_id || '')}
-                                                    </span>
-                                                    <Icon
-                                                        name="icon-copy"
-                                                        className="h-[14px] w-[14px] text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"
-                                                    ></Icon>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </CopyToClipboard>
+                                {current_identity.address.ic?.account_id && (
+                                    <ShowSingleAddress
+                                        address={current_identity.address.ic.account_id}
+                                        truncated={truncate_text(current_identity.address.ic.account_id)}
+                                        icon={ic_svg}
+                                        name="Account ID"
+                                    />
                                 )}
                             </div>
                         }
-                        placement={'bottom-end'}
-                    >
-                        <div>
-                            <Icon
-                                name="icon-copy"
-                                className="h-[14px] w-[14px] cursor-pointer text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"
-                            ></Icon>
-                        </div>
-                    </Tooltip>
+                    />
                 </div>
-                <div className="flex items-center">
-                    <div onClick={() => navigate('/home/token/view')}>
-                        <Icon
-                            name="icon-search"
-                            className="h-[18px] w-[18px] cursor-pointer text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"
-                        ></Icon>
-                    </div>
-                    <div onClick={() => setState('record')}>
-                        <Icon
-                            name="icon-history"
-                            className="mx-3 h-[18px] w-[18px] cursor-pointer text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"
-                        ></Icon>
-                    </div>
-                    <div onClick={() => navigate('/home/settings')}>
-                        <Icon
-                            name="icon-setting"
-                            className="h-[18px] w-[18px] cursor-pointer text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"
-                        ></Icon>
-                    </div>
+                <div className="flex items-center gap-3">
+                    {[
+                        { callback: () => navigate('/home/token/view'), icon: 'icon-search' },
+                        { callback: () => setState('record'), icon: 'icon-history' },
+                        { callback: () => navigate('/home/settings'), icon: 'icon-setting' },
+                    ].map(({ callback, icon }) => (
+                        <div key={icon} onClick={callback}>
+                            <Icon
+                                name={icon}
+                                className="h-[18px] w-[18px] cursor-pointer text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"
+                            />
+                        </div>
+                    ))}
                 </div>
             </div>
 

@@ -55,7 +55,8 @@ function CreateRestorePage({ wt, extra }: { wt: WindowType; extra?: boolean }) {
             return;
         }
 
-        await restoreAccountByMnemonic(password1, mnemonic);
+        const r = await restoreAccountByMnemonic(password1, mnemonic);
+        if (!r) console.error('restoreAccountByMnemonic failed', r);
         if (wt === 'options') {
             await chrome.action.openPopup();
             // window.close(); // close window if current window is individual page

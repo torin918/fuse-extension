@@ -41,7 +41,7 @@ export const SinglePageApp = ({
                     )}
                     {wt !== 'options' && <PageRoutes routes={routes} />}
                 </div>
-                <Toaster />
+                <Toaster position="top-center" theme="dark" />
             </HeroUIProvider>
         </HashRouter>
     );

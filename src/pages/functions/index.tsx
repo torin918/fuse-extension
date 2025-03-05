@@ -33,7 +33,7 @@ const InnerMainPage = ({ wt }: { wt: WindowType }) => {
     if (!current_identity) return <></>;
     return (
         <div className="h-full w-full">
-            {state === 'home' && <HomePage setState={setState} current_address={current_identity.address}></HomePage>}
+            {state === 'home' && <HomePage setState={setState} current_identity={current_identity}></HomePage>}
             <TransitionGroup component={null}>
                 {state === 'record' && (
                     <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
