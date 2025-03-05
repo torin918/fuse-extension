@@ -33,3 +33,9 @@ export const check_chain_address = (address: ChainAddress): boolean => {
             throw new Error(`Invalid address type: ${address.type}`);
     }
 };
+
+export const check_address_type = (address: string): AddressType => {
+    if (isPrincipalText(address) || isAccountHex(address)) return 'ic';
+    if (/^0x[a-fA-F0-9]{40}$/.test(address)) return 'evm';
+    throw new Error(`Invalid address: ${address}`);
+};
