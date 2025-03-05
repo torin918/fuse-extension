@@ -24,7 +24,7 @@ export const AddAddressDrawer = ({
         <Drawer open={open} onOpenChange={setOpen} container={container}>
             <DrawerTrigger>{trigger}</DrawerTrigger>
             <DrawerContent>
-                <DrawerHeader className="border-t bg-[#0a0600] text-left">
+                <DrawerHeader className="border-t border-[#333333] bg-[#0a0600] text-left">
                     <DrawerTitle>
                         <div className="flex w-full items-center justify-between py-3 text-white">
                             <span className="text-sm">Add Address</span>
@@ -38,9 +38,9 @@ export const AddAddressDrawer = ({
                     </DrawerTitle>
                     <DrawerDescription></DrawerDescription>
                 </DrawerHeader>
-                <div className="flex h-full w-full flex-col justify-between border-[#333333] bg-[#0a0600] px-5 pb-5">
+                <div className="flex h-full w-full flex-col justify-between bg-[#0a0600] px-5 pb-5">
                     <div className="w-full">
-                        <div className="mt-5 w-full">
+                        <div className="mb-10 w-full">
                             <div className="w-full">
                                 <label className="block py-3 text-sm">Name</label>
                                 <input
@@ -64,7 +64,7 @@ export const AddAddressDrawer = ({
                     </div>
 
                     <Button
-                        className="h-[48px] bg-[#FFCF13] text-lg font-semibold text-black"
+                        className="h-[48px] rounded-xl bg-[#FFCF13] text-lg font-semibold text-black"
                         isDisabled={!addrName || !customAddress}
                         onPress={() => setOpen(false)}
                     >

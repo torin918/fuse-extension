@@ -86,6 +86,19 @@ function FunctionSettingsAddressesPage() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     console.assert(onOpen); // TODO test
 
+    // test open,close
+    const [addressesWithShow, setAddressesWithShow] = useState(
+        markedAddresses.map((item) => ({ ...item, isShow: false })),
+    );
+    const handleToggleShow = (index: number) => {
+        setAddressesWithShow((prev) =>
+            prev.map((item, i) => ({
+                ...item,
+                isShow: i === index ? !item.isShow : false,
+            })),
+        );
+    };
+
     const ref = useRef<HTMLDivElement>(null);
     return (
         <FusePage current_state={current_address}>
@@ -101,13 +114,13 @@ function FunctionSettingsAddressesPage() {
                         />
                     }
                 >
-                    <button onClick={pushRandomMarked}>push marked</button>
-                    <button onClick={pushRandomRecent}>push recent</button>
+                    {/* <button onClick={pushRandomMarked}>push marked</button>
+                    <button onClick={pushRandomRecent}>push recent</button> */}
 
                     <div className="flex h-full flex-col justify-between">
                         <div className="flex-1 overflow-y-auto">
                             <div className="w-full px-5">
-                                {markedAddresses.map((item) => (
+                                {addressesWithShow.map((item, index) => (
                                     <div
                                         key={`${JSON.stringify(item.address)}`}
                                         className="mt-3 block w-full cursor-pointer rounded-xl bg-[#181818] p-3"
@@ -128,16 +141,15 @@ function FunctionSettingsAddressesPage() {
                                             </div>
                                             <div
                                                 className="dropdown-container relative flex h-8 w-8 items-center justify-center rounded-lg duration-300 hover:bg-[#2B2B2B]"
-                                                onClick={() => {
-                                                    // const updatedAddresses = [...addresses];
-                                                    // updatedAddresses[index].isVisible = !updatedAddresses[index].isVisible;
-                                                    // setAddresses(updatedAddresses);
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleToggleShow(index);
                                                 }}
                                             >
                                                 <span className="h-[3px] w-[3px] rounded-full bg-[#999999]"></span>
                                                 <span className="mx-[2px] h-[3px] w-[3px] rounded-full bg-[#999999]"></span>
                                                 <span className="h-[3px] w-[3px] rounded-full bg-[#999999]"></span>
-                                                {
+                                                {item.isShow && (
                                                     <div className="absolute right-0 top-9 z-50 w-[120px] rounded-xl bg-[#222222] p-2">
                                                         <CopyToClipboard
                                                             text={item.address.address}
@@ -180,7 +192,7 @@ function FunctionSettingsAddressesPage() {
                                                             <span>Delete</span>
                                                         </div>
                                                     </div>
-                                                }
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -210,9 +222,9 @@ function FunctionSettingsAddressesPage() {
                         <AddAddressDrawer
                             trigger={
                                 <div className="w-full p-5">
-                                    <div className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black">
+                                    <Button className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black">
                                         Add
-                                    </div>
+                                    </Button>
                                 </div>
                             }
                             container={ref.current ?? undefined}
