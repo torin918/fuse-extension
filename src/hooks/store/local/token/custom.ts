@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import type { Storage } from '@plasmohq/storage';
 
 import { useCachedStoreData, type DataMetadata } from '~hooks/store/metadata';
-import { resort_list } from '~lib/utils/sort';
+import { resort_list, type ResortFunction } from '~lib/utils/sort';
 import {
     get_token_symbol,
     is_same_token_info,
@@ -42,7 +42,7 @@ export const useTokenInfoCustomInner2 = (
     {
         pushCustomIcToken: (canister_id: string) => Promise<void>;
         removeCustomToken: (token: CustomToken) => Promise<void>;
-        resortCustomToken: (source_index: number, destination_index: number) => Promise<boolean | undefined>;
+        resortCustomToken: ResortFunction;
     },
 ] => {
     const [custom, setCustom] = useTokenInfoCustomInner(storage);
@@ -85,7 +85,7 @@ export const useTokenInfoCustomInner2 = (
 
     // resort
     const resortCustomToken = useCallback(
-        async (source_index: number, destination_index: number) => {
+        async (source_index: number, destination_index: number | undefined) => {
             if (!storage || !custom) return undefined;
 
             const next = resort_list(custom, source_index, destination_index);

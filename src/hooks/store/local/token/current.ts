@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import type { Storage } from '@plasmohq/storage';
 
 import { useCachedStoreData, type DataMetadata } from '~hooks/store/metadata';
-import { resort_list } from '~lib/utils/sort';
+import { resort_list, type ResortFunction } from '~lib/utils/sort';
 import { get_token_symbol, is_same_token_info, type CurrentTokens, type TokenInfo } from '~types/tokens';
 import { DEFAULT_TOKEN_INFO } from '~types/tokens/preset';
 
@@ -34,7 +34,7 @@ export const useTokenInfoCurrentInner2 = (
     {
         pushToken: (token: TokenInfo) => Promise<void>;
         removeToken: (token: TokenInfo) => Promise<void>;
-        resortToken: (source_index: number, destination_index: number) => Promise<boolean | undefined>;
+        resortToken: ResortFunction;
     },
 ] => {
     const [current, setCurrent] = useTokenInfoCurrentInner(storage);
@@ -72,7 +72,7 @@ export const useTokenInfoCurrentInner2 = (
 
     // resort
     const resortToken = useCallback(
-        async (source_index: number, destination_index: number) => {
+        async (source_index: number, destination_index: number | undefined) => {
             if (!storage || !current) return undefined;
 
             const next = resort_list(current, source_index, destination_index);
