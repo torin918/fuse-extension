@@ -58,7 +58,7 @@ function FunctionSettingsSecurityPage() {
 
                 {main_mnemonic_identity && (
                     <SettingsGroup>
-                        <SettingsItem
+                        {/* <SettingsItem
                             path={() => {
                                 showMnemonic(main_mnemonic_identity, '1111qqqq').then((m) => {
                                     console.error('show mnemonic', m);
@@ -68,7 +68,8 @@ function FunctionSettingsSecurityPage() {
                                 });
                             }}
                             title="Backup Seed Phrase"
-                        />
+                        /> */}
+                        <SettingsItem path={'/home/settings/security/backup'} title="Backup Seed Phrase" />
                     </SettingsGroup>
                 )}
             </FusePageTransition>
