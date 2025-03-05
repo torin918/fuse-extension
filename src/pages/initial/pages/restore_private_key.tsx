@@ -3,7 +3,15 @@ import { useState } from 'react';
 
 import Icon from '~components/icon';
 
-function RestorePrivateKeyPage({ onBack, onNext }: { onBack: () => void; onNext: () => void }) {
+function RestorePrivateKeyPage({
+    onBack,
+    onNext,
+    isLoading,
+}: {
+    onBack: () => void;
+    onNext: () => void;
+    isLoading?: boolean;
+}) {
     const [privateKey, setPrivateKey] = useState('');
     return (
         <div className="slide-in-right flex h-full w-full flex-col justify-between">
@@ -35,6 +43,7 @@ function RestorePrivateKeyPage({ onBack, onNext }: { onBack: () => void; onNext:
                     className="mt-5 h-[48px] bg-[#FFCF13] text-lg font-semibold text-black"
                     isDisabled={privateKey.length <= 20}
                     onPress={onNext}
+                    isLoading={isLoading}
                 >
                     Confirm
                 </Button>

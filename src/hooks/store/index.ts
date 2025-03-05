@@ -17,6 +17,8 @@ import {
     SESSION_KEY_POPUP_ACTIONS,
 } from './keys';
 import { usePasswordHashedInner } from './local/password_hashed';
+import { useTokenBalanceIcByRefreshingInner } from './local/token/ic/balance';
+import { useTokenInfoIcByInitialInner, useTokenInfoIcByRefreshingInner } from './local/token/ic/info';
 import { useWelcomedInner } from './local/welcome';
 import { usePasswordInner } from './session/password';
 import { usePasswordAliveInner } from './session/password_alive';
@@ -46,6 +48,11 @@ export const useUserSettingsIdle = () => useUserSettingsIdleInner(STORAGE); // s
 // ############### LOCAL ###############
 export const useWelcomed = () => useWelcomedInner(LOCAL_STORAGE); // local
 export const usePasswordHashed = () => usePasswordHashedInner(LOCAL_STORAGE); // local
+export const useTokenInfoIcByInitial = (canister_id: string) =>
+    useTokenInfoIcByInitialInner(LOCAL_STORAGE, canister_id); // local
+export const useTokenInfoIcByRefreshing = (sleep: number) => useTokenInfoIcByRefreshingInner(LOCAL_STORAGE, sleep); // local
+export const useTokenBalanceIcByRefreshing = (principal: string | undefined, canister_id: string) =>
+    useTokenBalanceIcByRefreshingInner(LOCAL_STORAGE, principal, canister_id); // local
 
 // ############### SESSION ###############
 export const usePassword = () => usePasswordInner(SESSION_STORAGE); // session

@@ -1,3 +1,5 @@
+import data from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
 import { Button, Drawer, DrawerBody, DrawerContent, useDisclosure } from '@heroui/react';
 import { useEffect, useMemo, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -127,44 +129,48 @@ const InnerSingleAccountPage = ({
                         <Icon name="icon-arrow-right" className="ml-3 h-3 w-3 text-[#999999]" />
                     </div>
                 </div>
-                <div className="flex items-center justify-between border-b border-[#222222] px-4 py-3">
-                    <span className="text-sm text-[#EEEEEE]">Principal ID</span>
-                    <CopyToClipboard
-                        text={current.address.ic?.owner}
-                        onCopy={() => {
-                            showToast('Copied', 'success');
-                        }}
-                    >
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-[#999999]">
-                                {truncate_text(current.address.ic?.owner || '')}
-                            </span>
-                            <Icon
-                                name="icon-copy"
-                                className="ml-3 h-3 w-3 cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                            />
-                        </div>
-                    </CopyToClipboard>
-                </div>
-                <div className="flex items-center justify-between px-4 py-3">
-                    <span className="text-sm text-[#EEEEEE]">Account ID</span>
-                    <CopyToClipboard
-                        text={current.address.ic?.account_id}
-                        onCopy={() => {
-                            showToast('Copied', 'success');
-                        }}
-                    >
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-[#999999]">
-                                {truncate_text(current.address.ic?.account_id || '')}
-                            </span>
-                            <Icon
-                                name="icon-copy"
-                                className="ml-3 h-3 w-3 cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                            />
-                        </div>
-                    </CopyToClipboard>
-                </div>
+                {current.address.ic?.owner && (
+                    <div className="flex items-center justify-between border-b border-[#222222] px-4 py-3">
+                        <span className="text-sm text-[#EEEEEE]">Principal ID</span>
+                        <CopyToClipboard
+                            text={current.address.ic?.owner}
+                            onCopy={() => {
+                                showToast('Copied', 'success');
+                            }}
+                        >
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-[#999999]">
+                                    {truncate_text(current.address.ic?.owner || '')}
+                                </span>
+                                <Icon
+                                    name="icon-copy"
+                                    className="ml-3 h-3 w-3 cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                                />
+                            </div>
+                        </CopyToClipboard>
+                    </div>
+                )}
+                {current.address.ic?.account_id && (
+                    <div className="flex items-center justify-between px-4 py-3">
+                        <span className="text-sm text-[#EEEEEE]">Account ID</span>
+                        <CopyToClipboard
+                            text={current.address.ic?.account_id}
+                            onCopy={() => {
+                                showToast('Copied', 'success');
+                            }}
+                        >
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-[#999999]">
+                                    {truncate_text(current.address.ic?.account_id || '')}
+                                </span>
+                                <Icon
+                                    name="icon-copy"
+                                    className="ml-3 h-3 w-3 cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
+                                />
+                            </div>
+                        </CopyToClipboard>
+                    </div>
+                )}
             </div>
 
             <div className="mt-4 w-full overflow-hidden rounded-xl bg-[#181818]">
@@ -177,15 +183,17 @@ const InnerSingleAccountPage = ({
                     <span className="text-sm text-[#EEEEEE]">Backup Seed Phrase</span>
                     <Icon name="icon-arrow-right" className="ml-3 h-3 w-3 text-[#999999]" />
                 </div>
-                <div
-                    className="flex cursor-pointer items-center justify-between px-4 py-3 duration-300 hover:bg-[#333333]"
-                    onClick={() => {
-                        setIsOpenPrivateKey(true);
-                    }}
-                >
-                    <span className="text-sm text-[#EEEEEE]">Backup Private Key</span>
-                    <Icon name="icon-arrow-right" className="ml-3 h-3 w-3 text-[#999999]" />
-                </div>
+                {current.key.type === 'private_key' && (
+                    <div
+                        className="flex cursor-pointer items-center justify-between px-4 py-3 duration-300 hover:bg-[#333333]"
+                        onClick={() => {
+                            setIsOpenPrivateKey(true);
+                        }}
+                    >
+                        <span className="text-sm text-[#EEEEEE]">Backup Private Key</span>
+                        <Icon name="icon-arrow-right" className="ml-3 h-3 w-3 text-[#999999]" />
+                    </div>
+                )}
             </div>
 
             {current.deletable && (
@@ -237,20 +245,36 @@ const InnerSingleAccountPage = ({
                     </div>
                 </>
             )} */}
-            <SetName isOpen={isOpenAccountName} setIsOpen={setIsOpenAccountName} />
-            {/* <div
-                onClick={() => {
-                    updateIdentity(current.id, current.name + '1', current.icon).then((r) => {
+            <SetName
+                isOpen={isOpenAccountName}
+                initName={current.name}
+                setIsOpen={setIsOpenAccountName}
+                onUpdate={(name) => {
+                    updateIdentity(current.id, name, current.icon).then((r) => {
                         console.error('update identity', r);
                         if (r === undefined) return;
                         if (r === false) throw new Error('can not update');
                         // notice successful
+                        showToast('Updated', 'success');
+                        setIsOpenAccountName(false);
                     });
                 }}
-            >
-                Set Name
-            </div> */}
-            <SetAvatar isOpen={isOpenAvatar} setIsOpen={setIsOpenAvatar} />
+            />
+            <SetAvatar
+                isOpen={isOpenAvatar}
+                setIsOpen={setIsOpenAvatar}
+                initAvatar={current.icon}
+                onUpdate={(icon) => {
+                    updateIdentity(current.id, current.name, icon).then((r) => {
+                        console.error('update identity', r);
+                        if (r === undefined) return;
+                        if (r === false) throw new Error('can not update');
+                        // notice successful
+                        showToast('Updated', 'success');
+                        setIsOpenAvatar(false);
+                    });
+                }}
+            />
         </div>
     );
 };
@@ -438,9 +462,19 @@ const Backup = ({
     );
 };
 
-const SetName = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) => {
+const SetName = ({
+    initName,
+    isOpen,
+    setIsOpen,
+    onUpdate,
+}: {
+    initName: string;
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+    onUpdate: (name: string) => void;
+}) => {
     const { onOpenChange } = useDisclosure();
-    const [name, setName] = useState('');
+    const [name, setName] = useState(initName);
     return (
         <Drawer isOpen={isOpen} placement="bottom" onOpenChange={onOpenChange}>
             <DrawerContent>
@@ -467,6 +501,7 @@ const SetName = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: b
                         <Button
                             className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
                             isDisabled={name.length < 1}
+                            onPress={() => onUpdate(name)}
                         >
                             Confirm
                         </Button>
@@ -477,9 +512,19 @@ const SetName = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: b
     );
 };
 
-const SetAvatar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) => {
+const SetAvatar = ({
+    isOpen,
+    setIsOpen,
+    onUpdate,
+    initAvatar,
+}: {
+    initAvatar: string;
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+    onUpdate: (avatar: string) => void;
+}) => {
     const { onOpenChange } = useDisclosure();
-    const [name, setName] = useState('');
+    const [avatar, setAvatar] = useState(initAvatar);
     return (
         <Drawer isOpen={isOpen} placement="bottom" onOpenChange={onOpenChange}>
             <DrawerContent>
@@ -497,14 +542,35 @@ const SetAvatar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen:
                         <div className="flex-1 overflow-y-auto">
                             <div className="flex items-center justify-center py-6">
                                 <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#333333] text-4xl">
-                                    😄
+                                    {avatar}
                                 </div>
                             </div>
                             <p className="block w-full text-center text-sm">Choose Your Favorite Emoji</p>
-                            <div className="pt-5">emoji</div>
+                            <div className="w-full flex-1 pt-5">
+                                <Picker
+                                    data={data}
+                                    theme={'dark'}
+                                    navPosition={'none'}
+                                    searchPosition={'none'}
+                                    skinTonePosition={'none'}
+                                    previewPosition={'none'}
+                                    dynamicWidth={false}
+                                    perLine={10}
+                                    maxHeight={100}
+                                    emojiSize={22}
+                                    emojiButtonSize={29}
+                                    maxFrequentRows={2}
+                                    onEmojiSelect={(e: any) => {
+                                        setAvatar(e?.native);
+                                    }}
+                                />
+                            </div>
                         </div>
                         <div className="w-full pt-5">
-                            <Button className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black">
+                            <Button
+                                className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
+                                onPress={() => onUpdate(avatar)}
+                            >
                                 Confirm
                             </Button>
                         </div>
