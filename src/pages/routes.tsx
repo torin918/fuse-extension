@@ -29,6 +29,7 @@ import FunctionSwapPage from './functions/swap';
 import FunctionTransferTokenIcPage from './functions/transfer/token/ic';
 import FunctionTransferPage from './functions/transfer';
 import FunctionTokenIcPage from './functions/token/ic';
+import FunctionTokenViewPage from './functions/token/view';
 
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
@@ -50,10 +51,11 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/home/transfer/token/ic', element: <FunctionTransferTokenIcPage   /> }] : []),
 
         // token
+        // token gallery
+        ...(hit(wt, []) ? [{ path: '/home/token/view', element: <FunctionTokenViewPage   /> }] : []),
         // token ic
         ...(hit(wt, []) ? [{ path: '/home/token/ic', element: <FunctionTokenIcPage   /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/token/ic/transfer', element: <FunctionTransferTokenIcPage   /> }] : []),
-
 
         // settings
         // settings/accounts
@@ -88,6 +90,8 @@ export const getRoutes = (wt: WindowType) => {
 
         // action
         ...(hit(wt, []) ? [{ path: '/action', element: <ActionsPage wt={wt} /> }] : []),
+
+        // others
         { path: '*', element: <MainPage wt={wt} /> },
     ];
     return routes;

@@ -1,4 +1,20 @@
-export const resort_list = <T>(list: T[], source_index: number, destination_index: number): T[] | boolean => {
+export type ResortFunction = (
+    source_index: number,
+    destination_index: number | undefined,
+) => Promise<boolean | undefined>;
+
+export const resort_list = <T>(
+    list: T[],
+    source_index: number,
+    destination_index: number | undefined,
+): T[] | boolean => {
+    if (destination_index === undefined) return false;
+
+    if (source_index === destination_index) {
+        console.error('same source_index with destination_index', source_index, destination_index);
+        return false;
+    }
+
     if (source_index < 0) return false;
     if (destination_index < 0) return false;
     if (source_index === destination_index) return true;

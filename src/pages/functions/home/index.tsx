@@ -104,7 +104,7 @@ function HomePage({
                     </Tooltip>
                 </div>
                 <div className="flex items-center">
-                    <div onClick={() => setState('search')}>
+                    <div onClick={() => navigate('/home/token/view')}>
                         <Icon
                             name="icon-search"
                             className="h-[18px] w-[18px] cursor-pointer text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"

@@ -10,7 +10,7 @@ import { icrc1_balance_of } from '~lib/canisters/icrc1';
 import { LOCAL_KEY_TOKEN_BALANCE_IC } from '../../../keys';
 
 // ! always try to use this value to avoid BLINK
-type DataType = Record<string, string>; // key:ic:address => [canister_id => balance]
+type DataType = Record<string, string>; // <prefix>:balance:ic:address => [canister_id => balance]
 const get_key = (principal: string): string => LOCAL_KEY_TOKEN_BALANCE_IC(principal);
 const get_default_value = (): DataType => ({});
 const cached_value: Record<string, DataType> = {};
@@ -40,22 +40,24 @@ export const useTokenBalanceIcByRefreshingInner = (
 
     // init
     useEffect(() => {
+        if (!storage) return;
         if (balance !== undefined) return;
         if (principal === undefined) return;
         icrc1_balance_of(anonymous, canister_id, { owner: principal }).then((balance) => {
             setBalance(balance);
             setBalances({ ...balances, [canister_id]: balance });
         });
-    }, [balance, balances, setBalances, canister_id, principal]);
+    }, [storage, balance, balances, setBalances, canister_id, principal]);
 
     // refresh
     const refreshBalance = useCallback(() => {
+        if (!storage) return;
         if (!principal) return;
         icrc1_balance_of(anonymous, canister_id, { owner: principal }).then((balance) => {
             setBalance(balance);
             setBalances({ ...balances, [canister_id]: balance });
         });
-    }, [principal, balances, setBalances, canister_id]);
+    }, [storage, principal, balances, setBalances, canister_id]);
 
     // schedule
     useInterval(() => refreshBalance(), 5000);

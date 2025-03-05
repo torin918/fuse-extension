@@ -4,7 +4,7 @@ import type { StorageWatchCallback } from '@plasmohq/storage';
 import type { SecureStorage } from '@plasmohq/storage/secure';
 
 import { same } from '~lib/utils/same';
-import { resort_list } from '~lib/utils/sort';
+import { resort_list, type ResortFunction } from '~lib/utils/sort';
 import { check_chain_address, type ChainAddress, type MarkedAddresses } from '~types/address';
 
 import { LOCAL_SECURE_KEY_MARKED_ADDRESSES } from '../keys';
@@ -22,7 +22,7 @@ export const useMarkedAddressesInner = (
     {
         pushOrUpdateMarkedAddress: (address: ChainAddress, name: string) => Promise<boolean | undefined>;
         removeMarkedAddress: (address: ChainAddress) => Promise<boolean | undefined>;
-        resortMarkedAddresses: (source_index: number, destination_index: number) => Promise<boolean | undefined>;
+        resortMarkedAddresses: ResortFunction;
     },
 ] => {
     const [marked_addresses, setMarkedAddresses] = useState<MarkedAddresses>(cached_marked_addresses); // use cached value to init
@@ -108,7 +108,7 @@ export const useMarkedAddressesInner = (
     );
     // resort
     const resortMarkedAddresses = useCallback(
-        async (source_index: number, destination_index: number) => {
+        async (source_index: number, destination_index: number | undefined) => {
             if (!storage || !marked_addresses) return undefined;
 
             const next = resort_list(marked_addresses, source_index, destination_index);
