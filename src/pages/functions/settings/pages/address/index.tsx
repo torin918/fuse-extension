@@ -10,9 +10,10 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useMarkedAddresses, useRecentAddresses } from '~hooks/store/local-secure';
 import { truncate_principal, truncate_text } from '~lib/utils/text';
+import type { ChainAddress, MarkedAddress } from '~types/address';
 
 import { FunctionHeader } from '../../../components/header';
-import { AddAddressDrawer } from './components/drawer';
+import { AddAddressDrawer, EditAddressDrawer } from './components/drawer';
 
 function FunctionSettingsAddressesPage() {
     const current_address = useCurrentState();
@@ -67,7 +68,10 @@ function FunctionSettingsAddressesPage() {
         });
     }, [pushRecentAddress]);
 
-    const [isAddrOpen, setIsOpen] = useState(false);
+    const [isEditOpen, setIsOpen] = useState(false);
+    const [isRecentEdit, setIsRecent] = useState(false);
+    const [removeAddress, setRemoveAddress] = useState<ChainAddress>();
+    const [editAddress, setEditAddress] = useState<MarkedAddress>();
 
     const handleClickOutside = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
@@ -90,6 +94,12 @@ function FunctionSettingsAddressesPage() {
     const [addressesWithShow, setAddressesWithShow] = useState(
         markedAddresses.map((item) => ({ ...item, isShow: false })),
     );
+
+    useEffect(() => {
+        if (!markedAddresses || markedAddresses.length === 0) return;
+        setAddressesWithShow(markedAddresses.map((item) => ({ ...item, isShow: false })));
+    }, [markedAddresses]);
+
     const handleToggleShow = (index: number) => {
         setAddressesWithShow((prev) =>
             prev.map((item, i) => ({
@@ -100,9 +110,10 @@ function FunctionSettingsAddressesPage() {
     };
 
     const ref = useRef<HTMLDivElement>(null);
+
     return (
         <FusePage current_state={current_address}>
-            <div ref={ref} className="relative h-full w-full overflow-hidden">
+            <div ref={ref} className="overflow-hidden relative w-full h-full">
                 <FusePageTransition
                     className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                     setHide={setHide}
@@ -117,15 +128,15 @@ function FunctionSettingsAddressesPage() {
                     {/* <button onClick={pushRandomMarked}>push marked</button>
                     <button onClick={pushRandomRecent}>push recent</button> */}
 
-                    <div className="flex h-full flex-col justify-between">
-                        <div className="flex-1 overflow-y-auto">
-                            <div className="w-full px-5">
+                    <div className="flex flex-col justify-between h-full">
+                        <div className="overflow-y-auto flex-1">
+                            <div className="px-5 w-full">
                                 {addressesWithShow.map((item, index) => (
                                     <div
                                         key={`${JSON.stringify(item.address)}`}
                                         className="mt-3 block w-full cursor-pointer rounded-xl bg-[#181818] p-3"
                                     >
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex justify-between items-center">
                                             <div className="flex items-center">
                                                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#333333] p-2 text-xl font-bold">
                                                     {item.address.address.charAt(0)}
@@ -169,6 +180,7 @@ function FunctionSettingsAddressesPage() {
                                                             className="flex items-center rounded-lg p-2 duration-300 hover:bg-[#333333]"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
+                                                                setEditAddress(item);
                                                                 setIsOpen(true);
                                                             }}
                                                         >
@@ -182,7 +194,9 @@ function FunctionSettingsAddressesPage() {
                                                             className="flex items-center rounded-lg p-2 duration-300 hover:bg-[#333333]"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                removeMarkedAddress(item.address);
+                                                                onOpen();
+                                                                setRemoveAddress(item.address);
+                                                                // removeMarkedAddress(item.address);
                                                             }}
                                                         >
                                                             <Icon
@@ -203,12 +217,22 @@ function FunctionSettingsAddressesPage() {
                                 {recentAddresses.map((item, index) => (
                                     <div
                                         key={index + JSON.stringify(item)}
-                                        className="flex items-center justify-between px-5"
+                                        className="flex justify-between items-center px-5"
                                     >
                                         <div className="flex-1 cursor-pointer break-all py-2 text-xs text-[#EEEEEE]">
                                             {item.address.address}
                                         </div>
-                                        <div onClick={() => setIsOpen(true)}>
+                                        <div
+                                            onClick={() => {
+                                                setEditAddress({
+                                                    ...item,
+                                                    name: '',
+                                                    updated: item.created,
+                                                });
+                                                setIsRecent(true);
+                                                setIsOpen(true);
+                                            }}
+                                        >
                                             <Icon
                                                 name="icon-add"
                                                 className="ml-4 h-4 w-4 shrink-0 cursor-pointer text-[#FFCF13] duration-300 hover:opacity-80"
@@ -220,20 +244,42 @@ function FunctionSettingsAddressesPage() {
                         </div>
 
                         <AddAddressDrawer
-                            trigger={
-                                <div className="w-full p-5">
-                                    <Button className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black">
-                                        Add
-                                    </Button>
-                                </div>
-                            }
+                            // trigger={}
                             container={ref.current ?? undefined}
+                            onAddAddress={pushOrUpdateMarkedAddress}
                         />
+
+                        {editAddress && (
+                            <EditAddressDrawer
+                                isOpen={isEditOpen}
+                                isRecent={isRecentEdit}
+                                initAddress={editAddress}
+                                onEditAddress={pushOrUpdateMarkedAddress}
+                                container={ref.current ?? undefined}
+                                onClose={() => {
+                                    setIsOpen(false);
+                                    setIsRecent(false);
+                                    setEditAddress(undefined);
+                                }}
+                                onOpenDelete={() => {
+                                    setIsOpen(false);
+                                    setIsRecent(false);
+                                    setEditAddress(undefined);
+                                    setRemoveAddress(editAddress.address);
+                                    onOpen();
+                                }}
+                            />
+                        )}
                         <Modal
                             backdrop="blur"
                             isOpen={isOpen}
                             onClose={onClose}
                             size="xs"
+                            classNames={{
+                                wrapper: '!z-[51]',
+                                backdrop: '!z-[51]',
+                                base: '!z-[52]',
+                            }}
                             placement="center"
                             hideCloseButton={true}
                         >
@@ -241,15 +287,15 @@ function FunctionSettingsAddressesPage() {
                                 {(onClose) => (
                                     <>
                                         <ModalBody>
-                                            <div className="flex w-full flex-col items-center justify-center pt-5">
+                                            <div className="flex flex-col justify-center items-center pt-5 w-full">
                                                 <Icon name="icon-tips" className="h-[56px] w-[56px] text-[#FFCF13]" />
-                                                <p className="w-full pt-4 text-base">
+                                                <p className="pt-4 w-full text-base">
                                                     Are you sure you want to delete the address?
                                                 </p>
                                             </div>
                                         </ModalBody>
                                         <ModalFooter>
-                                            <div className="grid w-full grid-cols-2 gap-x-4">
+                                            <div className="grid grid-cols-2 gap-x-4 w-full">
                                                 <Button
                                                     className="rounded-xl bg-[#666666] py-3 text-base text-[#EEEEEE]"
                                                     onPress={onClose}
@@ -258,7 +304,14 @@ function FunctionSettingsAddressesPage() {
                                                 </Button>
                                                 <Button
                                                     className="rounded-xl bg-[#FFCF13] py-3 text-base font-semibold text-black"
-                                                    onPress={onClose}
+                                                    onPress={() => {
+                                                        if (!removeAddress) return;
+
+                                                        removeMarkedAddress(removeAddress);
+                                                        onClose();
+                                                        setRemoveAddress(undefined);
+                                                        setIsOpen(false);
+                                                    }}
                                                 >
                                                     Confirm
                                                 </Button>
