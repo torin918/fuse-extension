@@ -59,6 +59,7 @@ function CreateRestorePage({ wt, extra }: { wt: WindowType; extra?: boolean }) {
         if (wt === 'options') {
             await chrome.action.openPopup();
             // window.close(); // close window if current window is individual page
+            navigate('/');
         }
     }, [extra, password1, mnemonic, restoreAccountByMnemonic, isKeyExist, pushIdentity, wt, navigate]);
 
