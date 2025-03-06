@@ -1,6 +1,9 @@
 import { Button } from '@heroui/react';
 import { useCallback } from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
+import Icon from '~components/icon';
+import { showToast } from '~components/toast';
 import { set_current_session_connected_app_message } from '~hooks/store';
 import { useCurrentConnectedApps } from '~hooks/store/local-secure';
 import type { PopupAction } from '~types/actions';
@@ -76,16 +79,54 @@ function ConnectActionPage({
         [connect, pushOrUpdateConnectedApp, deletePopupAction, action, current_identity, current_chain_network],
     );
     return (
-        <div>
-            <div className="h-full w-full">
-                <div>origin: {connect.origin}</div>
-                <div>title: {connect.title}</div>
-                <div>{connect.favicon && <img src={connect.favicon} />}</div>
-                <Button onPress={() => onAction('deny')}>Always Deny</Button>
-                <Button onPress={() => onAction('deny_once')}>Deny This Time</Button>
-                <Button onPress={() => onAction('granted_once')}>Granted This Time</Button>
-                <Button onPress={() => onAction('granted')}>Always Granted</Button>
-                <Button onPress={() => onAction('granted_5m')}>Granted 5m</Button>
+        <div className="flex h-screen w-full flex-col justify-between">
+            <div className="flex w-full items-center border-b border-[#333333] px-5 py-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#181818] text-2xl">😄</div>
+                <span className="px-2 text-sm font-semibold">Wallet 1</span>
+                <CopyToClipboard
+                    text={'wallet'}
+                    onCopy={() => {
+                        showToast('Copied', 'success');
+                    }}
+                >
+                    <Icon name="icon-copy" className="h-3 w-3 cursor-pointer text-[#999999] hover:text-[#FFCF13]" />
+                </CopyToClipboard>
+            </div>
+            <div className="overflow-y-1 mt-4 w-full flex-1 px-5">
+                <div className="flex w-full items-center">
+                    {/* {connect.favicon && <img src={connect.favicon} className="h-12 w-12 rounded-full" />} */}
+                    <img
+                        src="https://app.icpswap.com/images/tokens/ca6gz-lqaaa-aaaaq-aacwa-cai.png"
+                        className="mr-3 h-12 w-12 rounded-full"
+                    />
+                    <div className="w-auto">
+                        <strong className="block text-lg font-semibold">Connect</strong>
+                        <span className="text-sm text-[#999999]">icpswap.com</span>
+                    </div>
+                </div>
+                <div className="block py-2 text-sm text-[#999999]">{connect.title}</div>
+                <div className="block text-sm text-[#999999]">{connect.origin}</div>
+                <div className="mt-6 flex w-full items-center justify-between rounded-xl bg-[#181818] px-4 py-3">
+                    <span className="text-sm">Account</span>
+                    <span className="text-sm text-[#999999]">Wallet 1</span>
+                </div>
+            </div>
+            <div className="grid w-full grid-cols-2 gap-x-3 p-5">
+                {/* <Button onPress={() => onAction('deny')}>Always Deny</Button> */}
+                <Button
+                    className="h-12 w-full rounded-xl bg-[#666666] text-lg font-semibold text-white"
+                    onPress={() => onAction('deny_once')}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    className="h-12 w-full rounded-xl bg-[#FFCF13] text-lg font-semibold text-black"
+                    onPress={() => onAction('granted_once')}
+                >
+                    Connect
+                </Button>
+                {/* <Button onPress={() => onAction('granted')}>Always Granted</Button> */}
+                {/* <Button onPress={() => onAction('granted_5m')}>Granted 5m</Button> */}
             </div>
         </div>
     );

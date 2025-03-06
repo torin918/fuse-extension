@@ -40,22 +40,20 @@ const SingleActionPage = ({
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) => {
     return (
-        <div>
-            <div className="h-full w-full">
-                <div>unique_id: {get_popup_action_id(action)}</div>
-                {match_popup_action(action, {
-                    connect: (connect) => (
-                        <ConnectActionPage action={action} connect={connect} deletePopupAction={deletePopupAction} />
-                    ),
-                    approve_ic: (approve_ic) => (
-                        <ApproveIcActionPage
-                            action={action}
-                            approve_ic={approve_ic}
-                            deletePopupAction={deletePopupAction}
-                        />
-                    ),
-                })}
-            </div>
+        <div className="h-full w-full">
+            {/* <div>unique_id: {get_popup_action_id(action)}</div> */}
+            {match_popup_action(action, {
+                connect: (connect) => (
+                    <ConnectActionPage action={action} connect={connect} deletePopupAction={deletePopupAction} />
+                ),
+                approve_ic: (approve_ic) => (
+                    <ApproveIcActionPage
+                        action={action}
+                        approve_ic={approve_ic}
+                        deletePopupAction={deletePopupAction}
+                    />
+                ),
+            })}
         </div>
     );
 };

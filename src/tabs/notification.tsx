@@ -12,7 +12,7 @@ const routes = getRoutes('notification');
 // - A dedicated page for authentication
 // - When you need a more elaborate routing setup
 function NotificationPage() {
-    return <SinglePageApp className="flex h-full w-full flex-col" routes={routes} />;
+    return <SinglePageApp className="flex h-screen w-full flex-col" routes={routes} />;
 }
 
 export default NotificationPage;
