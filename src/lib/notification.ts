@@ -2,8 +2,8 @@ import type { CurrentWindow } from '~types/window';
 
 let unique_tab_id: number | undefined = undefined;
 
-const HEIGHT = 600;
-const WIDTH = 360;
+const HEIGHT = 600; // Same as popup page
+const WIDTH = 360; // Same as popup page
 
 export const get_current_notification = async (focus = false): Promise<chrome.windows.Window | undefined> => {
     if (unique_tab_id === undefined) return undefined;
