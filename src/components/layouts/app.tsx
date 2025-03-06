@@ -26,7 +26,7 @@ export const SinglePageApp = ({
             <HeroUIProvider>
                 <div className={className}>
                     {wt === 'options' && (
-                        <div className="flex h-screen w-full items-center justify-center bg-[#fef4ca]">
+                        <div className="flex h-screen w-screen items-center justify-center bg-[#fef4ca]">
                             <div className="fixed left-0 top-6 flex w-full items-center justify-between px-10">
                                 <img src={logo_black} className="mr-2 w-[120px]" />
                                 <div className="flex items-center">
