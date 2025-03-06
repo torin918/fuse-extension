@@ -3,14 +3,14 @@ import Picker from '@emoji-mart/react';
 import { Button, Drawer, DrawerBody, DrawerContent, useDisclosure } from '@heroui/react';
 import { useMemo, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { useParams, type NavigateOptions } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { showToast } from '~components/toast';
 import { useCurrentState } from '~hooks/memo/current_state';
-import { useGoto } from '~hooks/memo/goto';
+import { useGoto, type GotoFunction } from '~hooks/memo/goto';
 import { useIdentityKeys } from '~hooks/store/local-secure';
 import { truncate_text } from '~lib/utils/text';
 
@@ -43,11 +43,7 @@ function FunctionSettingsAccountsSinglePage() {
 
 export default FunctionSettingsAccountsSinglePage;
 
-const InnerSingleAccountPage = ({
-    goto: _goto,
-}: {
-    goto: (path: string | number, options?: NavigateOptions) => void;
-}) => {
+const InnerSingleAccountPage = ({ goto: _goto }: { goto: GotoFunction }) => {
     const { id } = useParams();
 
     const { current_identity, identity_list, showMnemonic, showPrivateKey, deleteIdentity, updateIdentity } =

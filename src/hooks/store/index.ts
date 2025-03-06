@@ -17,7 +17,7 @@ import {
     SESSION_KEY_POPUP_ACTIONS,
 } from './keys';
 import { usePasswordHashedInner } from './local/password_hashed';
-import { useTokenInfoCurrentInner2 } from './local/token/current';
+import { useTokenInfoCurrentInner, useTokenInfoCurrentInner2 } from './local/token/current';
 import { useTokenInfoCustomInner2 } from './local/token/custom';
 import { useTokenBalanceIcByRefreshingInner } from './local/token/ic/balance';
 import { useTokenInfoIcByInitialInner, useTokenInfoIcByRefreshingInner } from './local/token/ic/info';
@@ -56,6 +56,7 @@ export const useTokenInfoIcByRefreshing = (sleep: number) => useTokenInfoIcByRef
 export const useTokenBalanceIcByRefreshing = (principal: string | undefined, canister_id: string) =>
     useTokenBalanceIcByRefreshingInner(LOCAL_STORAGE, principal, canister_id); // local
 export const useTokenInfoCustom = () => useTokenInfoCustomInner2(LOCAL_STORAGE); // local
+export const useTokenInfoCurrentRead = () => useTokenInfoCurrentInner(LOCAL_STORAGE)[0]; // local
 export const useTokenInfoCurrent = () => useTokenInfoCurrentInner2(LOCAL_STORAGE); // local
 
 // ############### SESSION ###############
