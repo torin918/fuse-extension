@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
+import { useTokenInfoCurrentRead } from '~hooks/store';
 import { truncate_text } from '~lib/utils/text';
 import type { MainPageState } from '~pages/functions';
 import type { ShowIdentityKey } from '~types/identity';
+import { get_token_unique_id } from '~types/tokens';
 
 import { AddressTooltip } from './components/address-tooltip';
 import { ShowSingleAddress } from './components/show-address';
+import { HomeShowToken } from './components/show-token';
 
 function HomePage({
     setState,
@@ -18,6 +21,8 @@ function HomePage({
     current_identity: ShowIdentityKey;
 }) {
     const navigate = useNavigate();
+
+    const current_tokens = useTokenInfoCurrentRead();
 
     const ref = useRef<HTMLDivElement>(null);
     return (
@@ -115,113 +120,15 @@ function HomePage({
                 </div>
 
                 <div className="mt-5 flex w-full flex-col gap-y-[10px] px-5">
-                    <div
-                        className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]"
-                        onClick={() =>
-                            navigate('/home/token/ic', { state: { canister_id: 'ryjl3-tyaaa-aaaaa-aaaba-cai' } })
-                        }
-                    >
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICP</strong>
-                                <span className="text-xs text-[#999999]">$10.97</span>
-                                <span className="pl-2 text-xs text-[#00C431]">+2.8%</span>
-                            </div>
-                        </div>
-                        <div className="flex-end flex shrink-0 flex-col">
-                            <strong className="block text-right text-base text-[#EEEEEE]">800.12</strong>
-                            <span className="text-right text-xs text-[#999999]">$8,160.91</span>
-                        </div>
-                    </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICS</strong>
-                                <span className="text-xs text-[#999999]">$0.00013048</span>
-                                <span className="pl-2 text-xs text-[#FF2C40]">-2.87%</span>
-                            </div>
-                        </div>
-                        <div className="flex-end flex shrink-0 flex-col">
-                            <strong className="block text-right text-base text-[#EEEEEE]">9,237,834</strong>
-                            <span className="text-right text-xs text-[#999999]">$1,205.35</span>
-                        </div>
-                    </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICP</strong>
-                                <span className="text-xs text-[#999999]">$10.97</span>
-                                <span className="pl-2 text-xs text-[#00C431]">+2.8%</span>
-                            </div>
-                        </div>
-                        <div className="flex-end flex shrink-0 flex-col">
-                            <strong className="block text-right text-base text-[#EEEEEE]">800.12</strong>
-                            <span className="text-right text-xs text-[#999999]">$8,160.91</span>
-                        </div>
-                    </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICS</strong>
-                                <span className="text-xs text-[#999999]">$0.00013048</span>
-                                <span className="pl-2 text-xs text-[#FF2C40]">-2.87%</span>
-                            </div>
-                        </div>
-                        <div className="flex-end flex shrink-0 flex-col">
-                            <strong className="block text-right text-base text-[#EEEEEE]">9,237,834</strong>
-                            <span className="text-right text-xs text-[#999999]">$1,205.35</span>
-                        </div>
-                    </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICP</strong>
-                                <span className="text-xs text-[#999999]">$10.97</span>
-                                <span className="pl-2 text-xs text-[#00C431]">+2.8%</span>
-                            </div>
-                        </div>
-                        <div className="flex-end flex shrink-0 flex-col">
-                            <strong className="block text-right text-base text-[#EEEEEE]">800.12</strong>
-                            <span className="text-right text-xs text-[#999999]">$8,160.91</span>
-                        </div>
-                    </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
-                        <div className="flex items-center">
-                            <img
-                                src="https://metrics.icpex.org/images/atbfz-diaaa-aaaaq-aacyq-cai.png"
-                                className="h-10 w-10 rounded-full"
-                            />
-                            <div className="ml-[10px]">
-                                <strong className="block text-base text-[#EEEEEE]">ICS</strong>
-                                <span className="text-xs text-[#999999]">$0.00013048</span>
-                                <span className="pl-2 text-xs text-[#FF2C40]">-2.87%</span>
-                            </div>
-                        </div>
-                        <div className="flex-end flex shrink-0 flex-col">
-                            <strong className="block text-right text-base text-[#EEEEEE]">9,237,834</strong>
-                            <span className="text-right text-xs text-[#999999]">$1,205.35</span>
-                        </div>
-                    </div>
+                    {current_tokens.map((token) => (
+                        <HomeShowToken
+                            key={get_token_unique_id(token)}
+                            goto={(path, options) =>
+                                typeof path === 'number' ? navigate(path) : navigate(path, options)
+                            }
+                            token={token}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

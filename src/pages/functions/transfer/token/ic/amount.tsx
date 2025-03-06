@@ -2,10 +2,10 @@ import { isPrincipalText } from '@choptop/haw';
 import { Button } from '@heroui/react';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { NavigateOptions } from 'react-router-dom';
 
 import Icon from '~components/icon';
 import { showToast } from '~components/toast';
+import type { GotoFunction } from '~hooks/memo/goto';
 import { useCurrentConnectedIcIdentity } from '~hooks/memo/identity';
 import { useTokenBalanceIcByRefreshing, useTokenInfoIcByInitial } from '~hooks/store';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
@@ -19,7 +19,7 @@ function FunctionTransferTokenIcAmountPage({
 }: {
     canister_id: string;
     to: string;
-    goto: (path: string | number, options?: NavigateOptions) => void;
+    goto: GotoFunction;
 }) {
     const current_identity = useCurrentIdentity();
 
