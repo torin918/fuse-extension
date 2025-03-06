@@ -68,6 +68,7 @@ const main = async () => {
 
     // print token info
     const max_token_info_length = Math.max(...items.map((item) => item.token_info_name.length));
+    const max_token_name_length = Math.max(...items.map((item) => item.token.icrc1_metadata.icrc1_name.length));
     const max_decimals_length = Math.max(...items.map((item) => item.token.icrc1_metadata.icrc1_decimals.length));
     const max_fee_length = Math.max(...items.map((item) => item.token.icrc1_metadata.icrc1_fee.length));
     console.log(``);
@@ -76,13 +77,16 @@ const main = async () => {
     for (const item of items) {
         let token_info_spaces = '';
         for (let i = 0; i < max_token_info_length - item.token_info_name.length; i++) token_info_spaces += ' ';
+        let token_name_spaces = '';
+        for (let i = 0; i < max_token_name_length - item.token.icrc1_metadata.icrc1_name.length; i++)
+            token_name_spaces += ' ';
         let decimals_spaces = '';
         for (let i = 0; i < max_decimals_length - item.token.icrc1_metadata.icrc1_decimals.length; i++)
             decimals_spaces += ' ';
         let fee_spaces = '';
         for (let i = 0; i < max_fee_length - item.token.icrc1_metadata.icrc1_fee.length; i++) fee_spaces += ' ';
         console.log(
-            `const ${item.token_info_name}${token_info_spaces} : IcTokenInfo = { canister_id: '${item.token.ledger_canister_id}', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: '${item.token.icrc1_metadata.icrc1_symbol}',${token_info_spaces} symbol: '${item.token.icrc1_metadata.icrc1_symbol}',${token_info_spaces} decimals: ${decimals_spaces}${item.token.icrc1_metadata.icrc1_decimals}, fee: ${fee_spaces}'${item.token.icrc1_metadata.icrc1_fee}' }; // fee ${BigNumber(
+            `const ${item.token_info_name}${token_info_spaces} : IcTokenInfo = { canister_id: '${item.token.ledger_canister_id}', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: '${item.token.icrc1_metadata.icrc1_symbol}',${token_name_spaces} symbol: '${item.token.icrc1_metadata.icrc1_symbol}',${token_info_spaces} decimals: ${decimals_spaces}${item.token.icrc1_metadata.icrc1_decimals}, fee: ${fee_spaces}'${item.token.icrc1_metadata.icrc1_fee}' }; // fee ${BigNumber(
                 item.token.icrc1_metadata.icrc1_fee,
             )
                 .div(BigNumber(10).pow(BigNumber(item.token.icrc1_metadata.icrc1_decimals)))
