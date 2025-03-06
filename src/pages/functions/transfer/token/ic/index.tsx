@@ -1,12 +1,15 @@
 import { isCanisterIdText } from '@choptop/haw';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { useTokenInfoCustom } from '~hooks/store';
 import { FunctionHeader } from '~pages/functions/components/header';
+import { match_combined_token_info } from '~types/tokens';
+import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 
 import FunctionTransferTokenIcAddressPage from './address';
 import FunctionTransferTokenIcAmountPage from './amount';
@@ -17,7 +20,9 @@ function FunctionTransferTokenIcPage() {
     const current_state = useCurrentState();
 
     const { setHide, goto: _goto } = useGoto();
+    const [custom] = useTokenInfoCustom();
 
+    const allTokens = useMemo(() => [...PRESET_ALL_TOKEN_INFO, ...custom.map((t) => t.token)], [custom]);
     const location = useLocation();
     const [canister_id, setCanisterId] = useState<string>();
 
@@ -30,6 +35,19 @@ function FunctionTransferTokenIcPage() {
     const [state, setState] = useState<PageState>('address');
 
     const [to, setTo] = useState<string>('');
+    const [logo, setLogo] = useState<string>();
+
+    useEffect(() => {
+        if (!canister_id) return;
+
+        const token = allTokens.find((t) =>
+            match_combined_token_info(t.info, { ic: (ic) => ic.canister_id === canister_id }),
+        );
+
+        if (!token) throw new Error('Unknown token info');
+
+        get_token_logo(token.info).then(setLogo);
+    }, [allTokens, canister_id]);
 
     if (!canister_id) return <></>;
     return (
@@ -40,6 +58,7 @@ function FunctionTransferTokenIcPage() {
 
                     {state === 'address' && (
                         <FunctionTransferTokenIcAddressPage
+                            logo={logo}
                             onNext={(to: string) => {
                                 setTo(to);
                                 setState('amount');
@@ -47,7 +66,7 @@ function FunctionTransferTokenIcPage() {
                         />
                     )}
                     {state === 'amount' && (
-                        <FunctionTransferTokenIcAmountPage canister_id={canister_id} to={to} goto={_goto} />
+                        <FunctionTransferTokenIcAmountPage logo={logo} canister_id={canister_id} to={to} goto={_goto} />
                     )}
                 </div>
             </FusePageTransition>

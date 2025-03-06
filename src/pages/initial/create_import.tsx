@@ -61,7 +61,10 @@ function CreateImportPage({ wt, extra }: { wt: WindowType; extra?: boolean }) {
                 },
             };
             isKeyExist(key).then((exist) => {
-                if (exist) throw new Error('key already exists');
+                if (exist) {
+                    setImportWalletLoading(false);
+                    throw new Error('key already exists');
+                }
                 pushIdentity(key).then((r) => {
                     if (r === undefined) throw Error('push identity failed');
                     if (r === false) throw new Error('push identity failed');
