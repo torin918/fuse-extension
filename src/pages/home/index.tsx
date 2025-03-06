@@ -94,46 +94,24 @@ function HomePage({
                 </div>
 
                 <div className="mt-2 flex w-full items-center justify-between px-5">
-                    <div
-                        onClick={() => navigate('/home/transfer')}
-                        className="flex h-[70px] w-[70px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-[#333333] transition duration-300 hover:border-[#FFCF13]"
-                    >
-                        <Icon
-                            name="icon-send"
-                            className="h-[20px] w-[20px] cursor-pointer font-semibold text-[#FFCF13]"
-                        ></Icon>
-                        <span className="pt-1 text-xs text-[#EEEEEE]">Send</span>
-                    </div>
-                    <div
-                        onClick={() => navigate('/home/receive')}
-                        className="flex h-[70px] w-[70px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-[#333333] transition duration-300 hover:border-[#FFCF13]"
-                    >
-                        <Icon
-                            name="icon-receive"
-                            className="h-[20px] w-[20px] cursor-pointer font-semibold text-[#FFCF13]"
-                        ></Icon>
-                        <span className="pt-1 text-xs text-[#EEEEEE]">Receive</span>
-                    </div>
-                    <div
-                        onClick={() => navigate('/home/swap')}
-                        className="flex h-[70px] w-[70px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-[#333333] transition duration-300 hover:border-[#FFCF13]"
-                    >
-                        <Icon
-                            name="icon-swap"
-                            className="h-[20px] w-[20px] cursor-pointer font-semibold text-[#FFCF13]"
-                        ></Icon>
-                        <span className="pt-1 text-xs text-[#EEEEEE]">Swap</span>
-                    </div>
-                    <div
-                        onClick={() => navigate('/home/dapps')}
-                        className="flex h-[70px] w-[70px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-[#333333] transition duration-300 hover:border-[#FFCF13]"
-                    >
-                        <Icon
-                            name="icon-dapps"
-                            className="h-[20px] w-[20px] cursor-pointer font-semibold text-[#FFCF13]"
-                        ></Icon>
-                        <span className="pt-1 text-xs text-[#EEEEEE]">Dapps</span>
-                    </div>
+                    {[
+                        { callback: () => navigate('/home/transfer'), icon: 'icon-send', name: 'Send' },
+                        { callback: () => navigate('/home/receive'), icon: 'icon-receive', name: 'Receive' },
+                        { callback: () => navigate('/home/swap'), icon: 'icon-swap', name: 'Swap' },
+                        { callback: () => navigate('/home/dapps'), icon: 'icon-dapps', name: 'Dapps' },
+                    ].map(({ callback, icon, name }) => (
+                        <div
+                            key={icon}
+                            onClick={callback}
+                            className="flex h-[70px] w-[70px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-[#333333] transition duration-300 hover:border-[#FFCF13]"
+                        >
+                            <Icon
+                                name={icon}
+                                className="h-[20px] w-[20px] cursor-pointer font-semibold text-[#FFCF13]"
+                            ></Icon>
+                            <span className="pt-1 text-xs text-[#EEEEEE]">{name}</span>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="mt-5 flex w-full flex-col gap-y-[10px] px-5">

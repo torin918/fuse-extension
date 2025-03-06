@@ -6,7 +6,7 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
 import type { WindowType } from '~types/pages';
 
-import HomePage from './home';
+import HomePage from '../home';
 import RecordPage from './record';
 import SwitchWalletPage from './switch';
 
