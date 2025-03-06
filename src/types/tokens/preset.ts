@@ -183,10 +183,12 @@ export const DEFAULT_TOKEN_INFO: TokenInfo[] = [
     { info: { ic: TOKEN_INFO_IC_CK_BTC  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
     { info: { ic: TOKEN_INFO_IC_CK_ETH  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
     { info: { ic: TOKEN_INFO_IC_CK_USDC }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
-    { info: { ic: TOKEN_INFO_IC_CK_UNI  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
-    { info: { ic: TOKEN_INFO_IC_CK_LINK }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
+    { info: { ic: TOKEN_INFO_IC_CK_USDT }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
     // SNS
     { info: { ic: TOKEN_INFO_IC_SNS_CHAT }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_ICL  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_OGY  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_KONG }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
 ];
 
 export const PRESET_ALL_TOKEN_INFO: TokenInfo[] = [

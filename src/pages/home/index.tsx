@@ -1,9 +1,10 @@
+import BigNumber from 'bignumber.js';
 import { useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
-import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead } from '~hooks/store';
+import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store';
 import { truncate_text } from '~lib/utils/text';
 import type { MainPageState } from '~pages/functions';
 import type { ShowIdentityKey } from '~types/identity';
@@ -33,8 +34,58 @@ function HomePage({
         }
         return canisters;
     }, [current_tokens]);
-
     const [ic_balances] = useTokenBalanceIcByRefreshing(current_identity.address.ic?.owner, canisters, 15000);
+    const all_ic_prices = useTokenPriceIcRead();
+    const ic_prices = useMemo<[string | undefined, string | undefined][]>(
+        () =>
+            canisters.map((canister_id) => {
+                const price = all_ic_prices[canister_id];
+                return [price?.price, price?.price_change_24h];
+            }),
+        [canisters, all_ic_prices],
+    );
+
+    const { usd, usd_changed, usd_changed_24h } = useMemo(() => {
+        let usd = BigNumber(0);
+        let usd_now = BigNumber(0);
+        let usd_24h = BigNumber(0);
+
+        for (const token of current_tokens) {
+            match_combined_token_info(token.info, {
+                ic: (ic) => {
+                    const index = canisters.findIndex((c) => c == ic.canister_id);
+                    if (index < 0) return;
+                    const balance = ic_balances[index];
+                    if (!balance) return;
+                    if (balance === '0') return;
+                    const [price, price_changed_24h] = ic_prices[index];
+                    let b: BigNumber | undefined = undefined;
+                    if (price !== undefined) {
+                        b = BigNumber(balance).times(BigNumber(price)).div(BigNumber(10).pow(ic.decimals));
+                        usd = usd.plus(b);
+                        if (price_changed_24h !== undefined) {
+                            usd_now = usd_now.plus(b);
+                            const old_price = BigNumber(price).div(
+                                BigNumber(1).plus(BigNumber(price_changed_24h).div(BigNumber(100))),
+                            );
+                            const old_b = BigNumber(balance)
+                                .times(BigNumber(old_price))
+                                .div(BigNumber(10).pow(ic.decimals));
+                            usd_24h = usd_24h.plus(old_b);
+                        }
+                    }
+                },
+            });
+        }
+
+        return {
+            usd: usd.toFormat(2),
+            usd_changed: usd_now.minus(usd_24h),
+            usd_changed_24h: usd_24h.gt(BigNumber(0))
+                ? usd_now.times(BigNumber(100)).div(usd_24h).minus(BigNumber(100))
+                : BigNumber(0),
+        };
+    }, [canisters, ic_balances, current_tokens, ic_prices]);
 
     const ref = useRef<HTMLDivElement>(null);
     return (
@@ -103,10 +154,16 @@ function HomePage({
 
             <div className="h-full flex-1 overflow-y-auto pb-5 pt-[60px]">
                 <div className="w-full py-2">
-                    <div className="block text-center text-4xl font-semibold text-[#FFCF13]">$12,879.76</div>
+                    <div className="block text-center text-4xl font-semibold text-[#FFCF13]">${usd}</div>
                     <div className="mt-2 flex w-full items-center justify-center">
-                        <span className="mr-2 text-sm text-[#00C431]">+$34.06</span>
-                        <span className="rounded bg-[#193620] px-2 py-[2px] text-sm text-[#00C431]">+3.25%</span>
+                        <span className="mr-2 text-sm text-[#00C431]">
+                            {usd_changed.gt(BigNumber(0)) ? '+' : usd_changed.lt(BigNumber(0)) ? '-' : ''}$
+                            {usd_changed.abs().toFormat(2)}
+                        </span>
+                        <span className="rounded bg-[#193620] px-2 py-[2px] text-sm text-[#00C431]">
+                            {usd_changed_24h.gt(BigNumber(0)) ? '+' : usd_changed_24h.lt(BigNumber(0)) ? '-' : ''}
+                            {usd_changed_24h.abs().toFormat(2)}%
+                        </span>
                     </div>
                 </div>
 
@@ -141,6 +198,7 @@ function HomePage({
                             token={token}
                             canisters={canisters}
                             ic_balances={ic_balances}
+                            ic_prices={ic_prices}
                         />
                     ))}
                 </div>

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { useNavigatePages } from '~hooks/navigate';
-import { usePathname, useTokenInfoIcByRefreshing } from '~hooks/store';
+import { usePathname, useTokenInfoIcByRefreshing, useTokenPriceIcByRefreshing } from '~hooks/store';
 import { CurrentState } from '~types/state';
 
 export const FusePage = ({
@@ -20,12 +20,14 @@ export const FusePage = ({
     children: React.ReactNode;
     options?: {
         refresh_token_info_ic_sleep?: number;
+        refresh_token_price_ic_sleep?: number;
     };
 }) => {
     useNavigatePages(current_state, replace); // ! always check state and page
 
     // refresh data
     useTokenInfoIcByRefreshing(options?.refresh_token_info_ic_sleep ?? 0);
+    useTokenPriceIcByRefreshing(options?.refresh_token_price_ic_sleep ?? 0);
 
     const location = useLocation();
     const [, setPathname] = usePathname();

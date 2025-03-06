@@ -21,6 +21,11 @@ import { useTokenInfoCurrentInner, useTokenInfoCurrentInner2 } from './local/tok
 import { useTokenInfoCustomInner2 } from './local/token/custom';
 import { useTokenBalanceIcByRefreshingInner } from './local/token/ic/balance';
 import { useTokenInfoIcByInitialInner, useTokenInfoIcByRefreshingInner } from './local/token/ic/info';
+import {
+    useTokenPriceIcByInitialInner,
+    useTokenPriceIcByRefreshingInner,
+    useTokenPriceIcInner,
+} from './local/token/ic/price';
 import { useWelcomedInner } from './local/welcome';
 import { usePasswordInner } from './session/password';
 import { usePasswordAliveInner } from './session/password_alive';
@@ -58,6 +63,10 @@ export const useTokenBalanceIcByRefreshing = (principal: string | undefined, can
 export const useTokenInfoCustom = () => useTokenInfoCustomInner2(LOCAL_STORAGE); // local
 export const useTokenInfoCurrentRead = () => useTokenInfoCurrentInner(LOCAL_STORAGE)[0]; // local
 export const useTokenInfoCurrent = () => useTokenInfoCurrentInner2(LOCAL_STORAGE); // local
+export const useTokenPriceIcRead = () => useTokenPriceIcInner(LOCAL_STORAGE)[0]; // local
+export const useTokenPriceIcByInitial = (canister_id: string) =>
+    useTokenPriceIcByInitialInner(LOCAL_STORAGE, canister_id); // local
+export const useTokenPriceIcByRefreshing = (sleep: number) => useTokenPriceIcByRefreshingInner(LOCAL_STORAGE, sleep); // local
 
 // ############### SESSION ###############
 export const usePassword = () => usePasswordInner(SESSION_STORAGE); // session

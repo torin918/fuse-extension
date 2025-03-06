@@ -26,6 +26,8 @@ export const LOCAL_KEY_TOKEN_INFO_IC_UPDATED = `${LOCAL_KEY_PREFIX_TOKEN}:info:i
 export const LOCAL_KEY_TOKEN_BALANCE_IC = (principal: string) => `${LOCAL_KEY_PREFIX_TOKEN}:balance:ic:${principal}`; // * local
 export const LOCAL_KEY_TOKEN_INFO_CUSTOM = `${LOCAL_KEY_PREFIX_TOKEN}:info:custom`; // * local
 export const LOCAL_KEY_TOKEN_INFO_CURRENT = `${LOCAL_KEY_PREFIX_TOKEN}:info:current`; // * local
+export const LOCAL_KEY_TOKEN_PRICE_IC = `${LOCAL_KEY_PREFIX_TOKEN}:price:ic`; // * local
+export const LOCAL_KEY_TOKEN_PRICE_IC_UPDATED = `${LOCAL_KEY_PREFIX_TOKEN}:price:ic:updated`; // * local
 
 // ############### SESSION ###############
 

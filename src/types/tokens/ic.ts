@@ -17,3 +17,12 @@ export type IcTokens = Record<string, IcTokenInfo>;
 
 // <prefix>:balance:ic:address => [canister_id => balance]
 export type IcTokenBalances = Record<string, string>;
+
+export interface IcTokenPrice {
+    canister_id: string;
+    price?: string;
+    price_change_24h?: string;
+}
+
+// <prefix>:token:price:ic => [canister_id => price]
+export type IcTokenPrices = Record<string, IcTokenPrice>;

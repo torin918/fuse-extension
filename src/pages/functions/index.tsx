@@ -16,7 +16,13 @@ function MainPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
 
     return (
-        <FusePage current_state={current_state} pathname={true}>
+        <FusePage
+            current_state={current_state}
+            pathname={true}
+            options={{
+                refresh_token_price_ic_sleep: 1000 * 60,
+            }}
+        >
             <InnerMainPage wt={wt} />
         </FusePage>
     );
