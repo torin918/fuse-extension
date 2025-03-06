@@ -1,5 +1,6 @@
 import { addToast, type ToastProps } from '@heroui/react';
 import { useCallback } from 'react';
+import { toast as sonner_toast } from 'sonner';
 
 import error_svg from '~assets/svg/tips/error.min.svg';
 import info_svg from '~assets/svg/tips/info.min.svg';
@@ -49,4 +50,8 @@ export const useHeroToast = () => {
         [],
     );
     return toast;
+};
+
+export const useSonnerToast = (): typeof sonner_toast => {
+    return sonner_toast;
 };

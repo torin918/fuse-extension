@@ -17,9 +17,16 @@ export const useRestoreAccount = (
     const restoreAccountByMnemonic = useCallback(
         async (password: string, mnemonic: string) => {
             // TODO remove on prod
-            console.debug(`🚀 ~ restore account by mnemonic ~ :`, 'password ->', password, 'mnemonic ->', mnemonic);
+            console.debug(
+                `🚀 ~ restore account by mnemonic ~ :`,
+                'password ->',
+                password,
+                'mnemonic ->',
+                mnemonic,
+                current_state,
+            );
 
-            if (current_state !== CurrentState.INITIAL) return undefined;
+            if (current_state !== CurrentState.INITIAL && current_state !== CurrentState.LOCKED) return undefined;
 
             if (!check_password(password)) return false;
             if (!validate_mnemonic(mnemonic)) return false;
