@@ -1,8 +1,18 @@
+import { useState } from 'react';
+
 import logo_icp from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import type { MainPageState } from '~pages/functions';
 
+import ShowHistory from '../components/historydetail';
+
 function RecordPage({ setState }: { setState: (state: MainPageState) => void }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [currentDetail, setCurrentDetail] = useState<null>(null);
+    const handleOpenDetail = (item: { type: string }) => {
+        setIsOpen(true);
+        setCurrentDetail(item as any);
+    };
     return (
         <div className="flex h-full w-full flex-col">
             <div className="flex h-[60px] w-full items-center justify-between bg-[#0a0600] px-5">
@@ -19,7 +29,12 @@ function RecordPage({ setState }: { setState: (state: MainPageState) => void }) 
                 <div className="flex flex-col">
                     <span className="px-5 py-[5px] text-xs text-[#999999]">02/24/2025</span>
                     {/* send / receive */}
-                    <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
+                    <div
+                        className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]"
+                        onClick={() => {
+                            handleOpenDetail({ type: 'send' });
+                        }}
+                    >
                         <div className="flex items-center">
                             <img
                                 src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
@@ -33,7 +48,12 @@ function RecordPage({ setState }: { setState: (state: MainPageState) => void }) 
                         <div className="text-base font-semibold text-[#EEEEEE]">-11.55 ICP</div>
                     </div>
                     {/* swap */}
-                    <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
+                    <div
+                        className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]"
+                        onClick={() => {
+                            handleOpenDetail({ type: 'swap' });
+                        }}
+                    >
                         <div className="flex items-center">
                             <img src={logo_icp} className="h-10 w-10 rounded-full" />
                             <div className="ml-[10px]">
@@ -50,7 +70,12 @@ function RecordPage({ setState }: { setState: (state: MainPageState) => void }) 
                 <div className="flex flex-col">
                     <span className="px-5 py-[5px] text-xs text-[#999999]">01/20/2025</span>
                     {/* send / receive */}
-                    <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
+                    <div
+                        className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]"
+                        onClick={() => {
+                            handleOpenDetail({ type: 'send' });
+                        }}
+                    >
                         <div className="flex items-center">
                             <img
                                 src="https://metrics.icpex.org/images/xevnm-gaaaa-aaaar-qafnq-cai.png"
@@ -63,7 +88,12 @@ function RecordPage({ setState }: { setState: (state: MainPageState) => void }) 
                         </div>
                         <div className="text-base font-semibold text-[#EEEEEE]">-374 ckUSDC</div>
                     </div>
-                    <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
+                    <div
+                        className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]"
+                        onClick={() => {
+                            handleOpenDetail({ type: 'receive' });
+                        }}
+                    >
                         <div className="flex items-center">
                             <img
                                 src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
@@ -136,6 +166,7 @@ function RecordPage({ setState }: { setState: (state: MainPageState) => void }) 
                     </div>
                 </div>
             </div>
+            {currentDetail && <ShowHistory isOpen={isOpen} setIsOpen={setIsOpen} currentDetail={currentDetail} />}
         </div>
     );
 }
