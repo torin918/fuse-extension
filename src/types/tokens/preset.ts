@@ -20,42 +20,41 @@ import TOKEN_IC_CK_WSTETH_SVG from 'data-base64:~assets/svg/tokens/ic/ck/ckWSTET
 import TOKEN_IC_CK_UNI_SVG    from 'data-base64:~assets/svg/tokens/ic/ck/ckUNI.min.svg';
 import TOKEN_IC_CK_WBTC_SVG   from 'data-base64:~assets/svg/tokens/ic/ck/ckWBTC.min.svg';
 // SNS
-import TOKEN_IC_SNS_ALICE_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/ALICE.png';
-import TOKEN_IC_SNS_BOOM_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/BOOM.png';
-import TOKEN_IC_SNS_CTZ_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/CTZ.png';
-import TOKEN_IC_SNS_DCD_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/DCD.png';
-import TOKEN_IC_SNS_DOGMI_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/DOGMI.png';
-import TOKEN_IC_SNS_DOLR_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/DOLR.png';
-import TOKEN_IC_SNS_DKP_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/DKP.png';
-import TOKEN_IC_SNS_ELNA_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/ELNA.png';
-import TOKEN_IC_SNS_EST_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/EST.png';
-import TOKEN_IC_SNS_WELL_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/WELL.png';
-import TOKEN_IC_SNS_FUEL_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/FUEL.png';
-import TOKEN_IC_SNS_GOLDAO_PNG from 'data-base64:~assets/svg/tokens/ic/sns/GOLDAO.png';
-import TOKEN_IC_SNS_ICE_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/ICE.png';
-import TOKEN_IC_SNS_GHOST_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/GHOST.png';
-import TOKEN_IC_SNS_ICL_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/ICL.png';
-import TOKEN_IC_SNS_PANDA_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/PANDA.png';
-import TOKEN_IC_SNS_CONF_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/CONF.png';
-import TOKEN_IC_SNS_ICS_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/ICS.png';
-import TOKEN_IC_SNS_ICVC_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/ICVC.png';
-import TOKEN_IC_SNS_KINIC_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/KINIC.png';
-import TOKEN_IC_SNS_KONG_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/KONG.png';
-import TOKEN_IC_SNS_MOTOKO_PNG from 'data-base64:~assets/svg/tokens/ic/sns/MOTOKO.png';
-import TOKEN_IC_SNS_NTN_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/NTN.png';
-import TOKEN_IC_SNS_NFIDW_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/NFIDW.png';
-import TOKEN_IC_SNS_NUA_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/NUA.png';
 import TOKEN_IC_SNS_CHAT_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/CHAT.png';
-import TOKEN_IC_SNS_FPL_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/FPL.png';
-import TOKEN_IC_SNS_OGY_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/OGY.png';
-import TOKEN_IC_SNS_DAO_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/DAO.png';
+import TOKEN_IC_SNS_KINIC_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/KINIC.png';
+import TOKEN_IC_SNS_DOLR_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/DOLR.png';
+import TOKEN_IC_SNS_GHOST_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/GHOST.png';
+import TOKEN_IC_SNS_DCD_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/DCD.png';
+import TOKEN_IC_SNS_CTZ_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/CTZ.png';
+import TOKEN_IC_SNS_BOOM_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/BOOM.png';
 import TOKEN_IC_SNS_SEER_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/SEER.png';
-import TOKEN_IC_SNS_SNEED_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/SNEED.png';
+import TOKEN_IC_SNS_NUA_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/NUA.png';
 import TOKEN_IC_SNS_SONIC_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/SONIC.png';
+import TOKEN_IC_SNS_GOLDAO_PNG from 'data-base64:~assets/svg/tokens/ic/sns/GOLDAO.png';
 import TOKEN_IC_SNS_TRAX_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/TRAX.png';
-import TOKEN_IC_SNS_WTN_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/WTN.png';
+import TOKEN_IC_SNS_NTN_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/NTN.png';
+import TOKEN_IC_SNS_SNEED_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/SNEED.png';
+import TOKEN_IC_SNS_ICL_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/ICL.png';
+import TOKEN_IC_SNS_ELNA_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/ELNA.png';
+import TOKEN_IC_SNS_FPL_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/FPL.png';
+import TOKEN_IC_SNS_PANDA_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/PANDA.png';
+import TOKEN_IC_SNS_ICS_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/ICS.png';
 import TOKEN_IC_SNS_YUKU_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/YUKU.png';
+import TOKEN_IC_SNS_EST_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/EST.png';
+import TOKEN_IC_SNS_MOTOKO_PNG from 'data-base64:~assets/svg/tokens/ic/sns/MOTOKO.png';
+import TOKEN_IC_SNS_CONF_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/CONF.png';
+import TOKEN_IC_SNS_OGY_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/OGY.png';
+import TOKEN_IC_SNS_WTN_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/WTN.png';
 import TOKEN_IC_SNS_____PNG    from 'data-base64:~assets/svg/tokens/ic/sns/---.png';
+import TOKEN_IC_SNS_DOGMI_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/DOGMI.png';
+import TOKEN_IC_SNS_ICVC_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/ICVC.png';
+import TOKEN_IC_SNS_KONG_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/KONG.png';
+import TOKEN_IC_SNS_WELL_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/WELL.png';
+import TOKEN_IC_SNS_ALICE_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/ALICE.png';
+import TOKEN_IC_SNS_NFIDW_PNG  from 'data-base64:~assets/svg/tokens/ic/sns/NFIDW.png';
+import TOKEN_IC_SNS_FUEL_PNG   from 'data-base64:~assets/svg/tokens/ic/sns/FUEL.png';
+import TOKEN_IC_SNS_ICE_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/ICE.png';
+import TOKEN_IC_SNS_DKP_PNG    from 'data-base64:~assets/svg/tokens/ic/sns/DKP.png';
 
 const PRESET_LOGO: Record<string, string> = {
     'ic#ryjl3-tyaaa-aaaaa-aaaba-cai': TOKEN_IC_ICP_SVG,
@@ -74,42 +73,41 @@ const PRESET_LOGO: Record<string, string> = {
     'ic#ilzky-ayaaa-aaaar-qahha-cai': TOKEN_IC_CK_UNI_SVG,
     'ic#bptq2-faaaa-aaaar-qagxq-cai': TOKEN_IC_CK_WBTC_SVG,
     // SNS
-    'ic#oj6if-riaaa-aaaaq-aaeha-cai': TOKEN_IC_SNS_ALICE_PNG,
-    'ic#vtrom-gqaaa-aaaaq-aabia-cai': TOKEN_IC_SNS_BOOM_PNG,
-    'ic#uf2wh-taaaa-aaaaq-aabna-cai': TOKEN_IC_SNS_CTZ_PNG,
-    'ic#xsi2v-cyaaa-aaaaq-aabfq-cai': TOKEN_IC_SNS_DCD_PNG,
-    'ic#np5km-uyaaa-aaaaq-aadrq-cai': TOKEN_IC_SNS_DOGMI_PNG,
-    'ic#6rdgd-kyaaa-aaaaq-aaavq-cai': TOKEN_IC_SNS_DOLR_PNG,
-    'ic#zfcdd-tqaaa-aaaaq-aaaga-cai': TOKEN_IC_SNS_DKP_PNG,
-    'ic#gemj7-oyaaa-aaaaq-aacnq-cai': TOKEN_IC_SNS_ELNA_PNG,
-    'ic#bliq2-niaaa-aaaaq-aac4q-cai': TOKEN_IC_SNS_EST_PNG,
-    'ic#o4zzi-qaaaa-aaaaq-aaeeq-cai': TOKEN_IC_SNS_WELL_PNG,
-    'ic#nfjys-2iaaa-aaaaq-aaena-cai': TOKEN_IC_SNS_FUEL_PNG,
-    'ic#tyyy3-4aaaa-aaaaq-aab7a-cai': TOKEN_IC_SNS_GOLDAO_PNG,
-    'ic#ifwyg-gaaaa-aaaaq-aaeqq-cai': TOKEN_IC_SNS_ICE_PNG,
-    'ic#4c4fd-caaaa-aaaaq-aaa3a-cai': TOKEN_IC_SNS_GHOST_PNG,
-    'ic#hhaaz-2aaaa-aaaaq-aacla-cai': TOKEN_IC_SNS_ICL_PNG,
-    'ic#druyg-tyaaa-aaaaq-aactq-cai': TOKEN_IC_SNS_PANDA_PNG,
-    'ic#lrtnw-paaaa-aaaaq-aadfa-cai': TOKEN_IC_SNS_CONF_PNG,
-    'ic#ca6gz-lqaaa-aaaaq-aacwa-cai': TOKEN_IC_SNS_ICS_PNG,
-    'ic#m6xut-mqaaa-aaaaq-aadua-cai': TOKEN_IC_SNS_ICVC_PNG,
-    'ic#73mez-iiaaa-aaaaq-aaasq-cai': TOKEN_IC_SNS_KINIC_PNG,
-    'ic#o7oak-iyaaa-aaaaq-aadzq-cai': TOKEN_IC_SNS_KONG_PNG,
-    'ic#k45jy-aiaaa-aaaaq-aadcq-cai': TOKEN_IC_SNS_MOTOKO_PNG,
-    'ic#f54if-eqaaa-aaaaq-aacea-cai': TOKEN_IC_SNS_NTN_PNG,
-    'ic#mih44-vaaaa-aaaaq-aaekq-cai': TOKEN_IC_SNS_NFIDW_PNG,
-    'ic#rxdbk-dyaaa-aaaaq-aabtq-cai': TOKEN_IC_SNS_NUA_PNG,
     'ic#2ouva-viaaa-aaaaq-aaamq-cai': TOKEN_IC_SNS_CHAT_PNG,
-    'ic#ddsp7-7iaaa-aaaaq-aacqq-cai': TOKEN_IC_SNS_FPL_PNG,
-    'ic#lkwrt-vyaaa-aaaaq-aadhq-cai': TOKEN_IC_SNS_OGY_PNG,
-    'ic#ixqp7-kqaaa-aaaaq-aaetq-cai': TOKEN_IC_SNS_DAO_PNG,
+    'ic#73mez-iiaaa-aaaaq-aaasq-cai': TOKEN_IC_SNS_KINIC_PNG,
+    'ic#6rdgd-kyaaa-aaaaq-aaavq-cai': TOKEN_IC_SNS_DOLR_PNG,
+    'ic#4c4fd-caaaa-aaaaq-aaa3a-cai': TOKEN_IC_SNS_GHOST_PNG,
+    'ic#xsi2v-cyaaa-aaaaq-aabfq-cai': TOKEN_IC_SNS_DCD_PNG,
+    'ic#uf2wh-taaaa-aaaaq-aabna-cai': TOKEN_IC_SNS_CTZ_PNG,
+    'ic#vtrom-gqaaa-aaaaq-aabia-cai': TOKEN_IC_SNS_BOOM_PNG,
     'ic#rffwt-piaaa-aaaaq-aabqq-cai': TOKEN_IC_SNS_SEER_PNG,
-    'ic#hvgxa-wqaaa-aaaaq-aacia-cai': TOKEN_IC_SNS_SNEED_PNG,
+    'ic#rxdbk-dyaaa-aaaaq-aabtq-cai': TOKEN_IC_SNS_NUA_PNG,
     'ic#qbizb-wiaaa-aaaaq-aabwq-cai': TOKEN_IC_SNS_SONIC_PNG,
+    'ic#tyyy3-4aaaa-aaaaq-aab7a-cai': TOKEN_IC_SNS_GOLDAO_PNG,
     'ic#emww2-4yaaa-aaaaq-aacbq-cai': TOKEN_IC_SNS_TRAX_PNG,
-    'ic#jcmow-hyaaa-aaaaq-aadlq-cai': TOKEN_IC_SNS_WTN_PNG,
+    'ic#f54if-eqaaa-aaaaq-aacea-cai': TOKEN_IC_SNS_NTN_PNG,
+    'ic#hvgxa-wqaaa-aaaaq-aacia-cai': TOKEN_IC_SNS_SNEED_PNG,
+    'ic#hhaaz-2aaaa-aaaaq-aacla-cai': TOKEN_IC_SNS_ICL_PNG,
+    'ic#gemj7-oyaaa-aaaaq-aacnq-cai': TOKEN_IC_SNS_ELNA_PNG,
+    'ic#ddsp7-7iaaa-aaaaq-aacqq-cai': TOKEN_IC_SNS_FPL_PNG,
+    'ic#druyg-tyaaa-aaaaq-aactq-cai': TOKEN_IC_SNS_PANDA_PNG,
+    'ic#ca6gz-lqaaa-aaaaq-aacwa-cai': TOKEN_IC_SNS_ICS_PNG,
     'ic#atbfz-diaaa-aaaaq-aacyq-cai': TOKEN_IC_SNS_YUKU_PNG,
+    'ic#bliq2-niaaa-aaaaq-aac4q-cai': TOKEN_IC_SNS_EST_PNG,
+    'ic#k45jy-aiaaa-aaaaq-aadcq-cai': TOKEN_IC_SNS_MOTOKO_PNG,
+    'ic#lrtnw-paaaa-aaaaq-aadfa-cai': TOKEN_IC_SNS_CONF_PNG,
+    'ic#lkwrt-vyaaa-aaaaq-aadhq-cai': TOKEN_IC_SNS_OGY_PNG,
+    'ic#jcmow-hyaaa-aaaaq-aadlq-cai': TOKEN_IC_SNS_WTN_PNG,
     'ic#itgqj-7qaaa-aaaaq-aadoa-cai': TOKEN_IC_SNS_____PNG,
+    'ic#np5km-uyaaa-aaaaq-aadrq-cai': TOKEN_IC_SNS_DOGMI_PNG,
+    'ic#m6xut-mqaaa-aaaaq-aadua-cai': TOKEN_IC_SNS_ICVC_PNG,
+    'ic#o7oak-iyaaa-aaaaq-aadzq-cai': TOKEN_IC_SNS_KONG_PNG,
+    'ic#o4zzi-qaaaa-aaaaq-aaeeq-cai': TOKEN_IC_SNS_WELL_PNG,
+    'ic#oj6if-riaaa-aaaaq-aaeha-cai': TOKEN_IC_SNS_ALICE_PNG,
+    'ic#mih44-vaaaa-aaaaq-aaekq-cai': TOKEN_IC_SNS_NFIDW_PNG,
+    'ic#nfjys-2iaaa-aaaaq-aaena-cai': TOKEN_IC_SNS_FUEL_PNG,
+    'ic#ifwyg-gaaaa-aaaaq-aaeqq-cai': TOKEN_IC_SNS_ICE_PNG,
+    'ic#zfcdd-tqaaa-aaaaq-aaaga-cai': TOKEN_IC_SNS_DKP_PNG,
 }
 
 export const get_token_logo_key = (token: {ic: {canister_id: string}}): string => {
@@ -142,51 +140,53 @@ const TOKEN_INFO_IC_CK_WSTETH : IcTokenInfo = { canister_id: 'j2tuh-yqaaa-aaaar-
 const TOKEN_INFO_IC_CK_UNI    : IcTokenInfo = { canister_id: 'ilzky-ayaaa-aaaar-qahha-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ckUNI',    symbol: 'ckUNI',    decimals: 18, fee:       '1000000000000000' }; // fee 0.001 ckUNI
 const TOKEN_INFO_IC_CK_WBTC   : IcTokenInfo = { canister_id: 'bptq2-faaaa-aaaar-qagxq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ckWBTC',   symbol: 'ckWBTC',   decimals:  8, fee:                     '10' }; // fee 0.0000001 ckWBTC
 // SNS
-const TOKEN_INFO_IC_SNS_ALICE  : IcTokenInfo = { canister_id: 'oj6if-riaaa-aaaaq-aaeha-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ALICE',                symbol: 'ALICE',  decimals: 8, fee:           '500000000' }; // fee 5 ALICE
-const TOKEN_INFO_IC_SNS_BOOM   : IcTokenInfo = { canister_id: 'vtrom-gqaaa-aaaaq-aabia-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'BoomDAO',              symbol: 'BOOM',   decimals: 8, fee:              '100000' }; // fee 0.001 BOOM
-const TOKEN_INFO_IC_SNS_CTZ    : IcTokenInfo = { canister_id: 'uf2wh-taaaa-aaaaq-aabna-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'CatalyzeDAO',          symbol: 'CTZ',    decimals: 8, fee:              '100000' }; // fee 0.001 CTZ
-const TOKEN_INFO_IC_SNS_DCD    : IcTokenInfo = { canister_id: 'xsi2v-cyaaa-aaaaq-aabfq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'DecideAI',             symbol: 'DCD',    decimals: 8, fee:               '10000' }; // fee 0.0001 DCD
-const TOKEN_INFO_IC_SNS_DOGMI  : IcTokenInfo = { canister_id: 'np5km-uyaaa-aaaaq-aadrq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'DOGMI',                symbol: 'DOGMI',  decimals: 8, fee:        '100000000000' }; // fee 1000 DOGMI
-const TOKEN_INFO_IC_SNS_DOLR   : IcTokenInfo = { canister_id: '6rdgd-kyaaa-aaaaq-aaavq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'DOLR AI',              symbol: 'DOLR',   decimals: 8, fee:              '100000' }; // fee 0.001 DOLR
-const TOKEN_INFO_IC_SNS_DKP    : IcTokenInfo = { canister_id: 'zfcdd-tqaaa-aaaaq-aaaga-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Draggin Karma Points', symbol: 'DKP',    decimals: 8, fee:              '100000' }; // fee 0.001 DKP
-const TOKEN_INFO_IC_SNS_ELNA   : IcTokenInfo = { canister_id: 'gemj7-oyaaa-aaaaq-aacnq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ELNA',                 symbol: 'ELNA',   decimals: 8, fee:              '100000' }; // fee 0.001 ELNA
-const TOKEN_INFO_IC_SNS_EST    : IcTokenInfo = { canister_id: 'bliq2-niaaa-aaaaq-aac4q-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ESTATE',               symbol: 'EST',    decimals: 8, fee:              '100000' }; // fee 0.001 EST
-const TOKEN_INFO_IC_SNS_WELL   : IcTokenInfo = { canister_id: 'o4zzi-qaaaa-aaaaq-aaeeq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'FomoWell',             symbol: 'WELL',   decimals: 8, fee:              '100000' }; // fee 0.001 WELL
-const TOKEN_INFO_IC_SNS_FUEL   : IcTokenInfo = { canister_id: 'nfjys-2iaaa-aaaaq-aaena-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'FUEL',                 symbol: 'FUEL',   decimals: 8, fee:              '100000' }; // fee 0.001 FUEL
-const TOKEN_INFO_IC_SNS_GOLDAO : IcTokenInfo = { canister_id: 'tyyy3-4aaaa-aaaaq-aab7a-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'GOLDAO',               symbol: 'GOLDAO', decimals: 8, fee:              '100000' }; // fee 0.001 GOLDAO
-const TOKEN_INFO_IC_SNS_ICE    : IcTokenInfo = { canister_id: 'ifwyg-gaaaa-aaaaq-aaeqq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICExplorer',           symbol: 'ICE',    decimals: 8, fee:              '100000' }; // fee 0.001 ICE
-const TOKEN_INFO_IC_SNS_GHOST  : IcTokenInfo = { canister_id: '4c4fd-caaaa-aaaaq-aaa3a-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'GHOST',                symbol: 'GHOST',  decimals: 8, fee:           '100000000' }; // fee 1 GHOST
-const TOKEN_INFO_IC_SNS_ICL    : IcTokenInfo = { canister_id: 'hhaaz-2aaaa-aaaaq-aacla-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICLighthouse DAO',     symbol: 'ICL',    decimals: 8, fee:             '1000000' }; // fee 0.01 ICL
-const TOKEN_INFO_IC_SNS_PANDA  : IcTokenInfo = { canister_id: 'druyg-tyaaa-aaaaq-aactq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICPanda',              symbol: 'PANDA',  decimals: 8, fee:               '10000' }; // fee 0.0001 PANDA
-const TOKEN_INFO_IC_SNS_CONF   : IcTokenInfo = { canister_id: 'lrtnw-paaaa-aaaaq-aadfa-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICPCC DAO LLC',        symbol: 'CONF',   decimals: 8, fee:               '10000' }; // fee 0.0001 CONF
-const TOKEN_INFO_IC_SNS_ICS    : IcTokenInfo = { canister_id: 'ca6gz-lqaaa-aaaaq-aacwa-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICPSwap Token',        symbol: 'ICS',    decimals: 8, fee:             '1000000' }; // fee 0.01 ICS
-const TOKEN_INFO_IC_SNS_ICVC   : IcTokenInfo = { canister_id: 'm6xut-mqaaa-aaaaq-aadua-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICVC',                 symbol: 'ICVC',   decimals: 8, fee:               '10000' }; // fee 0.0001 ICVC
-const TOKEN_INFO_IC_SNS_KINIC  : IcTokenInfo = { canister_id: '73mez-iiaaa-aaaaq-aaasq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'KINIC',                symbol: 'KINIC',  decimals: 8, fee:              '100000' }; // fee 0.001 KINIC
-const TOKEN_INFO_IC_SNS_KONG   : IcTokenInfo = { canister_id: 'o7oak-iyaaa-aaaaq-aadzq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'KongSwap',             symbol: 'KONG',   decimals: 8, fee:               '10000' }; // fee 0.0001 KONG
-const TOKEN_INFO_IC_SNS_MOTOKO : IcTokenInfo = { canister_id: 'k45jy-aiaaa-aaaaq-aadcq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Motoko',               symbol: 'MOTOKO', decimals: 8, fee:           '100000000' }; // fee 1 MOTOKO
-const TOKEN_INFO_IC_SNS_NTN    : IcTokenInfo = { canister_id: 'f54if-eqaaa-aaaaq-aacea-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Neutrinite',           symbol: 'NTN',    decimals: 8, fee:               '10000' }; // fee 0.0001 NTN
-const TOKEN_INFO_IC_SNS_NFIDW  : IcTokenInfo = { canister_id: 'mih44-vaaaa-aaaaq-aaekq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'NFID Wallet',          symbol: 'NFIDW',  decimals: 8, fee:               '10000' }; // fee 0.0001 NFIDW
-const TOKEN_INFO_IC_SNS_NUA    : IcTokenInfo = { canister_id: 'rxdbk-dyaaa-aaaaq-aabtq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Nuance',               symbol: 'NUA',    decimals: 8, fee:              '100000' }; // fee 0.001 NUA
 const TOKEN_INFO_IC_SNS_CHAT   : IcTokenInfo = { canister_id: '2ouva-viaaa-aaaaq-aaamq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'CHAT',                 symbol: 'CHAT',   decimals: 8, fee:              '100000' }; // fee 0.001 CHAT
-const TOKEN_INFO_IC_SNS_FPL    : IcTokenInfo = { canister_id: 'ddsp7-7iaaa-aaaaq-aacqq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'OpenFPL',              symbol: 'FPL',    decimals: 8, fee:              '100000' }; // fee 0.001 FPL
-const TOKEN_INFO_IC_SNS_OGY    : IcTokenInfo = { canister_id: 'lkwrt-vyaaa-aaaaq-aadhq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ORIGYN',               symbol: 'OGY',    decimals: 8, fee:              '200000' }; // fee 0.002 OGY
-const TOKEN_INFO_IC_SNS_DAO    : IcTokenInfo = { canister_id: 'ixqp7-kqaaa-aaaaq-aaetq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Personal DAO',         symbol: 'DAO',    decimals: 8, fee:               '10000' }; // fee 0.0001 DAO
+const TOKEN_INFO_IC_SNS_KINIC  : IcTokenInfo = { canister_id: '73mez-iiaaa-aaaaq-aaasq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'KINIC',                symbol: 'KINIC',  decimals: 8, fee:              '100000' }; // fee 0.001 KINIC
+const TOKEN_INFO_IC_SNS_DOLR   : IcTokenInfo = { canister_id: '6rdgd-kyaaa-aaaaq-aaavq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'DOLR AI',              symbol: 'DOLR',   decimals: 8, fee:              '100000' }; // fee 0.001 DOLR
+const TOKEN_INFO_IC_SNS_GHOST  : IcTokenInfo = { canister_id: '4c4fd-caaaa-aaaaq-aaa3a-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'GHOST',                symbol: 'GHOST',  decimals: 8, fee:           '100000000' }; // fee 1 GHOST
+const TOKEN_INFO_IC_SNS_DCD    : IcTokenInfo = { canister_id: 'xsi2v-cyaaa-aaaaq-aabfq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'DecideAI',             symbol: 'DCD',    decimals: 8, fee:               '10000' }; // fee 0.0001 DCD
+const TOKEN_INFO_IC_SNS_CTZ    : IcTokenInfo = { canister_id: 'uf2wh-taaaa-aaaaq-aabna-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'CatalyzeDAO',          symbol: 'CTZ',    decimals: 8, fee:              '100000' }; // fee 0.001 CTZ
+const TOKEN_INFO_IC_SNS_BOOM   : IcTokenInfo = { canister_id: 'vtrom-gqaaa-aaaaq-aabia-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'BoomDAO',              symbol: 'BOOM',   decimals: 8, fee:              '100000' }; // fee 0.001 BOOM
 const TOKEN_INFO_IC_SNS_SEER   : IcTokenInfo = { canister_id: 'rffwt-piaaa-aaaaq-aabqq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Seers',                symbol: 'SEER',   decimals: 8, fee:              '100000' }; // fee 0.001 SEER
-const TOKEN_INFO_IC_SNS_SNEED  : IcTokenInfo = { canister_id: 'hvgxa-wqaaa-aaaaq-aacia-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Sneed DAO',            symbol: 'SNEED',  decimals: 8, fee:                '1000' }; // fee 0.00001 SNEED
+const TOKEN_INFO_IC_SNS_NUA    : IcTokenInfo = { canister_id: 'rxdbk-dyaaa-aaaaq-aabtq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Nuance',               symbol: 'NUA',    decimals: 8, fee:              '100000' }; // fee 0.001 NUA
 const TOKEN_INFO_IC_SNS_SONIC  : IcTokenInfo = { canister_id: 'qbizb-wiaaa-aaaaq-aabwq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Sonic',                symbol: 'SONIC',  decimals: 8, fee:              '100000' }; // fee 0.001 SONIC
+const TOKEN_INFO_IC_SNS_GOLDAO : IcTokenInfo = { canister_id: 'tyyy3-4aaaa-aaaaq-aab7a-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'GOLDAO',               symbol: 'GOLDAO', decimals: 8, fee:              '100000' }; // fee 0.001 GOLDAO
 const TOKEN_INFO_IC_SNS_TRAX   : IcTokenInfo = { canister_id: 'emww2-4yaaa-aaaaq-aacbq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'TRAX',                 symbol: 'TRAX',   decimals: 8, fee:              '100000' }; // fee 0.001 TRAX
-const TOKEN_INFO_IC_SNS_WTN    : IcTokenInfo = { canister_id: 'jcmow-hyaaa-aaaaq-aadlq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'WaterNeuron',          symbol: 'WTN',    decimals: 8, fee:             '1000000' }; // fee 0.01 WTN
+const TOKEN_INFO_IC_SNS_NTN    : IcTokenInfo = { canister_id: 'f54if-eqaaa-aaaaq-aacea-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Neutrinite',           symbol: 'NTN',    decimals: 8, fee:               '10000' }; // fee 0.0001 NTN
+const TOKEN_INFO_IC_SNS_SNEED  : IcTokenInfo = { canister_id: 'hvgxa-wqaaa-aaaaq-aacia-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Sneed DAO',            symbol: 'SNEED',  decimals: 8, fee:                '1000' }; // fee 0.00001 SNEED
+const TOKEN_INFO_IC_SNS_ICL    : IcTokenInfo = { canister_id: 'hhaaz-2aaaa-aaaaq-aacla-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICLighthouse DAO',     symbol: 'ICL',    decimals: 8, fee:             '1000000' }; // fee 0.01 ICL
+const TOKEN_INFO_IC_SNS_ELNA   : IcTokenInfo = { canister_id: 'gemj7-oyaaa-aaaaq-aacnq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ELNA',                 symbol: 'ELNA',   decimals: 8, fee:              '100000' }; // fee 0.001 ELNA
+const TOKEN_INFO_IC_SNS_FPL    : IcTokenInfo = { canister_id: 'ddsp7-7iaaa-aaaaq-aacqq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'OpenFPL',              symbol: 'FPL',    decimals: 8, fee:              '100000' }; // fee 0.001 FPL
+const TOKEN_INFO_IC_SNS_PANDA  : IcTokenInfo = { canister_id: 'druyg-tyaaa-aaaaq-aactq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICPanda',              symbol: 'PANDA',  decimals: 8, fee:               '10000' }; // fee 0.0001 PANDA
+const TOKEN_INFO_IC_SNS_ICS    : IcTokenInfo = { canister_id: 'ca6gz-lqaaa-aaaaq-aacwa-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICPSwap Token',        symbol: 'ICS',    decimals: 8, fee:             '1000000' }; // fee 0.01 ICS
 const TOKEN_INFO_IC_SNS_YUKU   : IcTokenInfo = { canister_id: 'atbfz-diaaa-aaaaq-aacyq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Yuku AI',              symbol: 'YUKU',   decimals: 8, fee:             '1000000' }; // fee 0.01 YUKU
+const TOKEN_INFO_IC_SNS_EST    : IcTokenInfo = { canister_id: 'bliq2-niaaa-aaaaq-aac4q-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ESTATE',               symbol: 'EST',    decimals: 8, fee:              '100000' }; // fee 0.001 EST
+const TOKEN_INFO_IC_SNS_MOTOKO : IcTokenInfo = { canister_id: 'k45jy-aiaaa-aaaaq-aadcq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Motoko',               symbol: 'MOTOKO', decimals: 8, fee:           '100000000' }; // fee 1 MOTOKO
+const TOKEN_INFO_IC_SNS_CONF   : IcTokenInfo = { canister_id: 'lrtnw-paaaa-aaaaq-aadfa-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICPCC DAO LLC',        symbol: 'CONF',   decimals: 8, fee:               '10000' }; // fee 0.0001 CONF
+const TOKEN_INFO_IC_SNS_OGY    : IcTokenInfo = { canister_id: 'lkwrt-vyaaa-aaaaq-aadhq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ORIGYN',               symbol: 'OGY',    decimals: 8, fee:              '200000' }; // fee 0.002 OGY
+const TOKEN_INFO_IC_SNS_WTN    : IcTokenInfo = { canister_id: 'jcmow-hyaaa-aaaaq-aadlq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'WaterNeuron',          symbol: 'WTN',    decimals: 8, fee:             '1000000' }; // fee 0.01 WTN
 const TOKEN_INFO_IC_SNS____    : IcTokenInfo = { canister_id: 'itgqj-7qaaa-aaaaq-aadoa-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: '----',                 symbol: '---',    decimals: 8, fee: '1000000000000000000' }; // fee 10000000000 ---
+const TOKEN_INFO_IC_SNS_DOGMI  : IcTokenInfo = { canister_id: 'np5km-uyaaa-aaaaq-aadrq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'DOGMI',                symbol: 'DOGMI',  decimals: 8, fee:        '100000000000' }; // fee 1000 DOGMI
+const TOKEN_INFO_IC_SNS_ICVC   : IcTokenInfo = { canister_id: 'm6xut-mqaaa-aaaaq-aadua-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICVC',                 symbol: 'ICVC',   decimals: 8, fee:               '10000' }; // fee 0.0001 ICVC
+const TOKEN_INFO_IC_SNS_KONG   : IcTokenInfo = { canister_id: 'o7oak-iyaaa-aaaaq-aadzq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'KongSwap',             symbol: 'KONG',   decimals: 8, fee:               '10000' }; // fee 0.0001 KONG
+const TOKEN_INFO_IC_SNS_WELL   : IcTokenInfo = { canister_id: 'o4zzi-qaaaa-aaaaq-aaeeq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'FomoWell',             symbol: 'WELL',   decimals: 8, fee:              '100000' }; // fee 0.001 WELL
+const TOKEN_INFO_IC_SNS_ALICE  : IcTokenInfo = { canister_id: 'oj6if-riaaa-aaaaq-aaeha-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ALICE',                symbol: 'ALICE',  decimals: 8, fee:           '500000000' }; // fee 5 ALICE
+const TOKEN_INFO_IC_SNS_NFIDW  : IcTokenInfo = { canister_id: 'mih44-vaaaa-aaaaq-aaekq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'NFID Wallet',          symbol: 'NFIDW',  decimals: 8, fee:               '10000' }; // fee 0.0001 NFIDW
+const TOKEN_INFO_IC_SNS_FUEL   : IcTokenInfo = { canister_id: 'nfjys-2iaaa-aaaaq-aaena-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'FUEL',                 symbol: 'FUEL',   decimals: 8, fee:              '100000' }; // fee 0.001 FUEL
+const TOKEN_INFO_IC_SNS_ICE    : IcTokenInfo = { canister_id: 'ifwyg-gaaaa-aaaaq-aaeqq-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'ICExplorer',           symbol: 'ICE',    decimals: 8, fee:              '100000' }; // fee 0.001 ICE
+const TOKEN_INFO_IC_SNS_DKP    : IcTokenInfo = { canister_id: 'zfcdd-tqaaa-aaaaq-aaaga-cai', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: 'Draggin Karma Points', symbol: 'DKP',    decimals: 8, fee:              '100000' }; // fee 0.001 DKP
 
 
 export const DEFAULT_TOKEN_INFO: TokenInfo[] = [
     { info: { ic: TOKEN_INFO_IC_ICP }, tags: [TokenTag.ChainIc] },
     // CK
-    { info: { ic: TOKEN_INFO_IC_CK_BTC }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
-    { info: { ic: TOKEN_INFO_IC_CK_ETH }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
+    { info: { ic: TOKEN_INFO_IC_CK_BTC  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
+    { info: { ic: TOKEN_INFO_IC_CK_ETH  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
+    { info: { ic: TOKEN_INFO_IC_CK_USDC }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
+    { info: { ic: TOKEN_INFO_IC_CK_UNI  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
+    { info: { ic: TOKEN_INFO_IC_CK_LINK }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
     // SNS
-    { info: { ic: TOKEN_INFO_IC_SNS_CHAT }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
+    { info: { ic: TOKEN_INFO_IC_SNS_CHAT }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
 ];
 
 export const PRESET_ALL_TOKEN_INFO: TokenInfo[] = [
@@ -206,42 +206,41 @@ export const PRESET_ALL_TOKEN_INFO: TokenInfo[] = [
     { info: { ic: TOKEN_INFO_IC_CK_UNI    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
     { info: { ic: TOKEN_INFO_IC_CK_WBTC   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
     // SNS
-    { info: { ic: TOKEN_INFO_IC_SNS_ALICE  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_BOOM   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_CTZ    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_DCD    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_DOGMI  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_DOLR   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_DKP    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_ELNA   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_EST    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_WELL   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_FUEL   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_GOLDAO }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_ICE    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_GHOST  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_ICL    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_PANDA  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_CONF   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_ICS    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_ICVC   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_KINIC  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_KONG   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_MOTOKO }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_NTN    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_NFIDW  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_NUA    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     { info: { ic: TOKEN_INFO_IC_SNS_CHAT   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_FPL    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_OGY    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_DAO    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_KINIC  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_DOLR   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_GHOST  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_DCD    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_CTZ    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_BOOM   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     { info: { ic: TOKEN_INFO_IC_SNS_SEER   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_SNEED  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_NUA    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     { info: { ic: TOKEN_INFO_IC_SNS_SONIC  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_GOLDAO }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     { info: { ic: TOKEN_INFO_IC_SNS_TRAX   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
-    { info: { ic: TOKEN_INFO_IC_SNS_WTN    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_NTN    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_SNEED  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_ICL    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_ELNA   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_FPL    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_PANDA  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_ICS    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     { info: { ic: TOKEN_INFO_IC_SNS_YUKU   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_EST    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_MOTOKO }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_CONF   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_OGY    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_WTN    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     { info: { ic: TOKEN_INFO_IC_SNS____    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_DOGMI  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_ICVC   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_KONG   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_WELL   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_ALICE  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_NFIDW  }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_FUEL   }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_ICE    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    { info: { ic: TOKEN_INFO_IC_SNS_DKP    }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
 ];
 
 export const is_known_token = (token: TokenInfo): boolean => !!PRESET_ALL_TOKEN_INFO.find(t => is_same_token_info(t, token))

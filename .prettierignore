@@ -4,3 +4,4 @@
 /dist/
 src/pages/routes.tsx
 src/types/tokens/preset.ts
+src/lib/canisters/constant.ts

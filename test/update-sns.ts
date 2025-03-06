@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { anonymous } from '@choptop/haw';
 import BigNumber from 'bignumber.js';
+import _ from 'lodash';
 
 import { get_token_info_ic } from '~hooks/store/local/token/ic/info';
 import { list_sns_canisters } from '~lib/canisters/sns_root';
@@ -13,14 +14,20 @@ type TokenItem = {
     url: string;
     logo: string;
     description: string;
+    swap_lifecycle: {
+        lifecycle: string; // 'LIFECYCLE_COMMITTED'
+        decentralization_sale_open_timestamp_seconds: number;
+    };
+    nns_proposal_id_create_sns: number;
 };
 
 const main = async () => {
     const response = await fetch(
-        'https://sns-api.internetcomputer.org/api/v1/snses?offset=0&limit=100&include_swap_lifecycle=LIFECYCLE_ADOPTED&include_swap_lifecycle=LIFECYCLE_COMMITTED&include_swap_lifecycle=LIFECYCLE_OPEN&include_swap_lifecycle=LIFECYCLE_PENDING&include_swap_lifecycle=LIFECYCLE_UNSPECIFIED',
+        'https://sns-api.internetcomputer.org/api/v1/snses?offset=0&limit=100&include_swap_lifecycle=LIFECYCLE_COMMITTED',
     );
     const json = await response.json();
-    const data = json.data as TokenItem[];
+    let data = json.data as TokenItem[];
+    data = _.sortBy(data, (d) => d.swap_lifecycle.decentralization_sale_open_timestamp_seconds);
 
     // save images
     const items: {
