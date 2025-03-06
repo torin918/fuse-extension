@@ -1,86 +1,88 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store';
 import { cn } from '~lib/utils/cn';
-import { formatNumber } from '~lib/utils/text';
+// import { formatNumber } from '~lib/utils/text';
 import { FunctionHeader } from '~pages/functions/components/header';
+import {
+    get_token_unique_id,
+    is_same_token_info,
+    match_combined_token_info,
+    TokenTag,
+    type TokenInfo,
+} from '~types/tokens';
+import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
+
+import { TransferShowToken } from './components/token_item';
+
+type Tab = 'current' | 'all' | 'ck' | 'sns' | 'custom';
+const TabNames: Record<Tab, string> = {
+    current: '⭐️',
+    all: 'All',
+    ck: 'CK',
+    sns: 'SNS',
+    custom: 'Custom',
+};
+const TABS: Tab[] = ['current', 'all', 'ck', 'sns', 'custom'];
 
 function FunctionTransferPage() {
     const current_state = useCurrentState();
 
     const { setHide, goto: _goto, navigate } = useGoto();
-    const [activeTab, setActiveTab] = useState('All');
 
-    const tokens = [
-        {
-            id: 1,
-            name: 'ICP',
-            icon: 'https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png',
-            price: 10.97,
-            balance: 322.98,
-            status: '+2.8%',
-        },
-        {
-            id: 2,
-            name: 'ICU',
-            icon: 'https://metrics.icpex.org/images/o64gq-3qaaa-aaaam-acfla-cai.png',
-            price: 0.0000001,
-            balance: 23782334.87,
-            status: '-18.9%',
-        },
-        {
-            id: 1,
-            name: 'ICP',
-            icon: 'https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png',
-            price: 10.97,
-            balance: 322.98,
-            status: '+2.8%',
-        },
-        {
-            id: 2,
-            name: 'ICU',
-            icon: 'https://metrics.icpex.org/images/o64gq-3qaaa-aaaam-acfla-cai.png',
-            price: 0.0000001,
-            balance: 23782334.87,
-            status: '-18.9%',
-        },
-        {
-            id: 1,
-            name: 'ICP',
-            icon: 'https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png',
-            price: 10.97,
-            balance: 322.98,
-            status: '+2.8%',
-        },
-        {
-            id: 2,
-            name: 'ICU',
-            icon: 'https://metrics.icpex.org/images/o64gq-3qaaa-aaaam-acfla-cai.png',
-            price: 0.0000001,
-            balance: 23782334.87,
-            status: '-18.9%',
-        },
-        {
-            id: 1,
-            name: 'ICP',
-            icon: 'https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png',
-            price: 10.97,
-            balance: 322.98,
-            status: '+2.8%',
-        },
-        {
-            id: 2,
-            name: 'ICU',
-            icon: 'https://metrics.icpex.org/images/o64gq-3qaaa-aaaam-acfla-cai.png',
-            price: 0.0000001,
-            balance: 23782334.87,
-            status: '-18.9%',
-        },
-    ];
+    const [tab, setTab] = useState<Tab>('current');
+    const [custom] = useTokenInfoCustom();
+    const [current] = useTokenInfoCurrent();
+
+    const [search, setSearch] = useState('');
+
+    const currentTokens = useMemo(() => current, [current]);
+    const allTokens = useMemo(() => [...PRESET_ALL_TOKEN_INFO, ...custom.map((t) => t.token)], [custom]);
+    const ckTokens = useMemo(() => PRESET_ALL_TOKEN_INFO.filter((t) => t.tags.includes(TokenTag.ChainIcCk)), []);
+    const snsTokens = useMemo(() => PRESET_ALL_TOKEN_INFO.filter((t) => t.tags.includes(TokenTag.ChainIcSns)), []);
+    const customTokens = useMemo(() => custom.map((t) => t.token), [custom]);
+
+    const tokens = useMemo<(TokenInfo & { id: string; current: boolean })[]>(() => {
+        return (() => {
+            const tokens: Record<Tab, TokenInfo[]> = {
+                current: currentTokens,
+                all: allTokens,
+                ck: ckTokens,
+                sns: snsTokens,
+                custom: customTokens,
+            };
+            return tokens[tab].map((t) => ({
+                ...t,
+                id: get_token_unique_id(t),
+                current: !!currentTokens.find((c) => is_same_token_info(c, t)),
+            }));
+        })().filter((t) => {
+            const s = search.trim().toLowerCase();
+            if (!s) return true;
+            return match_combined_token_info(t.info, {
+                ic: (ic) => 0 <= ic.name.toLowerCase().indexOf(s) || 0 <= ic.symbol.toLowerCase().indexOf(s),
+            });
+        });
+    }, [search, tab, currentTokens, allTokens, ckTokens, snsTokens, customTokens]);
+
+    const [logo_map, setLogoMap] = useState<Record<string, string>>({});
+    useEffect(() => {
+        const loads = tokens.filter((t) => !logo_map[t.id]);
+        if (loads.length === 0) return;
+        Promise.all(
+            loads.map(
+                async (token): Promise<[string, string | undefined]> => [token.id, await get_token_logo(token.info)],
+            ),
+        ).then((items) => {
+            for (const [id, icon] of items) if (icon !== undefined) logo_map[id] = icon;
+            setLogoMap({ ...logo_map });
+        });
+    }, [tokens, logo_map]);
 
     return (
         <FusePage current_state={current_state} options={{ refresh_token_info_ic_sleep: 1000 * 60 * 10 }}>
@@ -95,70 +97,36 @@ function FunctionTransferPage() {
                                 type="text"
                                 className="h-full w-full border-transparent bg-transparent pl-3 text-base outline-none placeholder:text-sm"
                                 placeholder="Search token or canister"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
                     </div>
                     <div className="flex w-full items-center px-5 py-3 text-sm">
-                        <span
-                            className={cn(
-                                'cursor-pointer rounded-full px-5 py-1',
-                                activeTab === 'All' ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
-                            )}
-                            onClick={() => setActiveTab('All')}
-                        >
-                            All
-                        </span>
-                        <span
-                            className={cn(
-                                'cursor-pointer rounded-full px-5 py-1',
-                                activeTab === 'SNS' ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
-                            )}
-                            onClick={() => setActiveTab('SNS')}
-                        >
-                            SNS
-                        </span>
-                        <span
-                            className={cn(
-                                'cursor-pointer rounded-full px-5 py-1',
-                                activeTab === 'CK' ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
-                            )}
-                            onClick={() => setActiveTab('CK')}
-                        >
-                            CK
-                        </span>
+                        {TABS.map((t) => (
+                            <span
+                                key={t}
+                                className={cn(
+                                    'cursor-pointer rounded-full px-3 py-1',
+                                    tab === t ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
+                                )}
+                                onClick={() => {
+                                    setTab(t);
+                                }}
+                            >
+                                {TabNames[t]}
+                            </span>
+                        ))}
                     </div>
                     <div className="flex w-full flex-1 flex-col gap-y-[10px] overflow-y-auto px-5 pb-5">
-                        {tokens.map((item) => (
-                            <div
-                                className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]"
-                                onClick={() =>
-                                    navigate('/home/transfer/token/ic', {
-                                        state: { canister_id: 'ryjl3-tyaaa-aaaaa-aaaba-cai' },
-                                    })
+                        {tokens.map((token) => (
+                            <TransferShowToken
+                                key={get_token_unique_id(token)}
+                                goto={(path, options) =>
+                                    typeof path === 'number' ? navigate(path) : navigate(path, options)
                                 }
-                            >
-                                <div className="flex items-center">
-                                    <img src={item.icon} className="h-10 w-10 rounded-full" />
-                                    <div className="ml-[10px]">
-                                        <strong className="block text-base text-[#EEEEEE]">{item.name}</strong>
-                                        <span className="text-xs text-[#999999]">${item.price}</span>
-                                        <span
-                                            className={cn(
-                                                'ml-2 text-xs',
-                                                item.status?.includes('+') ? 'text-[#00C431]' : 'text-[#FF2C40]',
-                                            )}
-                                        >
-                                            {item.status}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col items-end">
-                                    <span className="text-base font-semibold">{formatNumber(item.balance)}</span>
-                                    <span className="ml-3 text-xs text-[#999999]">
-                                        ${formatNumber(item.balance * item.price)}
-                                    </span>
-                                </div>
-                            </div>
+                                token={token}
+                            />
                         ))}
                     </div>
                 </div>

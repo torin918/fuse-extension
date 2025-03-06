@@ -14,10 +14,12 @@ import { truncate_principal, truncate_text } from '~lib/utils/text';
 
 function FunctionTransferTokenIcAmountPage({
     canister_id,
+    logo,
     to,
     goto: _goto,
 }: {
     canister_id: string;
+    logo?: string;
     to: string;
     goto: GotoFunction;
 }) {
@@ -103,7 +105,7 @@ function FunctionTransferTokenIcAmountPage({
             <div className="flex w-full flex-1 flex-col px-5">
                 <div className="my-5 flex w-full justify-center">
                     <img
-                        src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
+                        src={logo ?? 'https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png'}
                         className="h-[50px] w-[50px] rounded-full"
                     />
                 </div>
