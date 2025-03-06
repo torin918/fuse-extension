@@ -1,13 +1,13 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
-import { useTokenInfoCurrentRead } from '~hooks/store';
+import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead } from '~hooks/store';
 import { truncate_text } from '~lib/utils/text';
 import type { MainPageState } from '~pages/functions';
 import type { ShowIdentityKey } from '~types/identity';
-import { get_token_unique_id } from '~types/tokens';
+import { get_token_unique_id, match_combined_token_info } from '~types/tokens';
 
 import { AddressTooltip } from './components/address-tooltip';
 import { ShowSingleAddress } from './components/show-address';
@@ -23,6 +23,18 @@ function HomePage({
     const navigate = useNavigate();
 
     const current_tokens = useTokenInfoCurrentRead();
+
+    const canisters = useMemo(() => {
+        const canisters: string[] = [];
+        for (const token of current_tokens) {
+            match_combined_token_info(token.info, {
+                ic: (ic) => canisters.push(ic.canister_id),
+            });
+        }
+        return canisters;
+    }, [current_tokens]);
+
+    const [ic_balances] = useTokenBalanceIcByRefreshing(current_identity.address.ic?.owner, canisters, 15000);
 
     const ref = useRef<HTMLDivElement>(null);
     return (
@@ -127,6 +139,8 @@ function HomePage({
                                 typeof path === 'number' ? navigate(path) : navigate(path, options)
                             }
                             token={token}
+                            canisters={canisters}
+                            ic_balances={ic_balances}
                         />
                     ))}
                 </div>

@@ -32,35 +32,60 @@ export const useTokenBalanceIcInner = (
 export const useTokenBalanceIcByRefreshingInner = (
     storage: Storage,
     principal: string | undefined,
-    canister_id: string,
-): [string | undefined, { refreshBalance: () => void }] => {
+    canisters: string[],
+    sleep: number,
+): [(string | undefined)[], { refreshBalance: () => void }] => {
     const [balances, setBalances] = useTokenBalanceIcInner(storage, principal ?? '');
 
-    const [balance, setBalance] = useState<string>(balances[canister_id]);
+    const [balance, setBalance] = useState<(string | undefined)[]>(
+        canisters.map((canister_id) => balances[canister_id]),
+    );
 
     // init
     useEffect(() => {
         if (!storage) return;
-        if (balance !== undefined) return;
-        if (principal === undefined) return;
-        icrc1_balance_of(anonymous, canister_id, { owner: principal }).then((balance) => {
-            setBalance(balance);
-            setBalances({ ...balances, [canister_id]: balance });
-        });
-    }, [storage, balance, balances, setBalances, canister_id, principal]);
+        if (principal === undefined || principal === '') return;
+        if (!canisters.length) return;
+        if (balance.length !== canisters.length)
+            return setBalance(canisters.map((canister_id) => balances[canister_id]));
+        if (canisters.find((canister_id, index) => !balance[index] && balances[canister_id]))
+            return setBalance(canisters.map((canister_id) => balances[canister_id]));
+        if (balance.findIndex((b) => b === undefined) < 0) return;
+        update_token_balance(principal, canisters, setBalance, balances, setBalances);
+    }, [storage, balance, balances, setBalances, canisters, principal]);
 
     // refresh
     const refreshBalance = useCallback(() => {
         if (!storage) return;
-        if (!principal) return;
-        icrc1_balance_of(anonymous, canister_id, { owner: principal }).then((balance) => {
-            setBalance(balance);
-            setBalances({ ...balances, [canister_id]: balance });
-        });
-    }, [storage, principal, balances, setBalances, canister_id]);
+        if (principal === undefined || principal === '') return;
+        if (!canisters.length) return;
+        update_token_balance(principal, canisters, setBalance, balances, setBalances);
+    }, [storage, principal, balances, setBalances, canisters]);
 
     // schedule
-    useInterval(() => refreshBalance(), 5000);
+    useInterval(() => refreshBalance(), sleep);
 
     return [balance, { refreshBalance }];
+};
+
+const update_token_balance = (
+    principal: string,
+    canisters: string[],
+    setBalance: (balance: string[]) => void,
+    balances: DataType,
+    setBalances: (balances: DataType) => void,
+) => {
+    Promise.all(
+        canisters.map(
+            async (canister_id): Promise<[string, string]> => [
+                canister_id,
+                await icrc1_balance_of(anonymous, canister_id, { owner: principal }),
+            ],
+        ),
+    ).then((balance) => {
+        setBalance(balance.map(([, b]) => b));
+        const bs = { ...balances };
+        for (const [canister_id, b] of balance) bs[canister_id] = b;
+        setBalances(bs);
+    });
 };

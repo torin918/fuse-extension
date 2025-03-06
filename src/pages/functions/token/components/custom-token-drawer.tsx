@@ -160,7 +160,7 @@ const LoadCanisterInfo = ({
                     <div className="text-sm">
                         Fee:
                         {BigNumber(token.fee)
-                            .dividedBy(BigNumber(10 ** token.decimals))
+                            .dividedBy(new BigNumber(10).pow(new BigNumber(token.decimals)))
                             .toFixed()}
                     </div>
                     {0 < token.standards.length && (
