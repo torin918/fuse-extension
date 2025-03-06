@@ -123,7 +123,7 @@ function FunctionTransferTokenIcAmountPage({
                         style={{ width: `${amount.length + 1}ch` }}
                         ref={sendRef}
                     />
-                    <span className="text-5xl font-bold text-white">ICP</span>
+                    <span className="text-5xl font-bold text-white">{token?.symbol}</span>
                 </div>
                 <span className="block w-full py-2 text-center text-base text-[#999999]">$0.00</span>
                 <div className="flex items-center justify-center text-sm">
