@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { useMarkedAddresses, useRecentAddresses } from '~hooks/store/local-secure';
 import { check_chain_address, type ChainAddress } from '~types/address';
 
-function FunctionTransferTokenIcAddressPage({ onNext }: { onNext: (to: string) => void }) {
+function FunctionTransferTokenIcAddressPage({ logo, onNext }: { logo?: string; onNext: (to: string) => void }) {
     const [marked] = useMarkedAddresses();
     const [recent] = useRecentAddresses();
     const addresses = useMemo<{ name?: string; address: ChainAddress }[]>(() => {
@@ -28,7 +28,7 @@ function FunctionTransferTokenIcAddressPage({ onNext }: { onNext: (to: string) =
                 <div className="w-full px-5">
                     <div className="mb-8 mt-5 flex w-full justify-center">
                         <img
-                            src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
+                            src={logo ?? 'https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png'}
                             className="h-[50px] w-[50px] rounded-full"
                         />
                     </div>
