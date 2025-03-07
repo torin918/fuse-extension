@@ -30,6 +30,7 @@ import FunctionTransferTokenIcPage from './functions/transfer/token/ic';
 import FunctionTransferPage from './functions/transfer';
 import FunctionTokenIcPage from './functions/token/ic';
 import FunctionTokenViewPage from './functions/token/view';
+import FunctionSwitchWalletPage from './functions/switch';
 
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
@@ -46,6 +47,9 @@ export const getRoutes = (wt: WindowType) => {
         // home
         ...(hit(wt, []) ? [{ path: '/', element: <MainPage wt={wt} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home', element: <MainPage wt={wt} /> }] : []),
+
+        // wallet select
+        ...(hit(wt, []) ? [{ path: '/home/wallet/switch', element: <FunctionSwitchWalletPage /> }] : []),
 
         // receive
         ...(hit(wt, []) ? [{ path: '/home/receive', element: <FunctionReceivePage /> }] : []),
