@@ -16,7 +16,7 @@ const get_default_value = (): DataType => DEFAULT_TOKEN_INFO;
 let cached_value = get_default_value();
 const get_cached_value = (): DataType => cached_value;
 const set_cached_value = (value: DataType): DataType => (cached_value = value);
-const meta: DataMetadata<DataType, undefined> = {
+const meta: DataMetadata<DataType> = {
     get_key,
     get_default_value,
     get_cached_value,
@@ -25,7 +25,7 @@ const meta: DataMetadata<DataType, undefined> = {
 
 // token info current ic -> // * local
 export const useTokenInfoCurrentInner = (storage: Storage): [DataType, (value: DataType) => Promise<void>] =>
-    useCachedStoreData(storage, meta, undefined);
+    useCachedStoreData(storage, meta);
 
 export const useTokenInfoCurrentInner2 = (
     storage: Storage,

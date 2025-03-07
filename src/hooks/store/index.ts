@@ -55,14 +55,20 @@ export const useUserSettingsIdle = () => useUserSettingsIdleInner(STORAGE); // s
 // ############### LOCAL ###############
 export const useWelcomed = () => useWelcomedInner(LOCAL_STORAGE); // local
 export const usePasswordHashed = () => usePasswordHashedInner(LOCAL_STORAGE); // local
+
+// token/custom
+export const useTokenInfoCustom = () => useTokenInfoCustomInner2(LOCAL_STORAGE); // local
+// token/current
+export const useTokenInfoCurrentRead = () => useTokenInfoCurrentInner(LOCAL_STORAGE)[0]; // local
+export const useTokenInfoCurrent = () => useTokenInfoCurrentInner2(LOCAL_STORAGE); // local
+// token/ic/info
 export const useTokenInfoIcByInitial = (canister_id: string) =>
     useTokenInfoIcByInitialInner(LOCAL_STORAGE, canister_id); // local
 export const useTokenInfoIcByRefreshing = (sleep: number) => useTokenInfoIcByRefreshingInner(LOCAL_STORAGE, sleep); // local
+// token/ic/balance
 export const useTokenBalanceIcByRefreshing = (principal: string | undefined, canisters: string[], sleep: number) =>
     useTokenBalanceIcByRefreshingInner(LOCAL_STORAGE, principal, canisters, sleep); // local
-export const useTokenInfoCustom = () => useTokenInfoCustomInner2(LOCAL_STORAGE); // local
-export const useTokenInfoCurrentRead = () => useTokenInfoCurrentInner(LOCAL_STORAGE)[0]; // local
-export const useTokenInfoCurrent = () => useTokenInfoCurrentInner2(LOCAL_STORAGE); // local
+// token/ic/price
 export const useTokenPriceIcRead = () => useTokenPriceIcInner(LOCAL_STORAGE)[0]; // local
 export const useTokenPriceIcByInitial = (canister_id: string) =>
     useTokenPriceIcByInitialInner(LOCAL_STORAGE, canister_id); // local

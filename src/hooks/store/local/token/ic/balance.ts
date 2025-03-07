@@ -4,7 +4,7 @@ import { useInterval } from 'usehooks-ts';
 
 import type { Storage } from '@plasmohq/storage';
 
-import { useCachedStoreData, type DataMetadata } from '~hooks/store/metadata';
+import { useCachedStoreData1, type DataMetadata1 } from '~hooks/store/metadata';
 import { icrc1_balance_of } from '~lib/canisters/icrc1';
 
 import { LOCAL_KEY_TOKEN_BALANCE_IC } from '../../../keys';
@@ -16,7 +16,7 @@ const get_default_value = (): DataType => ({});
 const cached_value: Record<string, DataType> = {};
 const get_cached_value = (principal: string): DataType => cached_value[principal] ?? get_default_value();
 const set_cached_value = (value: DataType, principal: string): DataType => (cached_value[principal] = value);
-const meta: DataMetadata<DataType, string> = {
+const meta: DataMetadata1<DataType, string> = {
     get_key,
     get_default_value,
     get_cached_value,
@@ -27,7 +27,7 @@ const meta: DataMetadata<DataType, string> = {
 export const useTokenBalanceIcInner = (
     storage: Storage,
     principal: string,
-): [DataType, (value: DataType) => Promise<void>] => useCachedStoreData(storage, meta, principal);
+): [DataType, (value: DataType) => Promise<void>] => useCachedStoreData1(storage, meta, principal);
 
 export const useTokenBalanceIcByRefreshingInner = (
     storage: Storage,
