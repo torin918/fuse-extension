@@ -12,7 +12,8 @@ export interface ApprovedIcRecord {
     canister_id: string;
     method: string;
 
-    args: string;
+    func_text: string; // candid display // Too long and it gets truncated
+    args_text: string; // Too long and it gets truncated
 
     state: MessageResult<string, string>; // Too long and it gets truncated
 }

@@ -7,10 +7,13 @@ import Icon from '~components/icon';
 import { showToast } from '~components/toast';
 import type { GotoFunction } from '~hooks/memo/goto';
 import { useCurrentConnectedIcIdentity } from '~hooks/memo/identity';
-import { useTokenBalanceIcByRefreshing, useTokenInfoIcByInitial } from '~hooks/store/local';
+import { identity_network_callback } from '~hooks/store/common';
+import { push_local_record, useTokenBalanceIcByRefreshing, useTokenInfoIcByInitial } from '~hooks/store/local';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
 import { icrc1_transfer, transfer } from '~lib/canisters/icrc1';
+import type { MessageResult } from '~lib/messages';
 import { truncate_principal, truncate_text } from '~lib/utils/text';
+import type { FuseRecord } from '~types/records';
 
 function FunctionTransferTokenIcAmountPage({
     canister_id,
@@ -23,7 +26,7 @@ function FunctionTransferTokenIcAmountPage({
     to: string;
     goto: GotoFunction;
 }) {
-    const current_identity = useCurrentIdentity();
+    const { current_identity, current_identity_network } = useCurrentIdentity();
 
     const token = useTokenInfoIcByInitial(canister_id);
 
@@ -45,8 +48,8 @@ function FunctionTransferTokenIcAmountPage({
     const [amount, setAmount] = useState('0');
 
     const [transferring, setTransferring] = useState(false);
-    const onConfirm = useCallback(() => {
-        if (!to || !token || !amount || !identity || !balance) return;
+    const onConfirm = useCallback(async () => {
+        if (!to || !token || !amount || !identity || !balance || !current_identity_network) return;
 
         const amount_text = new BigNumber(amount)
             .multipliedBy(new BigNumber(10).pow(new BigNumber(token.decimals)))
@@ -72,7 +75,7 @@ function FunctionTransferTokenIcAmountPage({
                   })
             : async () =>
                   transfer(identity, token.canister_id, {
-                      from_subaccount: identity.account,
+                      from_subaccount: undefined,
                       to,
                       amount: amount_text,
                       fee: token.fee,
@@ -81,17 +84,45 @@ function FunctionTransferTokenIcAmountPage({
                   });
 
         setTransferring(true);
-        do_transfer()
-            .then((height) => {
-                showToast(`do transfer successful: ${height}`);
-                setTimeout(() => _goto('/', { replace: true }), 10000);
-            })
-            .catch((e) => showToast(`${e}`, 'error'))
-            .finally(() => {
-                setTransferring(false);
-                refreshBalance(); // update balance again
-            });
-    }, [token, to, amount, identity, balance, _goto, transferring, refreshBalance]);
+        let state: MessageResult<string, string> | undefined = undefined;
+        try {
+            const height = await do_transfer();
+            state = { ok: height };
+            refreshBalance(); // update balance again
+            showToast(`do transfer successful: ${height}`);
+            setTimeout(() => _goto('/', { replace: true }), 10000);
+        } catch (e) {
+            state = { err: `${e}` };
+            showToast(`${e}`, 'error');
+        } finally {
+            if (state !== undefined) {
+                // ! push record
+                const now = Date.now();
+                const record: FuseRecord = {
+                    token_transferred_ic: {
+                        type: 'token_transferred_ic',
+                        created: now,
+                        chain: 'ic',
+                        canister_id: token.canister_id,
+                        method: isPrincipalText(to) ? 'icrc1_transfer' : 'transfer',
+                        from_subaccount: undefined,
+                        to: isPrincipalText(to) ? { owner: to } : to,
+                        amount: amount_text,
+                        fee: isPrincipalText(to) ? undefined : token.fee,
+                        memo: isPrincipalText(to) ? undefined : '0',
+                        created_at_time: undefined,
+                        usd: undefined, // TODO use price
+                        state,
+                    },
+                };
+                await identity_network_callback('ic', current_identity_network, undefined, async (identity_network) =>
+                    push_local_record(identity_network, now, record),
+                );
+            }
+
+            setTransferring(false);
+        }
+    }, [token, to, amount, identity, balance, _goto, transferring, refreshBalance, current_identity_network]);
 
     const sendRef = useRef<HTMLInputElement>(null);
 

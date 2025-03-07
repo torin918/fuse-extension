@@ -30,7 +30,7 @@ function MainPage({ wt }: { wt: WindowType }) {
 export default MainPage;
 
 const InnerMainPage = ({ wt }: { wt: WindowType }) => {
-    const current_identity = useCurrentIdentity();
+    const { current_identity } = useCurrentIdentity();
     console.debug(`🚀 ~ MainPage ~ current_identity:`, wt, current_identity);
 
     const [state, setState] = useState<MainPageState>('home');

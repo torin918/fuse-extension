@@ -4,12 +4,15 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 
 import Icon from '~components/icon';
 import { showToast } from '~components/toast';
+import { identity_network_callback } from '~hooks/store/common';
+import { push_local_record } from '~hooks/store/local';
 import { useCurrentConnectedApps } from '~hooks/store/local-secure';
 import { set_current_session_connected_app_once } from '~hooks/store/session';
 import { MINUTE } from '~lib/utils/datetime';
 import type { PopupAction } from '~types/actions';
 import type { ConnectAction } from '~types/actions/connect';
-import type { ConnectedApp, ConnectedAppState } from '~types/connect';
+import { match_connected_app_state, type ConnectedApp, type ConnectedAppState } from '~types/connect';
+import type { FuseRecord } from '~types/records';
 
 function ConnectActionPage({
     action,
@@ -41,6 +44,37 @@ function ConnectActionPage({
                         return { granted_expired: { created: now, duration: MINUTE * 5 } };
                 }
             })();
+
+            // ! push record
+            const record_state = match_connected_app_state(state, {
+                denied: () => undefined,
+                ask_on_use: () => (type === 'granted_once' ? state : undefined),
+                granted: () => state,
+                denied_session: () => undefined,
+                granted_session: () => state,
+                denied_expired: () => undefined,
+                granted_expired: () => state,
+            });
+            if (record_state !== undefined) {
+                const record: FuseRecord = {
+                    connected: {
+                        type: 'connected',
+                        created: now,
+                        chain: connect.chain,
+                        origin: connect.origin,
+                        title: connect.title,
+                        favicon: connect.favicon,
+                        state: record_state,
+                    },
+                };
+                await identity_network_callback(
+                    connect.chain,
+                    current_identity_network,
+                    undefined,
+                    async (identity_network) => push_local_record(identity_network, now, record),
+                );
+            }
+
             const app: ConnectedApp = {
                 created: now,
                 origin: connect.origin,

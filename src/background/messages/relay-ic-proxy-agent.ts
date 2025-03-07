@@ -6,6 +6,8 @@ import { parse_func_candid } from '@jellypack/wasm-react'; // ! dynamic import m
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 
 import { get_unique_ic_agent } from '~hooks/store/agent';
+import { identity_network_callback } from '~hooks/store/common';
+import { push_local_record } from '~hooks/store/local';
 import { find_local_secure_approved, get_current_info } from '~hooks/store/local-secure';
 import {
     delete_current_session_approve_once,
@@ -14,6 +16,7 @@ import {
     find_current_session_approve_session,
     push_popup_action,
 } from '~hooks/store/session';
+import type { MessageResult } from '~lib/messages';
 import { get_current_notification, open_notification } from '~lib/notification';
 import { parse_proxy_message, stringify_proxy_message } from '~lib/utils/ic-message';
 import { stringify_factory } from '~lib/utils/json';
@@ -21,6 +24,7 @@ import { get_popup_action_id, type PopupAction } from '~types/actions';
 import { match_approved_state_async } from '~types/actions/approve';
 import { hash_approve_ic_action, type ApproveIcAction } from '~types/actions/approve/ic';
 import type { CurrentInfo } from '~types/current';
+import type { ApprovedIcRecord } from '~types/records/approved/approved_ic';
 import type { CurrentWindow } from '~types/window';
 
 interface RequestBodyService {
@@ -79,18 +83,38 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
             if (!agent) return handle_error(msg.id, `disconnected`);
 
             // Intercept messages that require popup confirmation
-            const intercepted = await intercept_request(request.origin, msg);
-            if (intercepted !== undefined) return intercepted;
+            const intercepted = await intercept_request(request.origin, msg, current_info);
+            if (intercepted.err !== undefined) return intercepted.err;
 
             // ? do request
+            const approve_ic = intercepted.ok;
             const response: ResponseBody = await new Promise((resolve) => {
                 const proxy = new ProxyStubAgent((msg) => {
                     const response = stringify_proxy_message(msg);
                     console.debug('<<<=== 📦 got message after sent to agent', [msg], '->', [response]);
+
+                    // ! push record
+                    if (approve_ic !== undefined && msg.type === ProxyMessageKind.CallResponse) {
+                        approve_ic.state = { ok: response };
+                    }
+
                     resolve(response);
                 }, agent);
                 proxy.onmessage(msg);
             });
+
+            // TODO handle error ?
+
+            // ! push record
+            if (approve_ic !== undefined && current_info !== undefined) {
+                await identity_network_callback(
+                    'ic',
+                    current_info.current_identity_network,
+                    undefined,
+                    async (identity_network) =>
+                        push_local_record(identity_network, approve_ic.created, { approved_ic: approve_ic }),
+                );
+            }
 
             return response;
         },
@@ -132,7 +156,11 @@ const handle_error = (id: number, error: string): ResponseBody => {
     return stringify_proxy_message(message_error);
 };
 
-const intercept_request = async (origin: string, msg: ProxyMessage): Promise<ResponseBody | undefined> => {
+const intercept_request = async (
+    origin: string,
+    msg: ProxyMessage,
+    current_info: CurrentInfo,
+): Promise<MessageResult<ApprovedIcRecord | undefined, ResponseBody>> => {
     switch (msg.type) {
         case ProxyMessageKind.Query: {
             break; // TODO query
@@ -144,7 +172,7 @@ const intercept_request = async (origin: string, msg: ProxyMessage): Promise<Res
             // do approve
             const window_timeout_and_func = find_window_timeout_and_func(origin, canister_id, method);
             if (window_timeout_and_func === undefined)
-                return handle_error(msg.id, `can not find service with method: ${method}`);
+                return { err: handle_error(msg.id, `can not find service with method: ${method}`) };
             const [current_window, timeout, func] = window_timeout_and_func;
             console.debug(`🚀 ~ const intercept_request= ~ func:`, func);
             const func_text = func.display();
@@ -162,8 +190,6 @@ const intercept_request = async (origin: string, msg: ProxyMessage): Promise<Res
 
             // do popup
             let action: PopupAction | undefined = undefined;
-            const current_info: CurrentInfo | undefined = await get_current_info();
-            if (current_info === undefined) return handle_error(msg.id, `disconnected`);
             let popup = false; // only popup once
             let approve_id = '';
             try {
@@ -179,6 +205,20 @@ const intercept_request = async (origin: string, msg: ProxyMessage): Promise<Res
                     request_hash: '',
                 };
                 approve_action.request_hash = await hash_approve_ic_action(approve_action);
+
+                // ! push record
+                const now = Date.now();
+                const approve_ic: ApprovedIcRecord = {
+                    type: 'approved_ic',
+                    created: now,
+                    chain: 'ic',
+                    canister_id,
+                    method,
+                    func_text,
+                    args_text,
+                    state: { err: 'dummy' },
+                };
+
                 action = { approve_ic: approve_action };
                 await push_popup_action(action); // * push action
 
@@ -217,9 +257,9 @@ const intercept_request = async (origin: string, msg: ProxyMessage): Promise<Res
                         })();
                     }, 67);
                 });
-                return response;
+                return response === undefined ? { ok: approve_ic } : { err: response };
             } catch (e) {
-                return handle_error(msg.id, `${e}`);
+                return { err: handle_error(msg.id, `${e}`) };
             } finally {
                 if (action) await delete_popup_action(action); // * delete action
                 if (approve_id && current_info.current_identity_network.ic) {
@@ -233,7 +273,7 @@ const intercept_request = async (origin: string, msg: ProxyMessage): Promise<Res
             }
         }
     }
-    return undefined;
+    return { ok: undefined };
 };
 
 const find_approved = async (

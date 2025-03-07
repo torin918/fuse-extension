@@ -17,7 +17,7 @@ function FunctionReceivePage() {
 
     const { setHide, goto } = useGoto();
 
-    const current_identity = useCurrentIdentity();
+    const { current_identity } = useCurrentIdentity();
 
     return (
         <FusePage current_state={current_state}>

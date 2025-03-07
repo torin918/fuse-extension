@@ -35,6 +35,7 @@ function ApproveIcActionPage({
             // record
             const approve_id = get_popup_action_id(action);
             const state: ApprovedState = 'ask_on_use';
+
             set_local_secure_approved('ic', current_identity_network, approve_ic.origin, approve_ic.request_hash, state)
                 .then(
                     () =>

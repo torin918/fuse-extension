@@ -13,16 +13,13 @@ export interface TokenTransferredIcRecord {
     method: string;
 
     from_subaccount?: string;
-    to: {
-        owner: string;
-        subaccount?: string;
-    };
+    to: { owner: string; subaccount?: string } | string;
     amount: string;
     fee?: string;
     memo?: string;
     created_at_time?: string;
 
-    usd: string;
+    usd?: string;
 
     state: MessageResult<string, string>; // Too long and it gets truncated
 }
