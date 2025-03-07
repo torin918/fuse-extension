@@ -19,8 +19,8 @@ import {
 } from '..';
 import { agent_refresh_unique_identity } from '../agent';
 import { SESSION_KEY_PASSWORD } from '../keys';
-import { useMarkedAddressesInner } from './address/marked_address';
-import { useRecentAddressesInner } from './address/recent_address';
+import { useMarkedAddressesInner2 } from './address/marked_address';
+import { useRecentAddressesInner2 } from './address/recent_address';
 import { useCurrentChainNetworkInner } from './current/current_chain_network';
 import { useCurrentConnectedAppsInner } from './current/current_connected_apps';
 import {
@@ -56,9 +56,9 @@ export const useChangePassword = () => {
             const new_storage = LOCAL_SECURE_STORAGE();
             await new_storage.setPassword(new_password);
 
-            console.error('before migrate');
-            console.error('old storage', await old_storage.getAll());
-            console.error('new storage', await new_storage.getAll());
+            // console.error('before migrate');
+            // console.error('old storage', await old_storage.getAll());
+            // console.error('new storage', await new_storage.getAll());
 
             // await old_storage.migrate(new_storage); // ! failed
             const keys = Object.keys(await old_storage.getAll()); // get all keys
@@ -108,12 +108,12 @@ export const useIdentityKeys = () => {
 export const useRecentAddresses = () => {
     const [password] = usePassword();
     const storage = useSecureStorageBy(password);
-    return useRecentAddressesInner(storage);
+    return useRecentAddressesInner2(storage);
 };
 export const useMarkedAddresses = () => {
     const [password] = usePassword();
     const storage = useSecureStorageBy(password);
-    return useMarkedAddressesInner(storage);
+    return useMarkedAddressesInner2(storage);
 };
 // ================ set directly by storage ================
 

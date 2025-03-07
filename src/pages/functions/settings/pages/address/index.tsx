@@ -20,8 +20,8 @@ function FunctionSettingsAddressesPage() {
 
     const { setHide, goto } = useGoto();
 
-    const [markedAddresses, , { pushOrUpdateMarkedAddress, removeMarkedAddress }] = useMarkedAddresses();
-    const [recentAddresses, , { pushRecentAddress }] = useRecentAddresses();
+    const [markedAddresses, { pushOrUpdateMarkedAddress, removeMarkedAddress }] = useMarkedAddresses();
+    const [recentAddresses, { pushRecentAddress }] = useRecentAddresses();
     console.debug('🚀 ~ FunctionSettingsAddressesPage ~ pushRecentAddress:', pushRecentAddress);
 
     const [isEditOpen, setIsOpen] = useState(false);

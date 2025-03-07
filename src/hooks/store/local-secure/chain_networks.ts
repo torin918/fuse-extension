@@ -1,60 +1,25 @@
-import { useCallback, useEffect, useState } from 'react';
-
-import type { StorageWatchCallback } from '@plasmohq/storage';
 import type { SecureStorage } from '@plasmohq/storage/secure';
 
-import { same } from '~lib/utils/same';
+import { useSecureCachedStoreData0, type SecureDataMetadata0 } from '~hooks/meta/metadata-secure-0';
 import type { ChainNetworks } from '~types/network';
 
 import { LOCAL_SECURE_KEY_CHAIN_NETWORKS } from './keys';
 
 // ! always try to use this value to avoid BLINK
-const DEFAULT_VALUE: ChainNetworks = [];
-let cached_chain_networks: ChainNetworks = DEFAULT_VALUE;
+type DataType = ChainNetworks;
+const get_key = (): string => LOCAL_SECURE_KEY_CHAIN_NETWORKS;
+const get_default_value = (): DataType => [];
+let cached_value = get_default_value();
+const get_cached_value = (): DataType => cached_value;
+const set_cached_value = (value: DataType): DataType => (cached_value = value);
+const meta: SecureDataMetadata0<DataType> = {
+    get_key,
+    get_default_value,
+    get_cached_value,
+    set_cached_value,
+};
 
 // chain networks ->  // * local secure
 export const useChainNetworksInner = (
     storage: SecureStorage | undefined,
-): [ChainNetworks, (value: ChainNetworks) => Promise<void>] => {
-    const [chain_networks, setChainNetworks] = useState<ChainNetworks>(cached_chain_networks); // use cached value to init
-
-    // watch this key, cloud notice other hook of this
-    useEffect(() => {
-        if (!storage) return;
-
-        const callback: StorageWatchCallback = (d) => {
-            const chain_networks = d.newValue ?? DEFAULT_VALUE;
-            if (!same(cached_chain_networks, chain_networks)) cached_chain_networks = chain_networks;
-            setChainNetworks(chain_networks);
-        };
-        storage.watch({ [LOCAL_SECURE_KEY_CHAIN_NETWORKS]: callback });
-        return () => {
-            storage.unwatch({ [LOCAL_SECURE_KEY_CHAIN_NETWORKS]: callback });
-        };
-    }, [storage]);
-
-    // init on this hook
-    useEffect(() => {
-        if (!storage) return setChainNetworks((cached_chain_networks = DEFAULT_VALUE));
-
-        storage.get<ChainNetworks>(LOCAL_SECURE_KEY_CHAIN_NETWORKS).then((data) => {
-            if (data === undefined) data = cached_chain_networks;
-            cached_chain_networks = data;
-            setChainNetworks(data);
-        });
-    }, [storage]);
-
-    // update on this hook
-    const updateChainNetworks = useCallback(
-        async (chain_networks: ChainNetworks) => {
-            if (!storage) return;
-
-            await storage.set(LOCAL_SECURE_KEY_CHAIN_NETWORKS, chain_networks);
-            cached_chain_networks = chain_networks;
-            setChainNetworks(chain_networks);
-        },
-        [storage],
-    );
-
-    return [chain_networks, updateChainNetworks];
-};
+): [DataType, (value: DataType) => Promise<void>] => useSecureCachedStoreData0(storage, meta);
