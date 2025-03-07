@@ -10,9 +10,3 @@ export const truncate_text = (text: string): string => {
     const truncated = `${text.substring(0, 5)}...${text.substring(text.length - 3)}`;
     return truncated;
 };
-
-export const formatNumber = (num: number | string): string => {
-    const number = typeof num === 'string' ? parseFloat(num) : num;
-    const fixed = number.toFixed(2);
-    return fixed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-};

@@ -6,7 +6,7 @@ import { showToast } from '~components/toast';
 import { useGoto } from '~hooks/memo/goto';
 import { useIdentityKeys } from '~hooks/store/local-secure';
 import { cn } from '~lib/utils/cn';
-import { formatNumber } from '~lib/utils/text';
+import { format_number } from '~lib/utils/number';
 import type { MainPageState } from '~pages/functions';
 
 import { AddWallet } from './components/addWallet';
@@ -56,7 +56,7 @@ function SwitchWalletPage({ setState }: { setState: (state: MainPageState) => vo
                             <div className="ml-3 flex flex-col">
                                 <span className="text-base">{wallet.name}</span>
                                 {/* TODO: wallet amount */}
-                                <span className="text-sm text-[#FFCF13]">${formatNumber('0.00')}</span>
+                                <span className="text-sm text-[#FFCF13]">${format_number('0.00')}</span>
                             </div>
                         </div>
                         {wallet.id === current_identity && <Icon name="icon-ok" className="h-5 w-5 text-[#FFCF13]" />}

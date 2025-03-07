@@ -7,7 +7,6 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store';
 import { cn } from '~lib/utils/cn';
-// import { formatNumber } from '~lib/utils/text';
 import { FunctionHeader } from '~pages/functions/components/header';
 import {
     get_token_unique_id,
