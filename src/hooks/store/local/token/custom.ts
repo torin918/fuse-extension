@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import type { Storage } from '@plasmohq/storage';
 
-import { useCachedStoreData, type DataMetadata } from '~hooks/store/metadata';
+import { useCachedStoreData0, type DataMetadata0 } from '~hooks/meta/metadata-0';
 import { resort_list, type ResortFunction } from '~lib/utils/sort';
 import { get_token_symbol, is_same_token_info, TokenTag, type CustomTokens, type TokenInfo } from '~types/tokens';
 import type { IcTokenInfo } from '~types/tokens/ic';
@@ -17,7 +17,7 @@ const get_default_value = (): DataType => [];
 let cached_value = get_default_value();
 const get_cached_value = (): DataType => cached_value;
 const set_cached_value = (value: DataType): DataType => (cached_value = value);
-const meta: DataMetadata<DataType> = {
+const meta: DataMetadata0<DataType> = {
     get_key,
     get_default_value,
     get_cached_value,
@@ -26,7 +26,7 @@ const meta: DataMetadata<DataType> = {
 
 // token info custom ic -> // * local
 export const useTokenInfoCustomInner = (storage: Storage): [DataType, (value: DataType) => Promise<void>] =>
-    useCachedStoreData(storage, meta);
+    useCachedStoreData0(storage, meta);
 
 export const useTokenInfoCustomInner2 = (
     storage: Storage,

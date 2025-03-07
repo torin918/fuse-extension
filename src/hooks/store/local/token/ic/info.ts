@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import type { Storage } from '@plasmohq/storage';
 
-import { useCachedStoreData, type DataMetadata } from '~hooks/store/metadata';
+import { useCachedStoreData0, type DataMetadata0 } from '~hooks/meta/metadata-0';
 import { icrc1_decimals, icrc1_fee, icrc1_name, icrc1_symbol } from '~lib/canisters/icrc1';
 import { get_canister_standards } from '~lib/canisters/standards';
 import { get_canister_status } from '~lib/canisters/status';
@@ -20,7 +20,7 @@ const get_default_value = (): DataType => ({});
 let cached_value = get_default_value();
 const get_cached_value = (): DataType => cached_value;
 const set_cached_value = (value: DataType): DataType => (cached_value = value);
-const meta: DataMetadata<DataType> = {
+const meta: DataMetadata0<DataType> = {
     get_key,
     get_default_value,
     get_cached_value,
@@ -29,7 +29,7 @@ const meta: DataMetadata<DataType> = {
 
 // token info ic -> // * local
 export const useTokenInfoIcInner = (storage: Storage): [DataType, (value: DataType) => Promise<void>] =>
-    useCachedStoreData(storage, meta);
+    useCachedStoreData0(storage, meta);
 
 export const useTokenInfoIcByInitialInner = (storage: Storage, canister_id: string): IcTokenInfo | undefined => {
     const [token_info, setTokenInfo] = useTokenInfoIcInner(storage);

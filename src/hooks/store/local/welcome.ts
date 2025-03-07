@@ -1,56 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
+import type { Storage } from '@plasmohq/storage';
 
-import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
-
-import { same } from '~lib/utils/same';
+import { useCachedStoreData0, type DataMetadata0 } from '~hooks/meta/metadata-0';
 
 import { LOCAL_KEY_WELCOMED } from '../keys';
 
 // ! always try to use this value to avoid BLINK
-const DEFAULT_VALUE = true; // * welcome message cloud be skip
-let cached_welcomed = DEFAULT_VALUE;
+type DataType = boolean;
+const get_key = (): string => LOCAL_KEY_WELCOMED;
+const get_default_value = (): DataType => true; // * welcome message cloud be skip
+let cached_value = get_default_value();
+const get_cached_value = (): DataType => cached_value;
+const set_cached_value = (value: DataType): DataType => (cached_value = value);
+const meta: DataMetadata0<DataType> = {
+    get_key,
+    get_default_value,
+    get_cached_value,
+    set_cached_value,
+};
 
 // check welcome page -> // * local
-export const useWelcomedInner = (storage: Storage): [boolean, (value: boolean) => Promise<void>] => {
-    const [welcomed, setWelcomed] = useState(cached_welcomed); // use cached value to init
-
-    // watch this key, cloud notice other hook of this
-    useEffect(() => {
-        if (!storage) return;
-
-        const callback: StorageWatchCallback = (d) => {
-            const welcomed = d.newValue ?? DEFAULT_VALUE;
-            if (!same(cached_welcomed, welcomed)) cached_welcomed = welcomed;
-            setWelcomed(welcomed);
-        };
-        storage.watch({ [LOCAL_KEY_WELCOMED]: callback });
-        return () => {
-            storage.unwatch({ [LOCAL_KEY_WELCOMED]: callback });
-        };
-    }, [storage]);
-
-    // init on this hook
-    useEffect(() => {
-        if (!storage) return setWelcomed((cached_welcomed = DEFAULT_VALUE));
-
-        storage.get<boolean>(LOCAL_KEY_WELCOMED).then((data) => {
-            if (data === undefined) data = cached_welcomed;
-            cached_welcomed = data;
-            setWelcomed(data);
-        });
-    }, [storage]);
-
-    // update on this hook
-    const updateWelcomed = useCallback(
-        async (welcomed: boolean) => {
-            if (!storage) return;
-
-            await storage.set(LOCAL_KEY_WELCOMED, welcomed);
-            cached_welcomed = welcomed;
-            setWelcomed(welcomed);
-        },
-        [storage],
-    );
-
-    return [welcomed, updateWelcomed];
-};
+export const useWelcomedInner = (storage: Storage): [DataType, (value: DataType) => Promise<void>] =>
+    useCachedStoreData0(storage, meta);

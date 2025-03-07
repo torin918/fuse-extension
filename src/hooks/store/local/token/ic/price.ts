@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type { Storage } from '@plasmohq/storage';
 
-import { useCachedStoreData, type DataMetadata } from '~hooks/store/metadata';
+import { useCachedStoreData0, type DataMetadata0 } from '~hooks/meta/metadata-0';
 import { same } from '~lib/utils/same';
 import { type IcTokenPrice } from '~types/tokens/ic';
 
@@ -16,7 +16,7 @@ const get_default_value = (): DataType => ({});
 let cached_value = get_default_value();
 const get_cached_value = (): DataType => cached_value;
 const set_cached_value = (value: DataType): DataType => (cached_value = value);
-const meta: DataMetadata<DataType> = {
+const meta: DataMetadata0<DataType> = {
     get_key,
     get_default_value,
     get_cached_value,
@@ -25,7 +25,7 @@ const meta: DataMetadata<DataType> = {
 
 // token price ic -> // * local
 export const useTokenPriceIcInner = (storage: Storage): [DataType, (value: DataType) => Promise<void>] =>
-    useCachedStoreData(storage, meta);
+    useCachedStoreData0(storage, meta);
 
 export const useTokenPriceIcByInitialInner = (storage: Storage, canister_id: string): IcTokenPrice | undefined => {
     const [token_price, setTokenPrice] = useTokenPriceIcInner(storage);
