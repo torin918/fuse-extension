@@ -25,7 +25,8 @@ export const useCachedStoreData0 = <T>(storage: Storage, meta: DataMetadata0<T>)
         const callback: StorageWatchCallback = (d) => {
             const value = d.newValue ?? meta.get_default_value();
             const cached_value = meta.get_cached_value();
-            if (!same(cached_value, value)) setValue(meta.set_cached_value(value));
+            if (!same(cached_value, value)) meta.set_cached_value(value);
+            setValue(value); // * always update
         };
         storage.watch({ [key]: callback });
         return () => {

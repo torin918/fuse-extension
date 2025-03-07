@@ -30,7 +30,8 @@ export const useSecureCachedStoreData1 = <T, A>(
         const callback: StorageWatchCallback = (d) => {
             const value = d.newValue ?? meta.get_default_value(arg);
             const cached_value = meta.get_cached_value(arg);
-            if (!same(cached_value, value)) setValue(meta.set_cached_value(value, arg));
+            if (!same(cached_value, value)) meta.set_cached_value(value, arg);
+            setValue(value); // * always update
         };
         storage.watch({ [key]: callback });
         return () => {
