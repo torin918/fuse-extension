@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useInterval } from 'usehooks-ts';
 
-import { usePasswordAlive, useUserSettingsIdle } from '~hooks/store';
+import { usePasswordAlive } from '~hooks/store/session';
+import { useUserSettingsIdle } from '~hooks/store/sync';
 import { CurrentState } from '~types/state';
 
 import { useCurrentState } from './current_state';

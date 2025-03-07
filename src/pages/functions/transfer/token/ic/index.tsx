@@ -6,7 +6,7 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { useTokenInfoCustom } from '~hooks/store';
+import { useTokenInfoCustom } from '~hooks/store/local';
 import { FunctionHeader } from '~pages/functions/components/header';
 import { match_combined_token_info } from '~types/tokens';
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';

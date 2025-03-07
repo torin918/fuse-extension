@@ -4,7 +4,7 @@ import { useSecureCachedStoreData1, type SecureDataMetadata1 } from '~hooks/meta
 import type { IdentityId } from '~types/identity';
 import { DEFAULT_CURRENT_CHAIN_NETWORK, type CurrentChainNetwork } from '~types/network';
 
-import { LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK } from '../keys';
+import { LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK } from '../../keys';
 
 // ! always try to use this value to avoid BLINK
 type DataType = CurrentChainNetwork;

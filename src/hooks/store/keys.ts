@@ -1,9 +1,23 @@
+import type { IdentityId } from '~types/identity';
 import { get_identity_network_key, type IdentityNetwork } from '~types/network';
 
 // prefix
+const LOCAL_SECURE_KEY_PREFIX = ':fuse:secure';
 const SYNC_KEY_PREFIX = ':fuse';
 const LOCAL_KEY_PREFIX = ':fuse';
 const SESSION_KEY_PREFIX = ':fuse';
+
+// ############### LOCAL SECURE ###############
+
+export const LOCAL_SECURE_KEY_PRIVATE_KEYS = `${LOCAL_SECURE_KEY_PREFIX}:private_keys`; // * local secure
+export const LOCAL_SECURE_KEY_CHAIN_NETWORKS = `${LOCAL_SECURE_KEY_PREFIX}:chain:networks`; // * local secure
+export const LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK = (id: IdentityId) =>
+    `${LOCAL_SECURE_KEY_PREFIX}:${id}:chain:network`; // * local secure
+export const LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS = (identity_network: IdentityNetwork) =>
+    `${LOCAL_SECURE_KEY_PREFIX}:${get_identity_network_key(identity_network)}:connected:apps`; // * local secure
+
+export const LOCAL_SECURE_KEY_RECENT_ADDRESSES = `${LOCAL_SECURE_KEY_PREFIX}:recent:addresses`; // * local secure
+export const LOCAL_SECURE_KEY_MARKED_ADDRESSES = `${LOCAL_SECURE_KEY_PREFIX}:marked:addresses`; // * local secure
 
 // ############### SYNC ###############
 

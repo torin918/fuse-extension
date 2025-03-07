@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { StorageWatchCallback } from '@plasmohq/storage';
 import type { SecureStorage } from '@plasmohq/storage/secure';
 
-import { revoke_current_session_connected_app } from '~hooks/store';
+import { revoke_current_session_connected_app } from '~hooks/store/session';
 import { same } from '~lib/utils/same';
 import { match_chain, match_chain_async, type Chain } from '~types/chain';
 import {
@@ -15,7 +15,7 @@ import {
 } from '~types/connect';
 import type { CurrentIdentityNetwork } from '~types/network';
 
-import { LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS } from '../keys';
+import { LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS } from '../../keys';
 
 // ! always try to use this value to avoid BLINK
 const DEFAULT_VALUE: CurrentConnectedApps = DEFAULT_CURRENT_CONNECTED_APPS;

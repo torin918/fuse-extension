@@ -2,7 +2,7 @@ import { Button } from '@heroui/react';
 
 import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
-import { useWelcomed } from '~hooks/store';
+import { useWelcomed } from '~hooks/store/local';
 import { CurrentState } from '~types/state';
 
 function WelcomePage() {

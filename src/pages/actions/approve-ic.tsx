@@ -4,8 +4,8 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 
 import Icon from '~components/icon';
 import { showToast } from '~components/toast';
-import { set_current_session_approve } from '~hooks/store';
 import { useCurrentConnectedApps } from '~hooks/store/local-secure';
+import { set_current_session_approve } from '~hooks/store/session';
 import { get_popup_action_id, type PopupAction } from '~types/actions';
 import type { ApproveIcAction } from '~types/actions/approve-ic';
 

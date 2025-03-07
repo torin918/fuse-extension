@@ -5,7 +5,7 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store';
+import { useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store/local';
 import { cn } from '~lib/utils/cn';
 import { FunctionHeader } from '~pages/functions/components/header';
 import {

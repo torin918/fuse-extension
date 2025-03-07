@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
-import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store';
+import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store/local';
 import { truncate_text } from '~lib/utils/text';
 import type { MainPageState } from '~pages/functions';
 import type { ShowIdentityKey } from '~types/identity';

@@ -7,7 +7,7 @@ import Icon from '~components/icon';
 import { showToast } from '~components/toast';
 import type { GotoFunction } from '~hooks/memo/goto';
 import { useCurrentConnectedIcIdentity } from '~hooks/memo/identity';
-import { useTokenBalanceIcByRefreshing, useTokenInfoIcByInitial } from '~hooks/store';
+import { useTokenBalanceIcByRefreshing, useTokenInfoIcByInitial } from '~hooks/store/local';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
 import { icrc1_transfer, transfer } from '~lib/canisters/icrc1';
 import { truncate_principal, truncate_text } from '~lib/utils/text';

@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { useNavigatePages } from '~hooks/navigate';
-import { usePathname, useTokenInfoIcByRefreshing, useTokenPriceIcByRefreshing } from '~hooks/store';
+import { useTokenInfoIcByRefreshing, useTokenPriceIcByRefreshing } from '~hooks/store/local';
+import { usePathname } from '~hooks/store/session';
 import { CurrentState } from '~types/state';
 
 export const FusePage = ({

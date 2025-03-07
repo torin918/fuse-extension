@@ -1,7 +1,7 @@
 // prettier-ignore // cSpell:words eurc dogmi dolr elna goldao icvc kinic motoko nfidw sneed trax yuku draggin icpcc neutrinite nfid origyn
 import { is_same_token_info, match_combined_token_info, TokenTag, type CombinedTokenInfo, type TokenInfo } from ".";
 import { IcTokenStandard, type IcTokenInfo } from "./ic";
-import { get_cached_data } from "~hooks/store";
+import { get_cached_data } from "~hooks/store/local";
 
 // IC
 import TOKEN_IC_ICP_SVG from 'data-base64:~assets/svg/tokens/ic/ICP.min.svg';

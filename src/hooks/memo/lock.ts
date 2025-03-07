@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { lockDirectly } from '~hooks/store';
+import { lockDirectly } from '~hooks/store/session';
 
 export const useLock = (): ((tips?: string) => Promise<void>) => {
     const lock = useCallback(async (tips?: string) => {

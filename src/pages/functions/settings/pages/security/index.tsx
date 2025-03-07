@@ -2,8 +2,8 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { useUserSettingsIdle } from '~hooks/store';
 import { useChangePassword, useIdentityKeys } from '~hooks/store/local-secure';
+import { useUserSettingsIdle } from '~hooks/store/sync';
 
 import { FunctionHeader } from '../../../components/header';
 import { SettingsGroup } from '../../components/group';

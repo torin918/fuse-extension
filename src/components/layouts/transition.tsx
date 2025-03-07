@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import { useTimeout } from 'usehooks-ts';
 
-import { usePathname } from '~hooks/store';
+import { usePathname } from '~hooks/store/session';
 
 const TRANSITION_TIMEOUT = 300;
 

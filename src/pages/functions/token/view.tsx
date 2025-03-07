@@ -11,7 +11,7 @@ import { FusePageTransition } from '~components/layouts/transition';
 import { ConfirmModal } from '~components/modals/confirm';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store';
+import { useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store/local';
 import { cn } from '~lib/utils/cn';
 import { resort_list } from '~lib/utils/sort';
 import {

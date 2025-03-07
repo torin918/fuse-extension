@@ -1,6 +1,6 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 
-import { get_cached_data } from '~hooks/store';
+import { get_cached_data } from '~hooks/store/local';
 import type { MessageResult } from '~lib/messages';
 
 export interface RequestBody {

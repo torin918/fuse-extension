@@ -3,7 +3,8 @@ import { useMemo } from 'react';
 import type { PopupActions } from '~types/actions';
 import { CurrentState } from '~types/state';
 
-import { usePassword, usePasswordHashed, usePopupActions, useWelcomed } from '../store';
+import { usePasswordHashed, useWelcomed } from '../store/local';
+import { usePassword, usePopupActions } from '../store/session';
 
 export const useCurrentStateBy = (
     welcomed: boolean,

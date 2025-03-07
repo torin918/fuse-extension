@@ -12,7 +12,7 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from '~components/ui/drawer';
-import { get_cached_data } from '~hooks/store';
+import { get_cached_data } from '~hooks/store/local';
 import { get_token_info_ic } from '~hooks/store/local/token/ic/info';
 import { icrc1_logo } from '~lib/canisters/icrc1';
 import type { IcTokenInfo } from '~types/tokens/ic';

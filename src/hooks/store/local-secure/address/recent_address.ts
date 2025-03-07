@@ -6,7 +6,7 @@ import { useSecureCachedStoreData0, type SecureDataMetadata0 } from '~hooks/meta
 import { same } from '~lib/utils/same';
 import { check_chain_address, type ChainAddress, type RecentAddresses } from '~types/address';
 
-import { LOCAL_SECURE_KEY_RECENT_ADDRESSES } from '../keys';
+import { LOCAL_SECURE_KEY_RECENT_ADDRESSES } from '../../keys';
 
 // ! always try to use this value to avoid BLINK
 type DataType = RecentAddresses;

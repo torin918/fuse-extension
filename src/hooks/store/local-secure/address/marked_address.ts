@@ -7,7 +7,7 @@ import { same } from '~lib/utils/same';
 import { resort_list, type ResortFunction } from '~lib/utils/sort';
 import { check_chain_address, type ChainAddress, type MarkedAddresses } from '~types/address';
 
-import { LOCAL_SECURE_KEY_MARKED_ADDRESSES } from '../keys';
+import { LOCAL_SECURE_KEY_MARKED_ADDRESSES } from '../../keys';
 
 // ! always try to use this value to avoid BLINK
 type DataType = MarkedAddresses;

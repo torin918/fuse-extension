@@ -4,8 +4,8 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 
 import Icon from '~components/icon';
 import { showToast } from '~components/toast';
-import { set_current_session_connected_app_message } from '~hooks/store';
 import { useCurrentConnectedApps } from '~hooks/store/local-secure';
+import { set_current_session_connected_app_message } from '~hooks/store/session';
 import type { PopupAction } from '~types/actions';
 import type { ConnectAction } from '~types/actions/connect';
 import type { ConnectedApp, ConnectedAppState } from '~types/connect';

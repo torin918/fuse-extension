@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
 import { v4 as uuid } from 'uuid';
 
-import { refreshPasswordDirectly, setPasswordHashedDirectly } from '~hooks/store';
+import { setPasswordHashedDirectly } from '~hooks/store/local';
 import { setPrivateKeysDirectly } from '~hooks/store/local-secure';
 import { inner_get_identity_address } from '~hooks/store/local-secure/memo/identity';
+import { refreshPasswordDirectly } from '~hooks/store/session';
 import { validate_mnemonic } from '~lib/mnemonic';
 import { check_password, hash_password } from '~lib/password';
 import type { CombinedIdentityKey, PrivateKeys } from '~types/identity';

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { refreshPasswordDirectly } from '~hooks/store';
+import { refreshPasswordDirectly } from '~hooks/store/session';
 import { verify_password } from '~lib/password';
 import { CurrentState } from '~types/state';
 

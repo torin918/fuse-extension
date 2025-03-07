@@ -2,75 +2,28 @@ import { Storage } from '@plasmohq/storage';
 
 import { is_same_popup_action, type PopupAction, type PopupActions } from '~types/actions';
 import { match_chain, type Chain } from '~types/chain';
-import { type CurrentIdentityNetwork } from '~types/network';
+import type { CurrentIdentityNetwork } from '~types/network';
 
 import {
-    LOCAL_KEY_CACHED_KEY,
-    LOCAL_KEY_PASSWORD_HASHED,
     SESSION_KEY_CURRENT_SESSION_APPROVE,
     SESSION_KEY_CURRENT_SESSION_CONNECTED_APP,
     SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_MESSAGE,
     SESSION_KEY_PASSWORD,
     SESSION_KEY_PASSWORD_ALIVE,
     SESSION_KEY_POPUP_ACTIONS,
-} from './keys';
-import { usePasswordHashedInner } from './local/password_hashed';
-import { useTokenInfoCurrentInner, useTokenInfoCurrentInner2 } from './local/token/current';
-import { useTokenInfoCustomInner2 } from './local/token/custom';
-import { useTokenBalanceIcByRefreshingInner } from './local/token/ic/balance';
-import { useTokenInfoIcByInitialInner, useTokenInfoIcByRefreshingInner } from './local/token/ic/info';
-import {
-    useTokenPriceIcByInitialInner,
-    useTokenPriceIcByRefreshingInner,
-    useTokenPriceIcInner,
-} from './local/token/ic/price';
-import { useWelcomedInner } from './local/welcome';
-import { usePasswordInner } from './session/password';
-import { usePasswordAliveInner } from './session/password_alive';
-import { usePathnameInner } from './session/pathname';
-import { usePopupActionsInner2 } from './session/popup_actions';
-import { useRestoreInner } from './session/restore';
-import { useUserSettingsIdleInner } from './sync/user/settings/idle';
+} from '../keys';
+import { usePasswordInner } from './password';
+import { usePasswordAliveInner } from './password_alive';
+import { usePathnameInner } from './pathname';
+import { usePopupActionsInner2 } from './popup_actions';
+import { useRestoreInner } from './restore';
 
-// * sync -> sync by google account -> user custom settings
-const STORAGE = new Storage(); // sync
-// const secure_storage = new SecureStorage(); // sync
-// * local -> current browser
-const LOCAL_STORAGE = new Storage({ area: 'local' }); // local
-// const LOCAL_SECURE_STORAGE = new SecureStorage({ area: 'local' }); // local
 // * session -> current session
 const SESSION_STORAGE = new Storage({ area: 'session' }); // session
 // const session_secure_storage = new SecureStorage({ area: 'session' }); // session
 export const __get_session_storage = () => SESSION_STORAGE;
 
 // ================ hooks ================
-
-// ############### SYNC ###############
-
-// use settings
-export const useUserSettingsIdle = () => useUserSettingsIdleInner(STORAGE); // sync
-
-// ############### LOCAL ###############
-export const useWelcomed = () => useWelcomedInner(LOCAL_STORAGE); // local
-export const usePasswordHashed = () => usePasswordHashedInner(LOCAL_STORAGE); // local
-
-// token/custom
-export const useTokenInfoCustom = () => useTokenInfoCustomInner2(LOCAL_STORAGE); // local
-// token/current
-export const useTokenInfoCurrentRead = () => useTokenInfoCurrentInner(LOCAL_STORAGE)[0]; // local
-export const useTokenInfoCurrent = () => useTokenInfoCurrentInner2(LOCAL_STORAGE); // local
-// token/ic/info
-export const useTokenInfoIcByInitial = (canister_id: string) =>
-    useTokenInfoIcByInitialInner(LOCAL_STORAGE, canister_id); // local
-export const useTokenInfoIcByRefreshing = (sleep: number) => useTokenInfoIcByRefreshingInner(LOCAL_STORAGE, sleep); // local
-// token/ic/balance
-export const useTokenBalanceIcByRefreshing = (principal: string | undefined, canisters: string[], sleep: number) =>
-    useTokenBalanceIcByRefreshingInner(LOCAL_STORAGE, principal, canisters, sleep); // local
-// token/ic/price
-export const useTokenPriceIcRead = () => useTokenPriceIcInner(LOCAL_STORAGE)[0]; // local
-export const useTokenPriceIcByInitial = (canister_id: string) =>
-    useTokenPriceIcByInitialInner(LOCAL_STORAGE, canister_id); // local
-export const useTokenPriceIcByRefreshing = (sleep: number) => useTokenPriceIcByRefreshingInner(LOCAL_STORAGE, sleep); // local
 
 // ############### SESSION ###############
 export const usePassword = () => usePasswordInner(SESSION_STORAGE); // session
@@ -80,39 +33,6 @@ export const usePopupActions = () => usePopupActionsInner2(SESSION_STORAGE); // 
 export const usePathname = () => usePathnameInner(SESSION_STORAGE); // session
 
 // ================ set directly by storage ================
-
-// ############### LOCAL ###############
-
-export const setPasswordHashedDirectly = async (password_hashed: string) => {
-    await LOCAL_STORAGE.set(LOCAL_KEY_PASSWORD_HASHED, password_hashed);
-};
-
-// current status
-export const is_current_initial = async (): Promise<boolean> => {
-    const password_hashed = await LOCAL_STORAGE.get<string>(LOCAL_KEY_PASSWORD_HASHED);
-    return !!password_hashed;
-};
-
-// cached data
-export const get_cached_data = async (
-    key: string,
-    produce: () => Promise<string | undefined>,
-    alive = 86400000,
-): Promise<string | undefined> => {
-    const cache_key = LOCAL_KEY_CACHED_KEY(key);
-    let cached = await LOCAL_STORAGE.get<{
-        value: string;
-        created: number;
-    }>(cache_key);
-    const now = Date.now();
-    if (!cached || cached.created + alive < now) {
-        const value = await produce();
-        if (value === undefined) return undefined;
-        cached = { value, created: now };
-        await LOCAL_STORAGE.set(cache_key, cached);
-    }
-    return cached.value;
-};
 
 // ############### SESSION ###############
 

@@ -3,7 +3,7 @@ import type { SecureStorage } from '@plasmohq/storage/secure';
 import { useSecureCachedStoreData0, type SecureDataMetadata0 } from '~hooks/meta/metadata-secure-0';
 import type { ChainNetworks } from '~types/network';
 
-import { LOCAL_SECURE_KEY_CHAIN_NETWORKS } from './keys';
+import { LOCAL_SECURE_KEY_CHAIN_NETWORKS } from '../keys';
 
 // ! always try to use this value to avoid BLINK
 type DataType = ChainNetworks;

@@ -9,25 +9,19 @@ import type { CurrentInfo } from '~types/current';
 import { type IdentityAddress, type IdentityKey, type PrivateKeys } from '~types/identity';
 import { DEFAULT_CURRENT_CHAIN_NETWORK, type CurrentChainNetwork, type CurrentIdentityNetwork } from '~types/network';
 
-import {
-    __get_session_storage,
-    lockDirectly,
-    refreshPasswordDirectly,
-    setPasswordHashedDirectly,
-    usePassword,
-    usePasswordHashed,
-} from '..';
 import { agent_refresh_unique_identity } from '../agent';
-import { SESSION_KEY_PASSWORD } from '../keys';
-import { useMarkedAddressesInner2 } from './address/marked_address';
-import { useRecentAddressesInner2 } from './address/recent_address';
-import { useCurrentChainNetworkInner } from './current/current_chain_network';
-import { useCurrentConnectedAppsInner } from './current/current_connected_apps';
 import {
     LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK,
     LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS,
     LOCAL_SECURE_KEY_PRIVATE_KEYS,
-} from './keys';
+    SESSION_KEY_PASSWORD,
+} from '../keys';
+import { setPasswordHashedDirectly, usePasswordHashed } from '../local';
+import { __get_session_storage, lockDirectly, refreshPasswordDirectly, usePassword } from '../session';
+import { useMarkedAddressesInner2 } from './address/marked_address';
+import { useRecentAddressesInner2 } from './address/recent_address';
+import { useCurrentChainNetworkInner } from './current/current_chain_network';
+import { useCurrentConnectedAppsInner } from './current/current_connected_apps';
 import { useCurrentIdentityBy } from './memo/current';
 import { useIdentityKeysBy, useIdentityKeysCountBy } from './memo/identity';
 import { usePrivateKeysInner } from './private_keys';

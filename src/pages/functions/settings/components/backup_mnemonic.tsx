@@ -5,7 +5,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import Icon from '~components/icon';
 import InputPassword from '~components/input-password';
 import { showToast } from '~components/toast';
-import { usePasswordHashed } from '~hooks/store';
+import { usePasswordHashed } from '~hooks/store/local';
 import { verify_password } from '~lib/password';
 import { cn } from '~lib/utils/cn';
 
