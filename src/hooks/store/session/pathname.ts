@@ -1,49 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
+import type { Storage } from '@plasmohq/storage';
 
-import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
-
-import { same } from '~lib/utils/same';
+import { useCachedStoreData0, type DataMetadata0 } from '~hooks/meta/metadata-0';
 
 import { SESSION_KEY_PATHNAME } from '../keys';
 
 // ! always try to use this value to avoid BLINK
-let cached_pathname = '';
+type DataType = string;
+const get_key = (): string => SESSION_KEY_PATHNAME;
+const get_default_value = (): DataType => '';
+let cached_value = get_default_value();
+const get_cached_value = (): DataType => cached_value;
+const set_cached_value = (value: DataType): DataType => (cached_value = value);
+const meta: DataMetadata0<DataType> = {
+    get_key,
+    get_default_value,
+    get_cached_value,
+    set_cached_value,
+};
 
 // pathname for check transition of pages -> // * session
-export const usePathnameInner = (storage: Storage): [string, (value: string) => Promise<void>] => {
-    const [pathname, setPathname] = useState(cached_pathname); // use cached value to init
-
-    // watch this key, cloud notice other hook of this
-    useEffect(() => {
-        const callback: StorageWatchCallback = (d) => {
-            const pathname = d.newValue ?? '';
-            if (!same(cached_pathname, pathname)) cached_pathname = pathname;
-            setPathname(pathname);
-        };
-        storage.watch({ [SESSION_KEY_PATHNAME]: callback });
-        return () => {
-            storage.unwatch({ [SESSION_KEY_PATHNAME]: callback });
-        };
-    }, [storage]);
-
-    // init on this hook
-    useEffect(() => {
-        storage.get<string>(SESSION_KEY_PATHNAME).then((data) => {
-            if (data === undefined) data = cached_pathname;
-            cached_pathname = data;
-            setPathname(data);
-        });
-    }, [storage]);
-
-    // update on this hook
-    const updatePathname = useCallback(
-        async (pathname: string) => {
-            await storage.set(SESSION_KEY_PATHNAME, pathname);
-            cached_pathname = pathname;
-            setPathname(pathname);
-        },
-        [storage],
-    );
-
-    return [pathname, updatePathname];
-};
+export const usePathnameInner = (storage: Storage): [DataType, (value: DataType) => Promise<void>] =>
+    useCachedStoreData0(storage, meta);

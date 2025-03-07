@@ -1,49 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
+import type { Storage } from '@plasmohq/storage';
 
-import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
-
-import { same } from '~lib/utils/same';
+import { useCachedStoreData0, type DataMetadata0 } from '~hooks/meta/metadata-0';
 
 import { SESSION_KEY_RESTORE } from '../keys';
 
 // ! always try to use this value to avoid BLINK
-let cached_restore = false;
+type DataType = boolean;
+const get_key = (): string => SESSION_KEY_RESTORE;
+const get_default_value = (): DataType => false;
+let cached_value = get_default_value();
+const get_cached_value = (): DataType => cached_value;
+const set_cached_value = (value: DataType): DataType => (cached_value = value);
+const meta: DataMetadata0<DataType> = {
+    get_key,
+    get_default_value,
+    get_cached_value,
+    set_cached_value,
+};
 
 // restore for options page -> // * session
-export const useRestoreInner = (storage: Storage): [boolean, (value: boolean) => Promise<void>] => {
-    const [restore, setRestore] = useState(cached_restore); // use cached value to init
-
-    // watch this key, cloud notice other hook of this
-    useEffect(() => {
-        const callback: StorageWatchCallback = (d) => {
-            const restore = d.newValue ?? false;
-            if (!same(cached_restore, restore)) cached_restore = restore;
-            setRestore(restore);
-        };
-        storage.watch({ [SESSION_KEY_RESTORE]: callback });
-        return () => {
-            storage.unwatch({ [SESSION_KEY_RESTORE]: callback });
-        };
-    }, [storage]);
-
-    // init on this hook
-    useEffect(() => {
-        storage.get<boolean>(SESSION_KEY_RESTORE).then((data) => {
-            if (data === undefined) data = cached_restore;
-            cached_restore = data;
-            setRestore(data);
-        });
-    }, [storage]);
-
-    // update on this hook
-    const updateRestore = useCallback(
-        async (restore: boolean) => {
-            await storage.set(SESSION_KEY_RESTORE, restore);
-            cached_restore = restore;
-            setRestore(restore);
-        },
-        [storage],
-    );
-
-    return [restore, updateRestore];
-};
+export const useRestoreInner = (storage: Storage): [DataType, (value: DataType) => Promise<void>] =>
+    useCachedStoreData0(storage, meta);

@@ -1,49 +1,24 @@
-import { useCallback, useEffect, useState } from 'react';
+import type { Storage } from '@plasmohq/storage';
 
-import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
-
-import { same } from '~lib/utils/same';
+import { useCachedStoreData0, type DataMetadata0 } from '~hooks/meta/metadata-0';
 
 import { SESSION_KEY_PASSWORD } from '../keys';
 
 // ! always try to use this value to avoid BLINK
-let cached_password = '';
+
+type DataType = string;
+const get_key = (): string => SESSION_KEY_PASSWORD;
+const get_default_value = (): DataType => '';
+let cached_value = get_default_value();
+const get_cached_value = (): DataType => cached_value;
+const set_cached_value = (value: DataType): DataType => (cached_value = value);
+const meta: DataMetadata0<DataType> = {
+    get_key,
+    get_default_value,
+    get_cached_value,
+    set_cached_value,
+};
 
 // password -> // * session
-export const usePasswordInner = (storage: Storage): [string, (value: string) => Promise<void>] => {
-    const [password, setPassword] = useState(cached_password); // use cached value to init
-
-    // watch this key, cloud notice other hook of this
-    useEffect(() => {
-        const callback: StorageWatchCallback = (d) => {
-            const password = d.newValue ?? '';
-            if (!same(cached_password, password)) cached_password = password;
-            setPassword(password);
-        };
-        storage.watch({ [SESSION_KEY_PASSWORD]: callback });
-        return () => {
-            storage.unwatch({ [SESSION_KEY_PASSWORD]: callback });
-        };
-    }, [storage]);
-
-    // init on this hook
-    useEffect(() => {
-        storage.get<string>(SESSION_KEY_PASSWORD).then((data) => {
-            if (data === undefined) data = cached_password;
-            cached_password = data;
-            setPassword(data);
-        });
-    }, [storage]);
-
-    // update on this hook
-    const updatePassword = useCallback(
-        async (password: string) => {
-            await storage.set(SESSION_KEY_PASSWORD, password);
-            cached_password = password;
-            setPassword(password);
-        },
-        [storage],
-    );
-
-    return [password, updatePassword];
-};
+export const usePasswordInner = (storage: Storage): [DataType, (value: DataType) => Promise<void>] =>
+    useCachedStoreData0(storage, meta);

@@ -1,49 +1,24 @@
-import { useCallback, useEffect, useState } from 'react';
+import type { Storage } from '@plasmohq/storage';
 
-import type { Storage, StorageWatchCallback } from '@plasmohq/storage';
-
-import { same } from '~lib/utils/same';
+import { useCachedStoreData0, type DataMetadata0 } from '~hooks/meta/metadata-0';
 
 import { SESSION_KEY_PASSWORD_ALIVE } from '../keys';
 
 // ! always try to use this value to avoid BLINK
-let cached_password_alive = Date.now();
+
+type DataType = number;
+const get_key = (): string => SESSION_KEY_PASSWORD_ALIVE;
+const get_default_value = (): DataType => Date.now();
+let cached_value = get_default_value();
+const get_cached_value = (): DataType => cached_value;
+const set_cached_value = (value: DataType): DataType => (cached_value = value);
+const meta: DataMetadata0<DataType> = {
+    get_key,
+    get_default_value,
+    get_cached_value,
+    set_cached_value,
+};
 
 // password alive -> // * session
-export const usePasswordAliveInner = (storage: Storage): [number, (value: number) => Promise<void>] => {
-    const [password_alive, setPasswordAlive] = useState(cached_password_alive); // use cached value to init
-
-    // watch this key, cloud notice other hook of this
-    useEffect(() => {
-        const callback: StorageWatchCallback = (d) => {
-            const password_alive = d.newValue ?? 0;
-            if (!same(cached_password_alive, password_alive)) cached_password_alive = password_alive;
-            setPasswordAlive(password_alive);
-        };
-        storage.watch({ [SESSION_KEY_PASSWORD_ALIVE]: callback });
-        return () => {
-            storage.unwatch({ [SESSION_KEY_PASSWORD_ALIVE]: callback });
-        };
-    }, [storage]);
-
-    // init on this hook
-    useEffect(() => {
-        storage.get<number>(SESSION_KEY_PASSWORD_ALIVE).then((data) => {
-            if (data === undefined) data = cached_password_alive;
-            cached_password_alive = data;
-            setPasswordAlive(data);
-        });
-    }, [storage]);
-
-    // update on this hook
-    const updatePasswordAlive = useCallback(
-        async (password_alive: number) => {
-            await storage.set(SESSION_KEY_PASSWORD_ALIVE, password_alive);
-            cached_password_alive = password_alive;
-            setPasswordAlive(password_alive);
-        },
-        [storage],
-    );
-
-    return [password_alive, updatePasswordAlive];
-};
+export const usePasswordAliveInner = (storage: Storage): [DataType, (value: DataType) => Promise<void>] =>
+    useCachedStoreData0(storage, meta);
