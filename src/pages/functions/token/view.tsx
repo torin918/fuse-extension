@@ -216,6 +216,22 @@ function FunctionTokenViewPage() {
                                             ref={provided.innerRef}
                                             className="flex w-full flex-1 flex-col gap-y-[10px] overflow-y-auto px-5 pb-5"
                                         >
+                                            {wrapped.length === 0 && (
+                                                <div className="flex h-full w-full flex-col items-center justify-center">
+                                                    <Icon
+                                                        name="icon-empty"
+                                                        className="h-[70px] w-[70px] text-[#999999]"
+                                                    ></Icon>
+                                                    <p className="text-sm text-[#999999]">No data found</p>
+                                                    <span className="mt-6 flex cursor-pointer items-center rounded-full bg-[#222222] px-3 py-2 text-sm duration-300 hover:bg-[#333333]">
+                                                        <Icon
+                                                            name="icon-add"
+                                                            className="mr-2 h-4 w-4 text-[#FFCF13]"
+                                                        ></Icon>
+                                                        Add
+                                                    </span>
+                                                </div>
+                                            )}
                                             {wrapped.map((token, index) => (
                                                 <Draggable
                                                     key={token.id}
