@@ -1,5 +1,5 @@
 import { anonymous, isCanisterIdText } from '@choptop/haw';
-import { Button } from '@heroui/react';
+import { Button, Skeleton } from '@heroui/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -145,30 +145,71 @@ const LoadCanisterInfo = ({
     }, [token, canister_id, setToken]);
     return (
         <div className="text-sm">
-            {loading && <div className="flex w-full items-center justify-center text-sm opacity-50">Loading...</div>}
+            {loading && (
+                <div className="w-full rounded-xl bg-[#181818] px-4 py-1 dark">
+                    <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm">
+                        <span>
+                            <Skeleton className="h-4 w-[60px] rounded-lg" />
+                        </span>
+                        <div className="flex items-center">
+                            <Skeleton className="mr-2 flex h-5 w-5 rounded-full" />
+                            <span>
+                                <Skeleton className="h-4 w-[50px] rounded-lg" />
+                            </span>
+                        </div>
+                    </div>
+                    {Array.from({ length: 5 }).map((_, _index) => (
+                        <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm last:border-b-0">
+                            <span>
+                                <Skeleton className="h-4 w-[60px] rounded-lg" />
+                            </span>
+                            <span>
+                                <Skeleton className="h-4 w-[70px] rounded-lg" />
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            )}
             {error && <div className="text-sm text-red-500">{error}</div>}
             {token && (
-                <div className="w-full">
-                    {logo && (
-                        <div className="text-sm">
-                            <img src={logo} className="h-10 w-10 rounded-full" />
+                <div className="w-full rounded-xl bg-[#181818] px-4 py-1">
+                    <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm">
+                        <span className="text-[#999999]">Name</span>
+                        <div className="flex items-center">
+                            {logo && (
+                                <div className="mr-2">
+                                    <img src={logo} className="h-5 w-5 rounded-full" />
+                                </div>
+                            )}
+                            <span>{token.name}</span>
                         </div>
-                    )}
-                    <div className="text-sm">Name: {token.name}</div>
-                    <div className="text-sm">Symbol: {token.symbol}</div>
-                    <div className="text-sm">Decimals: {token.decimals}</div>
-                    <div className="text-sm">
-                        Fee:
-                        {BigNumber(token.fee)
-                            .dividedBy(new BigNumber(10).pow(new BigNumber(token.decimals)))
-                            .toFixed()}
+                    </div>
+                    <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm">
+                        <span className="text-[#999999]">Symbol</span>
+                        <span>{token.symbol}</span>
+                    </div>
+                    <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm">
+                        <span className="text-[#999999]">Decimals</span>
+                        <span>{token.decimals}</span>
+                    </div>
+                    <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm">
+                        <span className="text-[#999999]">Fee</span>
+                        <span>
+                            {BigNumber(token.fee)
+                                .dividedBy(new BigNumber(10).pow(new BigNumber(token.decimals)))
+                                .toFixed()}
+                        </span>
                     </div>
                     {0 < token.standards.length && (
-                        <div className="flex flex-row justify-start gap-1 text-sm">
-                            Standards:
-                            {token.standards.map((s) => (
-                                <span key={s}>{s.toUpperCase()}</span>
-                            ))}
+                        <div className="items-cente flex w-full items-center justify-between py-3">
+                            <span className="text-[#999999]">Standards</span>
+                            <div className="flex items-center">
+                                {token.standards.map((s) => (
+                                    <span key={s} className="pl-2">
+                                        {s.toUpperCase()}
+                                    </span>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
