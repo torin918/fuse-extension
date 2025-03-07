@@ -3,11 +3,11 @@ import { useCallback } from 'react';
 import { SecureStorage } from '@plasmohq/storage/secure';
 
 import { check_password, hash_password, verify_password } from '~lib/password';
-import { match_chain_async, type Chain } from '~types/chain';
+import { match_chain, type Chain } from '~types/chain';
 import { type ConnectedApps, type CurrentConnectedApps } from '~types/connect';
 import type { CurrentInfo } from '~types/current';
-import { type IdentityAddress, type IdentityId, type PrivateKeys } from '~types/identity';
-import { DEFAULT_CURRENT_CHAIN_NETWORK, type CurrentChainNetwork } from '~types/network';
+import { type IdentityAddress, type IdentityKey, type PrivateKeys } from '~types/identity';
+import { DEFAULT_CURRENT_CHAIN_NETWORK, type CurrentChainNetwork, type CurrentIdentityNetwork } from '~types/network';
 
 import {
     __get_session_storage,
@@ -127,7 +127,10 @@ export const setPrivateKeysDirectly = async (password: string, private_keys: Pri
 };
 
 // identity address
-export const get_current_identity_address = async (): Promise<IdentityAddress | undefined> => {
+const _inner_get_current_address = async (): Promise<
+    | { current_address: IdentityAddress; storage: SecureStorage; private_keys: PrivateKeys; current: IdentityKey }
+    | undefined
+> => {
     const password = await SESSION_STORAGE.get<string>(SESSION_KEY_PASSWORD);
     if (!password) return undefined; // locked
 
@@ -141,44 +144,53 @@ export const get_current_identity_address = async (): Promise<IdentityAddress | 
     const current = private_keys.keys.find((i) => i.id === private_keys.current);
     if (!current) throw new Error('can not find current identity');
 
-    const current_address = inner_get_identity_address(current);
+    const current_address = inner_get_identity_address(current.key);
 
-    return current_address;
+    return { current_address, storage, private_keys, current };
+};
+export const get_current_identity_address = async (): Promise<IdentityAddress | undefined> => {
+    return (await _inner_get_current_address())?.current_address;
 };
 
 // current info
 export const get_current_info = async (): Promise<CurrentInfo | undefined> => {
-    const password = await SESSION_STORAGE.get<string>(SESSION_KEY_PASSWORD);
-    if (!password) return undefined; // locked
+    const _r = await _inner_get_current_address();
+    if (!_r) return undefined;
 
-    const storage = LOCAL_SECURE_STORAGE();
-    await storage.setPassword(password); // set password before any action
-
-    const private_keys = await storage.get<PrivateKeys>(LOCAL_SECURE_KEY_PRIVATE_KEYS);
-    // const chain_networks = await local_secure_storage.get<ChainNetworks>(KEY_CHAIN_NETWORKS);
-    if (private_keys === undefined) throw new Error('no private keys');
+    const { current_address, storage, private_keys, current } = _r;
 
     const current_chain_network =
         (await storage.get<CurrentChainNetwork>(LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK(private_keys.current))) ??
         DEFAULT_CURRENT_CHAIN_NETWORK;
 
-    agent_refresh_unique_identity(private_keys, current_chain_network); // * refresh identity
+    agent_refresh_unique_identity(current, current_chain_network); // * refresh identity
 
-    const current_connected_apps: CurrentConnectedApps = {
-        ic:
-            (await storage.get<ConnectedApps>(
-                LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(private_keys.current, current_chain_network.ic),
-            )) ?? [],
+    const current_identity_network: CurrentIdentityNetwork = {
+        ic: current_address.ic
+            ? { chain: 'ic', owner: current_address.ic.owner, network: current_chain_network.ic }
+            : undefined,
     };
 
-    return { current_identity: private_keys.current, current_chain_network, current_connected_apps };
+    const current_connected_apps: CurrentConnectedApps = {
+        ic: current_identity_network.ic
+            ? ((await storage.get<ConnectedApps>(
+                  LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity_network.ic),
+              )) ?? [])
+            : [],
+    };
+
+    return {
+        current_identity: private_keys.current,
+        current_chain_network,
+        current_identity_network,
+        current_connected_apps,
+    };
 };
 
 // update connected apps
 export const set_current_connected_apps = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
     chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     apps: ConnectedApps,
 ): Promise<void> => {
     const password = await SESSION_STORAGE.get<string>(SESSION_KEY_PASSWORD);
@@ -187,12 +199,9 @@ export const set_current_connected_apps = async (
     const storage = LOCAL_SECURE_STORAGE();
     await storage.setPassword(password); // set password before any action
 
-    match_chain_async(chain, {
-        ic: async () => {
-            await storage.set(
-                LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity, current_chain_network.ic),
-                apps,
-            );
-        },
-    });
+    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    if (!identity_network) return;
+
+    const key = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(identity_network);
+    await storage.set(key, apps);
 };

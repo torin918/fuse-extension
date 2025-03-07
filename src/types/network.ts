@@ -23,6 +23,23 @@ export interface CurrentChainNetwork {
 
 export const DEFAULT_CURRENT_CHAIN_NETWORK: CurrentChainNetwork = { ic: CHAIN_IC_MAINNET };
 
-export const get_chain_network_key = (network: ChainNetwork): string => {
-    return match_chain(network.chain, { ic: () => `${network.chain}:${network.origin}` });
+// =================== chain identity network ===================
+
+export interface ChainIcIdentityNetwork {
+    chain: 'ic';
+    owner: string;
+    network: ChainIcNetwork;
+}
+
+export type IdentityNetwork = ChainIcIdentityNetwork;
+
+export const get_identity_network_key = (identity_network: IdentityNetwork): string => {
+    return match_chain(identity_network.chain, {
+        ic: () => `${identity_network.chain}:${identity_network.owner}:${identity_network.network.origin}`,
+    });
 };
+
+// current
+export interface CurrentIdentityNetwork {
+    ic?: ChainIcIdentityNetwork;
+}

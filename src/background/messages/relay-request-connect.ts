@@ -40,12 +40,7 @@ const find_connected = async (current_info: CurrentInfo, body: RequestBody): Pro
         app.title = body.title;
         app.favicon = body.favicon;
         app.updated = Date.now();
-        await set_current_connected_apps(
-            current_info.current_identity,
-            current_info.current_chain_network,
-            body.chain,
-            apps,
-        );
+        await set_current_connected_apps(body.chain, current_info.current_identity_network, apps);
     }
 
     return await match_connected_app_state_async(app.state, {
@@ -53,9 +48,8 @@ const find_connected = async (current_info: CurrentInfo, body: RequestBody): Pro
         ask_on_use: async () => {
             // query storage
             const stored = await find_current_session_connected_app_message(
-                current_info.current_identity,
-                current_info.current_chain_network,
                 body.chain,
+                current_info.current_identity_network,
                 body.origin,
                 body.message_id,
             );
@@ -91,7 +85,12 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
         if (current_info !== undefined) {
             const connected = await find_connected(current_info, body);
             if (connected !== undefined) {
-                await reset_current_session_connected_app(current_info, body.chain, body.origin, connected);
+                await reset_current_session_connected_app(
+                    body.chain,
+                    current_info.current_identity_network,
+                    body.origin,
+                    connected,
+                );
                 return res.send({ ok: connected });
             }
         }
@@ -125,7 +124,12 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
                     if (current_info !== undefined) {
                         const connected = await find_connected(current_info, body);
                         if (connected !== undefined) {
-                            await reset_current_session_connected_app(current_info, body.chain, body.origin, connected);
+                            await reset_current_session_connected_app(
+                                body.chain,
+                                current_info.current_identity_network,
+                                body.origin,
+                                connected,
+                            );
                             return got_response({ ok: connected }, interval_id);
                         }
                     }
@@ -145,9 +149,8 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
         if (action) await delete_popup_action(action); // * delete action
         if (current_info !== undefined) {
             await delete_current_session_connected_app_message(
-                current_info.current_identity,
-                current_info.current_chain_network,
                 body.chain,
+                current_info.current_identity_network,
                 body.origin,
                 message_id,
             );

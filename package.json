@@ -12,6 +12,7 @@
         "test": "jest --config jestconfig.json"
     },
     "dependencies": {
+        "@aws-crypto/sha256-js": "^5.2.0",
         "@choptop/argon2-react": "^0.0.5",
         "@choptop/haw": "^0.0.13",
         "@dfinity/agent": "^2.3.0",

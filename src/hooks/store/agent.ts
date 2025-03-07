@@ -1,22 +1,20 @@
 import { HttpAgent } from '@dfinity/agent';
 
 import { get_address_by_mnemonic_and_metadata } from '~lib/mnemonic';
-import { match_combined_identity_key, type PrivateKeys } from '~types/identity';
+import { match_combined_identity_key, type IdentityKey } from '~types/identity';
 import type { CurrentChainNetwork } from '~types/network';
 
 // =================== unique ic agent ===================
 const UNIQUE_IC_AGENT: { target?: { principal: string; host?: string; agent: HttpAgent } } = {};
 const refresh_unique_ic_agent = (
-    private_keys: PrivateKeys | undefined,
+    identity_key: IdentityKey | undefined,
     current_chain_network: CurrentChainNetwork | undefined,
 ) => {
     const clean = () => (UNIQUE_IC_AGENT.target = undefined);
 
-    if (private_keys === undefined || current_chain_network === undefined) return clean();
-    const current = private_keys.keys.find((i) => i.id === private_keys.current);
-    if (current === undefined) return clean();
+    if (identity_key === undefined || current_chain_network === undefined) return clean();
 
-    match_combined_identity_key(current.key, {
+    match_combined_identity_key(identity_key.key, {
         mnemonic: (mnemonic) => {
             const [address, { ic }] = get_address_by_mnemonic_and_metadata(mnemonic.mnemonic);
             if (address.ic && ic) {
@@ -39,8 +37,8 @@ export const get_unique_ic_agent = () => UNIQUE_IC_AGENT.target?.agent;
 
 // refresh all unique identity
 export const agent_refresh_unique_identity = (
-    private_keys: PrivateKeys | undefined,
+    identity_key: IdentityKey | undefined,
     current_chain_network: CurrentChainNetwork | undefined,
 ) => {
-    refresh_unique_ic_agent(private_keys, current_chain_network);
+    refresh_unique_ic_agent(identity_key, current_chain_network);
 };

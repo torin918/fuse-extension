@@ -25,7 +25,7 @@ function RestoreMnemonicPage({
 
     const address = useMemo(() => {
         if (!valid) return undefined;
-        return get_address_by_mnemonic(mnemonic);
+        return get_address_by_mnemonic(mnemonic, 0);
     }, [mnemonic, valid]);
     console.assert(address); // TODO maybe useful
 

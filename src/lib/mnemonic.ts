@@ -47,8 +47,11 @@ export const get_address_by_mnemonic_and_metadata = (
     return [{ ic }, { ic: ic_identity }];
 };
 
-export const get_address_by_mnemonic = (mnemonic: string, subaccount = 0, parsed?: MnemonicParsed): IdentityAddress =>
-    get_address_by_mnemonic_and_metadata(mnemonic, subaccount, parsed)[0];
+export const get_address_by_mnemonic = (
+    mnemonic: string,
+    subaccount: number,
+    parsed?: MnemonicParsed,
+): IdentityAddress => get_address_by_mnemonic_and_metadata(mnemonic, subaccount, parsed)[0];
 
 const get_all_mnemonic_words = () => bip39.wordlists.english; // cspell: disable-line
 

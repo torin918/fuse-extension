@@ -1,3 +1,7 @@
+import { inner_get_identity_address } from '~hooks/store/local-secure/memo/identity';
+import { same } from '~lib/utils/same';
+
+import type { Chain } from './chain';
 import type { IdentityKeyMnemonic, MnemonicParsed } from './keys/mnemonic';
 import type { IdentityKeyPrivate } from './keys/private_key';
 
@@ -12,6 +16,7 @@ export interface IdentityKey {
     name: string; // show identity name
     icon: string;
     key: CombinedIdentityKey;
+    address: IdentityAddress;
 }
 
 export interface IdentityAddress {
@@ -55,26 +60,16 @@ export const match_combined_identity_key_async = <T>(
 };
 
 export const is_same_combined_identity_key = (a: CombinedIdentityKey, b: CombinedIdentityKey): boolean => {
-    return match_combined_identity_key(a, {
-        mnemonic: (m1) =>
-            match_combined_identity_key(b, {
-                mnemonic: (m2) =>
-                    m1.mnemonic === m2.mnemonic && m1.subaccount === m2.subaccount && m1.parsed === m2.parsed,
-                private_key: () => false,
-            }),
-        private_key: (pk1) =>
-            match_combined_identity_key(b, {
-                mnemonic: () => false,
-                private_key: (pk2) => pk1.private_key === pk2.private_key && pk1.chain === pk2.chain,
-            }),
-    });
+    const a_address = inner_get_identity_address(a);
+    const b_address = inner_get_identity_address(b);
+    return same(a_address, b_address);
 };
 
 // show identity
 
 export type CombinedShowIdentityKey =
-    | { type: 'mnemonic'; parsed?: MnemonicParsed }
-    | { type: 'private_key'; chain: 'ethereum' | 'solana' };
+    | { type: 'mnemonic'; subaccount: number; parsed?: MnemonicParsed }
+    | { type: 'private_key'; chain: Chain; parsed: string };
 export interface ShowIdentityKey {
     id: IdentityId; // uuid
     created: number; // ms

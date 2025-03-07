@@ -1,5 +1,4 @@
-import type { IdentityId } from '~types/identity';
-import { get_chain_network_key, type ChainNetwork } from '~types/network';
+import { get_identity_network_key, type IdentityNetwork } from '~types/network';
 
 // prefix
 const SYNC_KEY_PREFIX = ':fuse';
@@ -38,19 +37,18 @@ export const SESSION_KEY_POPUP_ACTIONS = `${SESSION_KEY_PREFIX}:popup:actions`; 
 export const SESSION_KEY_PATHNAME = `${SESSION_KEY_PREFIX}:pathname`; // * session
 
 // session
-export const SESSION_KEY_CURRENT_SESSION_CONNECTED_APP = (id: IdentityId, network: ChainNetwork, origin: string) =>
-    `${SESSION_KEY_PREFIX}:${id}:${get_chain_network_key(network)}:app:${origin}:connected`; // * session // mark current connected
+export const SESSION_KEY_CURRENT_SESSION_CONNECTED_APP = (identity_network: IdentityNetwork, origin: string) =>
+    `${SESSION_KEY_PREFIX}:${get_identity_network_key(identity_network)}:app:${origin}:connected`; // * session // mark current connected
 
 // temp
 export const SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_MESSAGE = (
-    id: IdentityId,
-    network: ChainNetwork,
+    identity_network: IdentityNetwork,
     origin: string,
     message_id: string,
-) => `${SESSION_KEY_PREFIX}:${id}:${get_chain_network_key(network)}:app:${origin}:message:${message_id}:connected`; // * session // mark once // temp
+) =>
+    `${SESSION_KEY_PREFIX}:${get_identity_network_key(identity_network)}:app:${origin}:message:${message_id}:connected`; // * session // mark once // temp
 export const SESSION_KEY_CURRENT_SESSION_APPROVE = (
-    id: IdentityId,
-    network: ChainNetwork,
+    identity_network: IdentityNetwork,
     origin: string,
     approve_id: string,
-) => `${SESSION_KEY_PREFIX}:${id}:${get_chain_network_key(network)}:app:${origin}:approve:${approve_id}`; // * session // make once approve // temp
+) => `${SESSION_KEY_PREFIX}:${get_identity_network_key(identity_network)}:app:${origin}:approve:${approve_id}`; // * session // make once approve // temp

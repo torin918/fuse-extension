@@ -1,10 +1,8 @@
 import { Storage } from '@plasmohq/storage';
 
 import { is_same_popup_action, type PopupAction, type PopupActions } from '~types/actions';
-import { match_chain_async, type Chain } from '~types/chain';
-import type { CurrentInfo } from '~types/current';
-import type { IdentityId } from '~types/identity';
-import { type CurrentChainNetwork } from '~types/network';
+import { match_chain, type Chain } from '~types/chain';
+import { type CurrentIdentityNetwork, type IdentityNetwork } from '~types/network';
 
 import {
     LOCAL_KEY_CACHED_KEY,
@@ -142,185 +140,109 @@ export const is_current_locked = async (): Promise<boolean> => {
 
 // temp connected app message
 export const find_current_session_connected_app_message = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
     chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     origin: string,
     message_id: string,
 ): Promise<boolean | undefined> => {
-    return match_chain_async(chain, {
-        ic: async () => {
-            const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_MESSAGE(
-                current_identity,
-                current_chain_network.ic,
-                origin,
-                message_id,
-            );
-            return await SESSION_STORAGE.get<boolean>(key);
-        },
-    });
+    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    if (!identity_network) return undefined;
+    const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_MESSAGE(identity_network, origin, message_id);
+    return await SESSION_STORAGE.get<boolean>(key);
 };
 export const delete_current_session_connected_app_message = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
     chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     origin: string,
     message_id: string,
 ): Promise<void> => {
-    match_chain_async(chain, {
-        ic: async () => {
-            const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_MESSAGE(
-                current_identity,
-                current_chain_network.ic,
-                origin,
-                message_id,
-            );
-            await SESSION_STORAGE.remove(key);
-        },
-    });
+    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    if (!identity_network) return;
+    const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_MESSAGE(identity_network, origin, message_id);
+    await SESSION_STORAGE.remove(key);
 };
 export const set_current_session_connected_app_message = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
     chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     origin: string,
     message_id: string,
     granted: boolean,
 ): Promise<void> => {
-    match_chain_async(chain, {
-        ic: async () => {
-            const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_MESSAGE(
-                current_identity,
-                current_chain_network.ic,
-                origin,
-                message_id,
-            );
-            await SESSION_STORAGE.set(key, granted);
-        },
-    });
+    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    if (!identity_network) return;
+    const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_MESSAGE(identity_network, origin, message_id);
+    await SESSION_STORAGE.set(key, granted);
 };
 
 // temp session app
 export const query_current_session_connected_app = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
     chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     origin: string,
 ): Promise<boolean> => {
-    return match_chain_async(chain, {
-        ic: async () => {
-            const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP(current_identity, current_chain_network.ic, origin);
-            return !!(await SESSION_STORAGE.get<boolean>(key));
-        },
-    });
+    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    if (!identity_network) return false;
+    const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP(identity_network, origin);
+    return !!(await SESSION_STORAGE.get<boolean>(key));
 };
 export const grant_current_session_connected_app = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
     chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     origin: string,
 ) => {
-    match_chain_async(chain, {
-        ic: async () => {
-            const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP(current_identity, current_chain_network.ic, origin);
-            await SESSION_STORAGE.set(key, true);
-        },
-    });
+    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    if (!identity_network) return;
+    const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP(identity_network, origin);
+    await SESSION_STORAGE.set(key, true);
 };
 export const revoke_current_session_connected_app = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
     chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     origin: string,
 ) => {
-    match_chain_async(chain, {
-        ic: async () => {
-            const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP(current_identity, current_chain_network.ic, origin);
-            await SESSION_STORAGE.remove(key);
-        },
-    });
+    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    if (!identity_network) return;
+    const key = SESSION_KEY_CURRENT_SESSION_CONNECTED_APP(identity_network, origin);
+    await SESSION_STORAGE.remove(key);
 };
 export const reset_current_session_connected_app = async (
-    current_info: CurrentInfo,
     chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     origin: string,
     granted: boolean,
 ) => {
     if (granted) {
-        await grant_current_session_connected_app(
-            current_info.current_identity,
-            current_info.current_chain_network,
-            chain,
-            origin,
-        );
+        await grant_current_session_connected_app(chain, current_identity_network, origin);
     } else {
-        await revoke_current_session_connected_app(
-            current_info.current_identity,
-            current_info.current_chain_network,
-            chain,
-            origin,
-        );
+        await revoke_current_session_connected_app(chain, current_identity_network, origin);
     }
 };
 
 // temp approve action
 export const find_current_session_approve = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
-    chain: Chain,
+    identity_network: IdentityNetwork,
     origin: string,
     approve_id: string,
 ): Promise<boolean | undefined> => {
-    return match_chain_async(chain, {
-        ic: async () => {
-            const key = SESSION_KEY_CURRENT_SESSION_APPROVE(
-                current_identity,
-                current_chain_network.ic,
-                origin,
-                approve_id,
-            );
-            return await SESSION_STORAGE.get<boolean>(key);
-        },
-    });
+    const key = SESSION_KEY_CURRENT_SESSION_APPROVE(identity_network, origin, approve_id);
+    return await SESSION_STORAGE.get<boolean>(key);
 };
 export const delete_current_session_approve = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
-    chain: Chain,
+    identity_network: IdentityNetwork,
     origin: string,
     approve_id: string,
 ): Promise<void> => {
-    match_chain_async(chain, {
-        ic: async () => {
-            const key = SESSION_KEY_CURRENT_SESSION_APPROVE(
-                current_identity,
-                current_chain_network.ic,
-                origin,
-                approve_id,
-            );
-            await SESSION_STORAGE.remove(key);
-        },
-    });
+    const key = SESSION_KEY_CURRENT_SESSION_APPROVE(identity_network, origin, approve_id);
+    await SESSION_STORAGE.remove(key);
 };
 export const set_current_session_approve = async (
-    current_identity: IdentityId,
-    current_chain_network: CurrentChainNetwork,
-    chain: Chain,
+    identity_network: IdentityNetwork,
     origin: string,
     approve_id: string,
     approved: boolean,
 ): Promise<void> => {
-    match_chain_async(chain, {
-        ic: async () => {
-            const key = SESSION_KEY_CURRENT_SESSION_APPROVE(
-                current_identity,
-                current_chain_network.ic,
-                origin,
-                approve_id,
-            );
-            await SESSION_STORAGE.set(key, approved);
-        },
-    });
+    const key = SESSION_KEY_CURRENT_SESSION_APPROVE(identity_network, origin, approve_id);
+    await SESSION_STORAGE.set(key, approved);
 };
 
 // temp popup actions

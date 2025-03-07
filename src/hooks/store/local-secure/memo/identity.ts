@@ -144,6 +144,7 @@ export const useIdentityKeysBy = (
             if (private_keys.keys.find((identity) => is_same_combined_identity_key(identity.key, key))) {
                 return false; // already exist
             }
+
             const id = uuid();
             const now = Date.now();
             const new_keys: IdentityKey[] = [
@@ -155,6 +156,7 @@ export const useIdentityKeysBy = (
                     name: `Account #${private_keys.keys.length + 1}`,
                     icon: random_account_icon(),
                     key,
+                    address: inner_get_identity_address(key),
                 },
             ];
             await setPrivateKeys({
@@ -285,10 +287,10 @@ export const inner_show_identity_key = (private_keys: PrivateKeys, identity_key:
     created: identity_key.created,
     name: identity_key.name,
     icon: identity_key.icon,
-    address: inner_get_identity_address(identity_key),
+    address: inner_get_identity_address(identity_key.key),
     key: match_combined_identity_key<CombinedShowIdentityKey>(identity_key.key, {
-        mnemonic: (mnemonic) => ({ type: 'mnemonic', parsed: mnemonic.parsed }),
-        private_key: (private_key) => ({ type: 'private_key', chain: private_key.chain }),
+        mnemonic: (mnemonic) => ({ type: 'mnemonic', subaccount: mnemonic.subaccount, parsed: mnemonic.parsed }),
+        private_key: (private_key) => ({ type: 'private_key', chain: private_key.chain, parsed: private_key.parsed }),
     }),
 
     deletable:
@@ -300,8 +302,8 @@ export const inner_show_identity_key = (private_keys: PrivateKeys, identity_key:
         }),
 });
 
-export const inner_get_identity_address = (current: IdentityKey) => {
-    const current_address = match_combined_identity_key(current.key, {
+export const inner_get_identity_address = (key: CombinedIdentityKey) => {
+    const current_address = match_combined_identity_key(key, {
         mnemonic: (mnemonic) => get_address_by_mnemonic(mnemonic.mnemonic, mnemonic.subaccount, mnemonic.parsed),
         private_key: () => {
             throw new Error(`Unimplemented identity type: private_key`);

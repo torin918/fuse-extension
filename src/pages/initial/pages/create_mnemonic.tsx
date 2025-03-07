@@ -20,9 +20,9 @@ function CreateMnemonicPage({
     setMnemonic24: (mnemonic: string) => void;
     onNext: (mnemonic: string) => void;
 }) {
-    const address12 = useMemo(() => get_address_by_mnemonic(mnemonic12), [mnemonic12]);
+    const address12 = useMemo(() => get_address_by_mnemonic(mnemonic12, 0), [mnemonic12]);
     console.assert(address12); // TODO maybe useful
-    const address24 = useMemo(() => get_address_by_mnemonic(mnemonic24), [mnemonic24]);
+    const address24 = useMemo(() => get_address_by_mnemonic(mnemonic24, 0), [mnemonic24]);
     console.assert(address24); // TODO maybe useful
 
     const [isHovered, setIsHovered] = useState(false);

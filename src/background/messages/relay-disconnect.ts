@@ -23,12 +23,7 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
 
     const current_info = await get_current_info();
     if (!current_info) return res.send({ ok: true });
-    await revoke_current_session_connected_app(
-        current_info.current_identity,
-        current_info.current_chain_network,
-        body.chain,
-        body.origin,
-    );
+    await revoke_current_session_connected_app(body.chain, current_info.current_identity_network, body.origin);
 
     return res.send({ ok: true });
 };
