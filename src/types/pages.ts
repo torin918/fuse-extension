@@ -1,1 +1,1 @@
-export type WindowType = 'popup' | 'options' | 'notification' | 'sidepanel';
+export type WindowType = 'popup' | 'options' | 'sidepanel' | 'notification';

@@ -34,11 +34,16 @@ import FunctionTokenViewPage from './functions/token/view';
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
         ...(hit(wt, []) ? [{ path: '/welcome', element: <WelcomePage /> }] : []),
+
+        // initial
         ...(hit(wt, []) ? [{ path: '/initial', element: <InitialPage wt={wt} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/initial/create', element: <InnerCreatePage wt={wt} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/initial/restore', element: <CreateRestorePage wt={wt} /> }] : []),
+
+        // locked
         ...(hit(wt, []) ? [{ path: '/locked', element: <LockedPage wt={wt} /> }] : []),
 
+        // home
         ...(hit(wt, []) ? [{ path: '/', element: <MainPage wt={wt} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home', element: <MainPage wt={wt} /> }] : []),
 
