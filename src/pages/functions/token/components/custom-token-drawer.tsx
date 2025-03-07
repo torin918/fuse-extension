@@ -205,7 +205,9 @@ const LoadCanisterInfo = ({
                             <span className="text-[#999999]">Standards</span>
                             <div className="flex items-center">
                                 {token.standards.map((s) => (
-                                    <span key={s}>{s.toUpperCase()}</span>
+                                    <span key={s} className="pl-2">
+                                        {s.toUpperCase()}
+                                    </span>
                                 ))}
                             </div>
                         </div>
