@@ -8,9 +8,8 @@ import type { WindowType } from '~types/pages';
 
 import HomePage from '../home';
 import RecordPage from './record';
-import SwitchWalletPage from './switch';
 
-export type MainPageState = 'home' | 'record' | 'switch';
+export type MainPageState = 'home' | 'record';
 
 function MainPage({ wt }: { wt: WindowType }) {
     const current_state = useCurrentState();
@@ -44,11 +43,6 @@ const InnerMainPage = ({ wt }: { wt: WindowType }) => {
                 {state === 'record' && (
                     <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
                         <RecordPage setState={setState}></RecordPage>
-                    </CSSTransition>
-                )}
-                {state === 'switch' && (
-                    <CSSTransition key={state} classNames="slide" timeout={300} unmountOnExit>
-                        <SwitchWalletPage setState={setState}></SwitchWalletPage>
                     </CSSTransition>
                 )}
             </TransitionGroup>

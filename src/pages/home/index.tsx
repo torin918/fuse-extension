@@ -94,7 +94,7 @@ function HomePage({
                 <div className="flex items-center">
                     <div
                         className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#333333] text-lg font-semibold text-[#999999]"
-                        onClick={() => setState('switch')}
+                        onClick={() => navigate('/home/wallet/switch')}
                     >
                         <div
                             style={{
