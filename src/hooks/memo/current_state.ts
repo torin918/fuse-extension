@@ -12,7 +12,7 @@ export const useCurrentStateBy = (
     popup_actions: PopupActions,
 ) => {
     const current_state = useMemo<CurrentState>(() => {
-        console.error('current_state', password_hashed, '->', password);
+        // console.error('current_state', password_hashed, '->', password);
         if (!welcomed) return CurrentState.WELCOME;
         if (!password_hashed) return CurrentState.INITIAL;
         if (!password) return CurrentState.LOCKED;

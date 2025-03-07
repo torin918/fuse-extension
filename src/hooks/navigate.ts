@@ -28,7 +28,7 @@ export const useNavigatePages = (current_state: CurrentState, replace = true) =>
             const pathname = location.pathname;
             // console.debug(`🚀 ~ useEffect ~ pathname:`, pathname, route);
             if (route === '/home' && pathname === '/locked') {
-                console.error("go back to home'page from", pathname);
+                console.debug("go back to home'page from", pathname);
                 navigate(-1);
             } else if (route === '/locked' && pathname === '/initial/restore') {
                 // pass
@@ -37,10 +37,10 @@ export const useNavigatePages = (current_state: CurrentState, replace = true) =>
             } else if (route === '/home' && pathname.startsWith('/home/')) {
                 // pass
             } else if (route === '/home' && !['/', '/home'].includes(pathname)) {
-                console.error('go', pathname, '->', '/');
+                console.debug('go', pathname, '->', '/');
                 navigate('/', { replace });
             } else if (!pathname.startsWith(route)) {
-                console.error('go', pathname, '->', route);
+                console.debug('go', pathname, '->', route);
                 navigate(route, { replace });
             }
         }

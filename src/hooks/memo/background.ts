@@ -15,7 +15,7 @@ export const useBackground = () => {
 
     // TODO TEST
     useEffect(() => {
-        console.warn('CURRENT STATE:', current_state);
+        console.debug('CURRENT STATE:', current_state);
     }, [current_state]);
 
     // always check idle
