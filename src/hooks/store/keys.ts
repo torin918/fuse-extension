@@ -19,6 +19,10 @@ export const LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS = (identity_network: Identi
 export const LOCAL_SECURE_KEY_RECENT_ADDRESSES = `${LOCAL_SECURE_KEY_PREFIX}:recent:addresses`; // * local secure
 export const LOCAL_SECURE_KEY_MARKED_ADDRESSES = `${LOCAL_SECURE_KEY_PREFIX}:marked:addresses`; // * local secure
 
+// local secure, once use granted/denied local, there is somewhere catch this result, and BGSW cloud find it
+export const LOCAL_SECURE_KEY_APPROVED = (identity_network: IdentityNetwork, origin: string, request_hash: string) =>
+    `${LOCAL_SECURE_KEY_PREFIX}:${get_identity_network_key(identity_network)}:app:${origin}:${request_hash}:approved`; // * local secure // make local
+
 // ############### SYNC ###############
 
 // user settings
@@ -42,6 +46,14 @@ export const LOCAL_KEY_TOKEN_INFO_CURRENT = `${LOCAL_KEY_PREFIX_TOKEN}:info:curr
 export const LOCAL_KEY_TOKEN_PRICE_IC = `${LOCAL_KEY_PREFIX_TOKEN}:price:ic`; // * local
 export const LOCAL_KEY_TOKEN_PRICE_IC_UPDATED = `${LOCAL_KEY_PREFIX_TOKEN}:price:ic:updated`; // * local
 
+const LOCAL_KEY_PREFIX_RECORD = `${LOCAL_KEY_PREFIX}:record`;
+export const LOCAL_KEY_RECORD_STARTED = (identity_network: IdentityNetwork) =>
+    `${LOCAL_KEY_PREFIX_RECORD}:${get_identity_network_key(identity_network)}:started`; // * local
+export const LOCAL_KEY_RECORD_COUNT = (identity_network: IdentityNetwork) =>
+    `${LOCAL_KEY_PREFIX_RECORD}:${get_identity_network_key(identity_network)}:count`; // * local
+export const LOCAL_KEY_RECORD_DATE = (identity_network: IdentityNetwork, date: string) =>
+    `${LOCAL_KEY_PREFIX_RECORD}:${get_identity_network_key(identity_network)}:date:${date}`; // * local
+
 // ############### SESSION ###############
 
 export const SESSION_KEY_PASSWORD = `${SESSION_KEY_PREFIX}:password`; // * session
@@ -50,19 +62,28 @@ export const SESSION_KEY_RESTORE = `${SESSION_KEY_PREFIX}:restore`; // * session
 export const SESSION_KEY_POPUP_ACTIONS = `${SESSION_KEY_PREFIX}:popup:actions`; // * session
 export const SESSION_KEY_PATHNAME = `${SESSION_KEY_PREFIX}:pathname`; // * session
 
-// session
+// session, once user connect app, is_connected always cloud be true // ? true => connected, false => disconnected
 export const SESSION_KEY_CURRENT_SESSION_CONNECTED_APP = (identity_network: IdentityNetwork, origin: string) =>
     `${SESSION_KEY_PREFIX}:${get_identity_network_key(identity_network)}:app:${origin}:connected`; // * session // mark current connected
-
-// temp
-export const SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_MESSAGE = (
+// session, once use granted/denied once, there is somewhere catch this result, and BGSW cloud find it // ? true => granted, false => denied
+export const SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_ONCE = (
     identity_network: IdentityNetwork,
     origin: string,
     message_id: string,
 ) =>
     `${SESSION_KEY_PREFIX}:${get_identity_network_key(identity_network)}:app:${origin}:message:${message_id}:connected`; // * session // mark once // temp
-export const SESSION_KEY_CURRENT_SESSION_APPROVE = (
+// session, once use granted/denied this session, there is somewhere catch this result, and BGSW cloud find it // ? true => granted, false => denied
+export const SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_SESSION = (identity_network: IdentityNetwork, origin: string) =>
+    `${SESSION_KEY_PREFIX}:${get_identity_network_key(identity_network)}:app:${origin}:session:connected`; // * session // mark session // temp
+// session, once use granted/denied once, there is somewhere catch this result, and BGSW cloud find it // ? true => granted, false => denied
+export const SESSION_KEY_CURRENT_SESSION_APPROVE_ONCE = (
     identity_network: IdentityNetwork,
     origin: string,
     approve_id: string,
-) => `${SESSION_KEY_PREFIX}:${get_identity_network_key(identity_network)}:app:${origin}:approve:${approve_id}`; // * session // make once approve // temp
+) => `${SESSION_KEY_PREFIX}:${get_identity_network_key(identity_network)}:app:${origin}:approve:${approve_id}:approved`; // * session // make once // temp
+// session, once use granted/denied session, there is somewhere catch this result, and BGSW cloud find it // ? true => granted, false => denied
+export const SESSION_KEY_CURRENT_SESSION_APPROVE_SESSION = (
+    identity_network: IdentityNetwork,
+    origin: string,
+    request_hash: string,
+) => `${SESSION_KEY_PREFIX}:${get_identity_network_key(identity_network)}:app:${origin}:${request_hash}:approved`; // * session // make session // temp

@@ -1,6 +1,17 @@
+import dayjs from 'dayjs';
+
 import { Storage } from '@plasmohq/storage';
 
-import { LOCAL_KEY_CACHED_KEY, LOCAL_KEY_PASSWORD_HASHED } from '../keys';
+import type { IdentityNetwork } from '~types/network';
+import type { FuseRecord, FuseRecordList } from '~types/records';
+
+import {
+    LOCAL_KEY_CACHED_KEY,
+    LOCAL_KEY_PASSWORD_HASHED,
+    LOCAL_KEY_RECORD_COUNT,
+    LOCAL_KEY_RECORD_DATE,
+    LOCAL_KEY_RECORD_STARTED,
+} from '../keys';
 import { usePasswordHashedInner } from './password_hashed';
 import { useTokenInfoCurrentInner, useTokenInfoCurrentInner2 } from './token/current';
 import { useTokenInfoCustomInner2 } from './token/custom';
@@ -74,4 +85,26 @@ export const get_cached_data = async (
         await LOCAL_STORAGE.set(cache_key, cached);
     }
     return cached.value;
+};
+
+// ---------- record ----------
+export const assure_record_started = async (identity_network: IdentityNetwork, now: number) => {
+    const key = LOCAL_KEY_RECORD_STARTED(identity_network);
+    const value = await LOCAL_STORAGE.get<number>(key);
+    if (value !== undefined && 0 < value) return;
+    await LOCAL_STORAGE.set(key, now);
+};
+export const increment_record_count = async (identity_network: IdentityNetwork) => {
+    const key = LOCAL_KEY_RECORD_COUNT(identity_network);
+    const value = (await LOCAL_STORAGE.get<number>(key)) ?? 0;
+    await LOCAL_STORAGE.set(key, value + 1);
+};
+export const push_record = async (identity_network: IdentityNetwork, now: number, record: FuseRecord) => {
+    const date = dayjs(now).format('YYYYMMDD');
+    const key = LOCAL_KEY_RECORD_DATE(identity_network, date);
+    const value = (await LOCAL_STORAGE.get<FuseRecordList>(key)) ?? [];
+    const next = [...value, record];
+    await LOCAL_STORAGE.set(key, next);
+    await increment_record_count(identity_network);
+    await assure_record_started(identity_network, now);
 };

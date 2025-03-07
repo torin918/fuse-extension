@@ -1,4 +1,4 @@
-import type { ApproveIcAction } from './approve-ic';
+import type { ApproveIcAction } from './approve/ic';
 import type { ConnectAction } from './connect';
 
 export type PopupAction = { connect: ConnectAction } | { approve_ic: ApproveIcAction };

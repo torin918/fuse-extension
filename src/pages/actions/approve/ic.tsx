@@ -4,10 +4,11 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 
 import Icon from '~components/icon';
 import { showToast } from '~components/toast';
-import { useCurrentConnectedApps } from '~hooks/store/local-secure';
-import { set_current_session_approve } from '~hooks/store/session';
+import { set_local_secure_approved, useCurrentConnectedApps } from '~hooks/store/local-secure';
+import { set_current_session_approve_once } from '~hooks/store/session';
 import { get_popup_action_id, type PopupAction } from '~types/actions';
-import type { ApproveIcAction } from '~types/actions/approve-ic';
+import type { ApprovedState } from '~types/actions/approve';
+import type { ApproveIcAction } from '~types/actions/approve/ic';
 
 function ApproveIcActionPage({
     action,
@@ -33,25 +34,31 @@ function ApproveIcActionPage({
             if (!current_identity_network) return;
             // record
             const approve_id = get_popup_action_id(action);
-            new Promise<void>((resolve) => {
-                if (type === 'deny') {
-                    set_current_session_approve(
-                        'ic',
-                        current_identity_network,
-                        approve_ic.origin,
-                        approve_id,
-                        false,
-                    ).then(resolve);
-                } else if (type === 'approve') {
-                    set_current_session_approve(
-                        'ic',
-                        current_identity_network,
-                        approve_ic.origin,
-                        approve_id,
-                        true,
-                    ).then(resolve);
-                } else resolve();
-            }).then(() => deletePopupAction(action));
+            const state: ApprovedState = 'ask_on_use';
+            set_local_secure_approved('ic', current_identity_network, approve_ic.origin, approve_ic.request_hash, state)
+                .then(
+                    () =>
+                        new Promise<void>((resolve) => {
+                            if (type === 'deny') {
+                                set_current_session_approve_once(
+                                    'ic',
+                                    current_identity_network,
+                                    approve_ic.origin,
+                                    approve_id,
+                                    false,
+                                ).then(resolve);
+                            } else if (type === 'approve') {
+                                set_current_session_approve_once(
+                                    'ic',
+                                    current_identity_network,
+                                    approve_ic.origin,
+                                    approve_id,
+                                    true,
+                                ).then(resolve);
+                            } else resolve();
+                        }),
+                )
+                .then(() => deletePopupAction(action));
         },
         [approve_ic, deletePopupAction, action, current_identity_network],
     );

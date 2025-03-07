@@ -2,16 +2,16 @@ import { match_chain } from './chain';
 
 export interface ChainIcNetwork {
     chain: 'ic';
-    origin: string;
-    created: number; // ms
     name: string;
+    created: number; // ms
+    origin: string;
 }
 
 export const CHAIN_IC_MAINNET: ChainIcNetwork = {
     chain: 'ic',
-    origin: 'https://icp-api.io',
-    created: 0, // inner
     name: 'Internet Computer Mainnet',
+    created: 0, // inner, means mainnet
+    origin: 'mainnet', //'https://icp-api.io'
 };
 
 export type ChainNetwork = ChainIcNetwork;

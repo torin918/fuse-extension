@@ -3,14 +3,22 @@ import { useCallback, useMemo } from 'react';
 import { SecureStorage } from '@plasmohq/storage/secure';
 
 import { check_password, hash_password, verify_password } from '~lib/password';
+import type { ApprovedState } from '~types/actions/approve';
 import { match_chain, type Chain } from '~types/chain';
 import { type ConnectedApps, type CurrentConnectedApps } from '~types/connect';
 import type { CurrentInfo } from '~types/current';
 import { type IdentityAddress, type IdentityKey, type PrivateKeys } from '~types/identity';
-import { DEFAULT_CURRENT_CHAIN_NETWORK, type CurrentChainNetwork, type CurrentIdentityNetwork } from '~types/network';
+import {
+    DEFAULT_CURRENT_CHAIN_NETWORK,
+    type CurrentChainNetwork,
+    type CurrentIdentityNetwork,
+    type IdentityNetwork,
+} from '~types/network';
 
 import { agent_refresh_unique_identity } from '../agent';
+import { identity_network_callback } from '../common';
 import {
+    LOCAL_SECURE_KEY_APPROVED,
     LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK,
     LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS,
     LOCAL_SECURE_KEY_PRIVATE_KEYS,
@@ -124,9 +132,19 @@ export const useMarkedAddresses = () => {
 
 export const setPrivateKeysDirectly = async (password: string, private_keys: PrivateKeys) => {
     const storage = LOCAL_SECURE_STORAGE();
-    await storage.setPassword(password);
+    await storage.setPassword(password); // set password before any action
 
     await storage.set(LOCAL_SECURE_KEY_PRIVATE_KEYS, private_keys);
+};
+
+const get_password_secure_storage = async () => {
+    const password = await SESSION_STORAGE.get<string>(SESSION_KEY_PASSWORD);
+    if (!password) return; // locked
+
+    const storage = LOCAL_SECURE_STORAGE();
+    await storage.setPassword(password); // set password before any action
+
+    return storage;
 };
 
 // identity address
@@ -134,11 +152,8 @@ const _inner_get_current_address = async (): Promise<
     | { current_address: IdentityAddress; storage: SecureStorage; private_keys: PrivateKeys; current: IdentityKey }
     | undefined
 > => {
-    const password = await SESSION_STORAGE.get<string>(SESSION_KEY_PASSWORD);
-    if (!password) return undefined; // locked
-
-    const storage = LOCAL_SECURE_STORAGE();
-    await storage.setPassword(password); // set password before any action
+    const storage = await get_password_secure_storage();
+    if (!storage) return undefined; // get secure storage after password
 
     const private_keys = await storage.get<PrivateKeys>(LOCAL_SECURE_KEY_PRIVATE_KEYS);
     // const chain_networks = await LOCAL_SECURE_STORAGE.get<ChainNetworks>(KEY_CHAIN_NETWORKS);
@@ -196,15 +211,54 @@ export const set_current_connected_apps = async (
     current_identity_network: CurrentIdentityNetwork,
     apps: ConnectedApps,
 ): Promise<void> => {
-    const password = await SESSION_STORAGE.get<string>(SESSION_KEY_PASSWORD);
-    if (!password) return; // locked
+    const storage = await get_password_secure_storage();
+    if (!storage) return undefined; // get secure storage after password
 
-    const storage = LOCAL_SECURE_STORAGE();
-    await storage.setPassword(password); // set password before any action
-
-    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    const identity_network = match_chain<IdentityNetwork | undefined>(chain, { ic: () => current_identity_network.ic });
     if (!identity_network) return;
 
     const key = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(identity_network);
     await storage.set(key, apps);
+};
+
+// marked granted/denied local
+export const find_local_secure_approved = async (
+    chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
+    origin: string,
+    request_hash: string,
+): Promise<ApprovedState | undefined> => {
+    const storage = await get_password_secure_storage();
+    if (!storage) return undefined; // get secure storage after password
+    return identity_network_callback(chain, current_identity_network, undefined, async (identity_network) => {
+        const key = LOCAL_SECURE_KEY_APPROVED(identity_network, origin, request_hash);
+        return await storage.get<ApprovedState>(key);
+    });
+};
+export const delete_local_secure_approved = async (
+    chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
+    origin: string,
+    request_hash: string,
+): Promise<void> => {
+    const storage = await get_password_secure_storage();
+    if (!storage) return undefined; // get secure storage after password
+    return identity_network_callback(chain, current_identity_network, undefined, async (identity_network) => {
+        const key = LOCAL_SECURE_KEY_APPROVED(identity_network, origin, request_hash);
+        await storage.remove(key);
+    });
+};
+export const set_local_secure_approved = async (
+    chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
+    origin: string,
+    request_hash: string,
+    state: ApprovedState,
+): Promise<void> => {
+    const storage = await get_password_secure_storage();
+    if (!storage) return undefined; // get secure storage after password
+    return identity_network_callback(chain, current_identity_network, undefined, async (identity_network) => {
+        const key = LOCAL_SECURE_KEY_APPROVED(identity_network, origin, request_hash);
+        await storage.set(key, state);
+    });
 };

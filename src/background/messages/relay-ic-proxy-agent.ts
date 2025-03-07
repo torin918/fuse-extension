@@ -6,18 +6,20 @@ import { parse_func_candid } from '@jellypack/wasm-react'; // ! dynamic import m
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 
 import { get_unique_ic_agent } from '~hooks/store/agent';
-import { get_current_info } from '~hooks/store/local-secure';
+import { find_local_secure_approved, get_current_info } from '~hooks/store/local-secure';
 import {
-    delete_current_session_approve,
+    delete_current_session_approve_once,
     delete_popup_action,
-    find_current_session_approve,
+    find_current_session_approve_once,
+    find_current_session_approve_session,
     push_popup_action,
 } from '~hooks/store/session';
 import { get_current_notification, open_notification } from '~lib/notification';
 import { parse_proxy_message, stringify_proxy_message } from '~lib/utils/ic-message';
 import { stringify_factory } from '~lib/utils/json';
 import { get_popup_action_id, type PopupAction } from '~types/actions';
-import type { ApproveIcAction } from '~types/actions/approve-ic';
+import { match_approved_state_async } from '~types/actions/approve';
+import { hash_approve_ic_action, type ApproveIcAction } from '~types/actions/approve/ic';
 import type { CurrentInfo } from '~types/current';
 import type { CurrentWindow } from '~types/window';
 
@@ -174,7 +176,9 @@ const intercept_request = async (origin: string, msg: ProxyMessage): Promise<Res
                     method,
                     func_text,
                     args_text,
+                    request_hash: '',
                 };
+                approve_action.request_hash = await hash_approve_ic_action(approve_action);
                 action = { approve_ic: approve_action };
                 await push_popup_action(action); // * push action
 
@@ -197,7 +201,7 @@ const intercept_request = async (origin: string, msg: ProxyMessage): Promise<Res
                             const n = Date.now();
                             if (n - s > timeout) return got_response(handle_error(msg.id, `timeout`), interval_id);
 
-                            const approved = await find_approved(current_info, origin, approve_id);
+                            const approved = await find_approved(approve_action, current_info, approve_id);
                             if (approved !== undefined) {
                                 return got_response(
                                     approved ? undefined : handle_error(msg.id, `User refused`),
@@ -219,7 +223,7 @@ const intercept_request = async (origin: string, msg: ProxyMessage): Promise<Res
             } finally {
                 if (action) await delete_popup_action(action); // * delete action
                 if (approve_id && current_info.current_identity_network.ic) {
-                    await delete_current_session_approve(
+                    await delete_current_session_approve_once(
                         'ic',
                         current_info.current_identity_network,
                         origin,
@@ -233,18 +237,65 @@ const intercept_request = async (origin: string, msg: ProxyMessage): Promise<Res
 };
 
 const find_approved = async (
+    approve_action: ApproveIcAction,
     current_info: CurrentInfo,
-    origin: string,
     approve_id: string,
 ): Promise<boolean | undefined> => {
     if (!current_info.current_identity_network.ic) return undefined;
-    const approved = await find_current_session_approve(
+
+    const state = await find_local_secure_approved(
         'ic',
         current_info.current_identity_network,
-        origin,
-        approve_id,
+        approve_action.origin,
+        approve_action.request_hash,
     );
-    return approved;
+
+    return await match_approved_state_async(state ?? 'ask_on_use', {
+        denied: async () => false,
+        ask_on_use: async () => {
+            // query storage
+            const approved = await find_current_session_approve_once(
+                'ic',
+                current_info.current_identity_network,
+                approve_action.origin,
+                approve_id,
+            );
+            return approved;
+        },
+        granted: async () => true,
+        denied_session: async () => {
+            // query storage
+            const stored = await find_current_session_approve_session(
+                'ic',
+                current_info.current_identity_network,
+                approve_action.origin,
+                approve_action.request_hash,
+            );
+            if (stored === false) return false;
+            return undefined;
+        },
+        granted_session: async () => {
+            // query storage
+            const stored = await find_current_session_approve_session(
+                'ic',
+                current_info.current_identity_network,
+                approve_action.origin,
+                approve_action.request_hash,
+            );
+            if (stored === true) return true;
+            return undefined;
+        },
+        denied_expired: async (expired) => {
+            const now = Date.now();
+            if (expired.created <= now && now < expired.created + expired.duration) return false;
+            return undefined;
+        },
+        granted_expired: async (expired) => {
+            const now = Date.now();
+            if (expired.created <= now && now < expired.created + expired.duration) return true;
+            return undefined;
+        },
+    });
 };
 
 const find_window_timeout_and_func = (

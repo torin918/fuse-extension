@@ -7,7 +7,7 @@ import { match_popup_action, type PopupAction } from '~types/actions';
 import type { WindowType } from '~types/pages';
 import { CurrentState } from '~types/state';
 
-import ApproveIcActionPage from './approve-ic';
+import ApproveIcActionPage from './approve/ic';
 import ConnectActionPage from './connect';
 
 function ActionsPage({ wt }: { wt: WindowType }) {

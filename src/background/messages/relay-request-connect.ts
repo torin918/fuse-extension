@@ -3,9 +3,10 @@ import type { PlasmoMessaging } from '@plasmohq/messaging';
 import { is_current_initial } from '~hooks/store/local';
 import { get_current_info, set_current_connected_apps } from '~hooks/store/local-secure';
 import {
-    delete_current_session_connected_app_message,
+    delete_current_session_connected_app_once,
     delete_popup_action,
-    find_current_session_connected_app_message,
+    find_current_session_connected_app_once,
+    find_current_session_connected_app_session,
     push_popup_action,
     reset_current_session_connected_app,
 } from '~hooks/store/session';
@@ -29,40 +30,6 @@ export interface RequestBody {
     favicon?: string;
 }
 export type ResponseBody = MessageResult<boolean, string>;
-
-const find_connected = async (current_info: CurrentInfo, body: RequestBody): Promise<boolean | undefined> => {
-    // console.error(`🚀 ~ const find_connected= ~ current_info:`, current_info);
-    const apps = match_chain(body.chain, { ic: () => current_info.current_connected_apps.ic });
-    const app = apps.find((app) => app.origin === body.origin);
-    if (app === undefined) return undefined;
-    // update information
-    if (app.title !== body.title || app.favicon !== body.favicon) {
-        app.title = body.title;
-        app.favicon = body.favicon;
-        app.updated = Date.now();
-        await set_current_connected_apps(body.chain, current_info.current_identity_network, apps);
-    }
-
-    return await match_connected_app_state_async(app.state, {
-        denied: async () => false,
-        ask_on_use: async () => {
-            // query storage
-            const stored = await find_current_session_connected_app_message(
-                body.chain,
-                current_info.current_identity_network,
-                body.origin,
-                body.message_id,
-            );
-            return stored;
-        },
-        granted: async () => true,
-        granted_expired: async (expired) => {
-            const now = Date.now();
-            if (now < expired) return true;
-            return undefined;
-        },
-    });
-};
 
 const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async (req, res) => {
     if (!req.body) return res.send({ err: 'request body is undefined' });
@@ -148,7 +115,7 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
     } finally {
         if (action) await delete_popup_action(action); // * delete action
         if (current_info !== undefined) {
-            await delete_current_session_connected_app_message(
+            await delete_current_session_connected_app_once(
                 body.chain,
                 current_info.current_identity_network,
                 body.origin,
@@ -159,3 +126,62 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
 };
 
 export default handler;
+
+const find_connected = async (current_info: CurrentInfo, body: RequestBody): Promise<boolean | undefined> => {
+    // console.error(`🚀 ~ const find_connected= ~ current_info:`, current_info);
+    const apps = match_chain(body.chain, { ic: () => current_info.current_connected_apps.ic });
+    const app = apps.find((app) => app.origin === body.origin);
+    if (app === undefined) return undefined;
+    // update information
+    if (app.title !== body.title || app.favicon !== body.favicon) {
+        app.title = body.title;
+        app.favicon = body.favicon;
+        app.updated = Date.now();
+        await set_current_connected_apps(body.chain, current_info.current_identity_network, apps);
+    }
+
+    return await match_connected_app_state_async(app.state, {
+        denied: async () => false,
+        ask_on_use: async () => {
+            // query storage
+            const stored = await find_current_session_connected_app_once(
+                body.chain,
+                current_info.current_identity_network,
+                body.origin,
+                body.message_id,
+            );
+            return stored;
+        },
+        granted: async () => true,
+        denied_session: async () => {
+            // query storage
+            const stored = await find_current_session_connected_app_session(
+                body.chain,
+                current_info.current_identity_network,
+                body.origin,
+            );
+            if (stored === false) return false;
+            return undefined;
+        },
+        granted_session: async () => {
+            // query storage
+            const stored = await find_current_session_connected_app_session(
+                body.chain,
+                current_info.current_identity_network,
+                body.origin,
+            );
+            if (stored === true) return true;
+            return undefined;
+        },
+        denied_expired: async (expired) => {
+            const now = Date.now();
+            if (expired.created <= now && now < expired.created + expired.duration) return false;
+            return undefined;
+        },
+        granted_expired: async (expired) => {
+            const now = Date.now();
+            if (expired.created <= now && now < expired.created + expired.duration) return true;
+            return undefined;
+        },
+    });
+};

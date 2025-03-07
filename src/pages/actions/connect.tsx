@@ -5,7 +5,8 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import Icon from '~components/icon';
 import { showToast } from '~components/toast';
 import { useCurrentConnectedApps } from '~hooks/store/local-secure';
-import { set_current_session_connected_app_message } from '~hooks/store/session';
+import { set_current_session_connected_app_once } from '~hooks/store/session';
+import { MINUTE } from '~lib/utils/datetime';
 import type { PopupAction } from '~types/actions';
 import type { ConnectAction } from '~types/actions/connect';
 import type { ConnectedApp, ConnectedAppState } from '~types/connect';
@@ -37,7 +38,7 @@ function ConnectActionPage({
                     case 'granted':
                         return 'granted';
                     case 'granted_5m':
-                        return { granted_expired: now + 1000 * 50 * 5 };
+                        return { granted_expired: { created: now, duration: MINUTE * 5 } };
                 }
             })();
             const app: ConnectedApp = {
@@ -53,7 +54,7 @@ function ConnectActionPage({
                     () =>
                         new Promise<void>((resolve) => {
                             if (type === 'deny_once') {
-                                set_current_session_connected_app_message(
+                                set_current_session_connected_app_once(
                                     connect.chain,
                                     current_identity_network,
                                     connect.origin,
@@ -61,7 +62,7 @@ function ConnectActionPage({
                                     false,
                                 ).then(resolve);
                             } else if (type === 'granted_once') {
-                                set_current_session_connected_app_message(
+                                set_current_session_connected_app_once(
                                     connect.chain,
                                     current_identity_network,
                                     connect.origin,
