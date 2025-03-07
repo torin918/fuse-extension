@@ -2,7 +2,7 @@ import { Storage } from '@plasmohq/storage';
 
 import { is_same_popup_action, type PopupAction, type PopupActions } from '~types/actions';
 import { match_chain, type Chain } from '~types/chain';
-import { type CurrentIdentityNetwork, type IdentityNetwork } from '~types/network';
+import { type CurrentIdentityNetwork } from '~types/network';
 
 import {
     LOCAL_KEY_CACHED_KEY,
@@ -220,27 +220,36 @@ export const reset_current_session_connected_app = async (
 
 // temp approve action
 export const find_current_session_approve = async (
-    identity_network: IdentityNetwork,
+    chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     origin: string,
     approve_id: string,
 ): Promise<boolean | undefined> => {
+    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    if (!identity_network) return;
     const key = SESSION_KEY_CURRENT_SESSION_APPROVE(identity_network, origin, approve_id);
     return await SESSION_STORAGE.get<boolean>(key);
 };
 export const delete_current_session_approve = async (
-    identity_network: IdentityNetwork,
+    chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     origin: string,
     approve_id: string,
 ): Promise<void> => {
+    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    if (!identity_network) return;
     const key = SESSION_KEY_CURRENT_SESSION_APPROVE(identity_network, origin, approve_id);
     await SESSION_STORAGE.remove(key);
 };
 export const set_current_session_approve = async (
-    identity_network: IdentityNetwork,
+    chain: Chain,
+    current_identity_network: CurrentIdentityNetwork,
     origin: string,
     approve_id: string,
     approved: boolean,
 ): Promise<void> => {
+    const identity_network = match_chain(chain, { ic: () => current_identity_network.ic });
+    if (!identity_network) return;
     const key = SESSION_KEY_CURRENT_SESSION_APPROVE(identity_network, origin, approve_id);
     await SESSION_STORAGE.set(key, approved);
 };

@@ -3,9 +3,10 @@ import { v4 as uuid } from 'uuid';
 
 import { refreshPasswordDirectly, setPasswordHashedDirectly } from '~hooks/store';
 import { setPrivateKeysDirectly } from '~hooks/store/local-secure';
+import { inner_get_identity_address } from '~hooks/store/local-secure/memo/identity';
 import { validate_mnemonic } from '~lib/mnemonic';
 import { check_password, hash_password } from '~lib/password';
-import type { PrivateKeys } from '~types/identity';
+import type { CombinedIdentityKey, PrivateKeys } from '~types/identity';
 import { CurrentState } from '~types/state';
 
 export const useRestoreAccount = (
@@ -58,6 +59,9 @@ const new_account_by_mnemonic = async (
     const current = uuid();
     const created = Date.now();
     const name = `Account #1`;
+
+    const key: CombinedIdentityKey = { mnemonic: { type: 'mnemonic', mnemonic, subaccount: 0 } };
+
     const private_keys: PrivateKeys = {
         mnemonic,
         keys: [
@@ -67,7 +71,8 @@ const new_account_by_mnemonic = async (
                 updated: created,
                 name,
                 icon: '😀',
-                key: { mnemonic: { type: 'mnemonic', mnemonic, subaccount: 0 } },
+                key,
+                address: inner_get_identity_address(key),
             },
         ],
         current,

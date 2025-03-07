@@ -25,9 +25,8 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
     if (!current_info) return res.send({ ok: false });
 
     const connected = await query_current_session_connected_app(
-        current_info.current_identity,
-        current_info.current_chain_network,
         body.chain,
+        current_info.current_identity_network,
         body.origin,
     );
     return res.send({ ok: !!connected });

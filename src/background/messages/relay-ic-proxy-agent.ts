@@ -218,11 +218,10 @@ const intercept_request = async (origin: string, msg: ProxyMessage): Promise<Res
                 return handle_error(msg.id, `${e}`);
             } finally {
                 if (action) await delete_popup_action(action); // * delete action
-                if (approve_id) {
+                if (approve_id && current_info.current_identity_network.ic) {
                     await delete_current_session_approve(
-                        current_info.current_identity,
-                        current_info.current_chain_network,
                         'ic',
+                        current_info.current_identity_network,
                         origin,
                         approve_id,
                     );
@@ -238,10 +237,10 @@ const find_approved = async (
     origin: string,
     approve_id: string,
 ): Promise<boolean | undefined> => {
+    if (!current_info.current_identity_network.ic) return undefined;
     const approved = await find_current_session_approve(
-        current_info.current_identity,
-        current_info.current_chain_network,
         'ic',
+        current_info.current_identity_network,
         origin,
         approve_id,
     );

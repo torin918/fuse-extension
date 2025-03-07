@@ -18,7 +18,7 @@ function ApproveIcActionPage({
     approve_ic: ApproveIcAction;
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) {
-    const [current_connected_apps, , { current_identity, current_chain_network }] = useCurrentConnectedApps();
+    const [current_connected_apps, , { current_identity_network }] = useCurrentConnectedApps();
 
     const app = useMemo(() => {
         if (!current_connected_apps) return undefined;
@@ -30,25 +30,22 @@ function ApproveIcActionPage({
 
     const onAction = useCallback(
         async (type: 'deny' | 'approve') => {
-            if (!current_identity) return;
-            if (!current_chain_network) return;
+            if (!current_identity_network) return;
             // record
             const approve_id = get_popup_action_id(action);
             new Promise<void>((resolve) => {
                 if (type === 'deny') {
                     set_current_session_approve(
-                        current_identity,
-                        current_chain_network,
                         'ic',
+                        current_identity_network,
                         approve_ic.origin,
                         approve_id,
                         false,
                     ).then(resolve);
                 } else if (type === 'approve') {
                     set_current_session_approve(
-                        current_identity,
-                        current_chain_network,
                         'ic',
+                        current_identity_network,
                         approve_ic.origin,
                         approve_id,
                         true,
@@ -56,7 +53,7 @@ function ApproveIcActionPage({
                 } else resolve();
             }).then(() => deletePopupAction(action));
         },
-        [approve_ic, deletePopupAction, action, current_identity, current_chain_network],
+        [approve_ic, deletePopupAction, action, current_identity_network],
     );
     return (
         <div>

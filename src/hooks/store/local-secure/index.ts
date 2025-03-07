@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { SecureStorage } from '@plasmohq/storage/secure';
 
@@ -29,7 +29,7 @@ import {
     LOCAL_SECURE_KEY_PRIVATE_KEYS,
 } from './keys';
 import { useCurrentIdentityBy } from './memo/current';
-import { inner_get_identity_address, useIdentityKeysBy, useIdentityKeysCountBy } from './memo/identity';
+import { useIdentityKeysBy, useIdentityKeysCountBy } from './memo/identity';
 import { usePrivateKeysInner } from './private_keys';
 import { useSecureStorageInner } from './storage';
 
@@ -80,7 +80,16 @@ export const useCurrentConnectedApps = () => {
     const storage = useSecureStorageBy(password);
     const [private_keys] = usePrivateKeysInner(storage);
     const [current_chain_network] = useCurrentChainNetworkInner(storage, private_keys?.current);
-    return useCurrentConnectedAppsInner(storage, private_keys?.current, current_chain_network);
+    const current_identity_network: CurrentIdentityNetwork | undefined = useMemo(() => {
+        if (!private_keys) return undefined;
+        const current = private_keys.keys.find((i) => i.id === private_keys.current);
+        if (!current) return undefined;
+        const address = current.address;
+        return {
+            ic: address.ic ? { chain: 'ic', owner: address.ic.owner, network: current_chain_network.ic } : undefined,
+        };
+    }, [private_keys, current_chain_network]);
+    return useCurrentConnectedAppsInner(storage, current_identity_network);
 };
 
 export const useCurrentIdentity = () => {
@@ -144,7 +153,7 @@ const _inner_get_current_address = async (): Promise<
     const current = private_keys.keys.find((i) => i.id === private_keys.current);
     if (!current) throw new Error('can not find current identity');
 
-    const current_address = inner_get_identity_address(current.key);
+    const current_address = current.address;
 
     return { current_address, storage, private_keys, current };
 };

@@ -287,11 +287,11 @@ export const inner_show_identity_key = (private_keys: PrivateKeys, identity_key:
     created: identity_key.created,
     name: identity_key.name,
     icon: identity_key.icon,
-    address: inner_get_identity_address(identity_key.key),
     key: match_combined_identity_key<CombinedShowIdentityKey>(identity_key.key, {
         mnemonic: (mnemonic) => ({ type: 'mnemonic', subaccount: mnemonic.subaccount, parsed: mnemonic.parsed }),
         private_key: (private_key) => ({ type: 'private_key', chain: private_key.chain, parsed: private_key.parsed }),
     }),
+    address: identity_key.address,
 
     deletable:
         private_keys.keys.length > 1 &&

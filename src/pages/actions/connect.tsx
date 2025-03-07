@@ -19,12 +19,11 @@ function ConnectActionPage({
     connect: ConnectAction;
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) {
-    const [, , { current_chain_network, current_identity, pushOrUpdateConnectedApp }] = useCurrentConnectedApps();
+    const [, , { current_identity_network, pushOrUpdateConnectedApp }] = useCurrentConnectedApps();
 
     const onAction = useCallback(
         async (type: 'deny' | 'deny_once' | 'granted_once' | 'granted' | 'granted_5m') => {
-            if (!current_identity) return;
-            if (!current_chain_network) return;
+            if (!current_identity_network) return;
             // insert connected app info
             const now = Date.now();
             const state = await (async (): Promise<ConnectedAppState> => {
@@ -55,18 +54,16 @@ function ConnectActionPage({
                         new Promise<void>((resolve) => {
                             if (type === 'deny_once') {
                                 set_current_session_connected_app_message(
-                                    current_identity,
-                                    current_chain_network,
                                     connect.chain,
+                                    current_identity_network,
                                     connect.origin,
                                     connect.message_id,
                                     false,
                                 ).then(resolve);
                             } else if (type === 'granted_once') {
                                 set_current_session_connected_app_message(
-                                    current_identity,
-                                    current_chain_network,
                                     connect.chain,
+                                    current_identity_network,
                                     connect.origin,
                                     connect.message_id,
                                     true,
@@ -76,7 +73,7 @@ function ConnectActionPage({
                 )
                 .then(() => deletePopupAction(action));
         },
-        [connect, pushOrUpdateConnectedApp, deletePopupAction, action, current_identity, current_chain_network],
+        [connect, pushOrUpdateConnectedApp, deletePopupAction, action, current_identity_network],
     );
     return (
         <div className="flex h-screen w-full flex-col justify-between">

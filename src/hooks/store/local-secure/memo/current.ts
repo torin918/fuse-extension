@@ -16,7 +16,7 @@ export const useCurrentIdentityBy = (
         if (!current) return undefined;
 
         // ! refresh agent
-        agent_refresh_unique_identity(private_keys, current_chain_network); // * refresh identity
+        agent_refresh_unique_identity(current, current_chain_network); // * refresh identity
 
         return inner_show_identity_key(private_keys, current);
     }, [private_keys, current_chain_network]);

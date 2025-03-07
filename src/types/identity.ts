@@ -75,8 +75,8 @@ export interface ShowIdentityKey {
     created: number; // ms
     name: string; // show identity name
     icon: string;
-    address: IdentityAddress;
     key: CombinedShowIdentityKey;
+    address: IdentityAddress;
 
     deletable: boolean;
 }
