@@ -98,8 +98,8 @@ function HomePage({
                     >
                         <div
                             style={{
-                                lineHeight: '30px',
-                                fontSize: '30px',
+                                lineHeight: '22px',
+                                fontSize: '22px',
                             }}
                         >
                             {current_identity.icon}
