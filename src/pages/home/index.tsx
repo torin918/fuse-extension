@@ -6,7 +6,6 @@ import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store/local';
 import { truncate_text } from '~lib/utils/text';
-import type { MainPageState } from '~pages/functions';
 import type { ShowIdentityKey } from '~types/identity';
 import { get_token_unique_id, match_combined_token_info } from '~types/tokens';
 
@@ -14,13 +13,7 @@ import { AddressTooltip } from './components/address-tooltip';
 import { ShowSingleAddress } from './components/show-address';
 import { HomeShowToken } from './components/show-token';
 
-function HomePage({
-    setState,
-    current_identity,
-}: {
-    setState: (state: MainPageState) => void;
-    current_identity: ShowIdentityKey;
-}) {
+function HomePage({ current_identity }: { current_identity: ShowIdentityKey }) {
     const navigate = useNavigate();
 
     const current_tokens = useTokenInfoCurrentRead();
@@ -139,7 +132,7 @@ function HomePage({
                 <div className="flex items-center gap-3">
                     {[
                         { callback: () => navigate('/home/token/view'), icon: 'icon-search' },
-                        { callback: () => setState('record'), icon: 'icon-history' },
+                        { callback: () => navigate('/home/records'), icon: 'icon-history' },
                         { callback: () => navigate('/home/settings'), icon: 'icon-setting' },
                     ].map(({ callback, icon }) => (
                         <div key={icon} onClick={callback}>

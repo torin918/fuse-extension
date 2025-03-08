@@ -6,10 +6,9 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import type { MainPageState } from '~pages/functions';
 import { FunctionHeader } from '~pages/functions/components/header';
 
-function FunctionTokenIcPage(setState: (state: MainPageState) => void) {
+function FunctionTokenIcPage() {
     const current_state = useCurrentState();
 
     const { setHide, goto: _goto, navigate } = useGoto();
@@ -67,7 +66,7 @@ function FunctionTokenIcPage(setState: (state: MainPageState) => void) {
                                 { callback: () => navigate('/home/transfer'), icon: 'icon-send', name: 'Send' },
                                 { callback: () => navigate('/home/receive'), icon: 'icon-receive', name: 'Receive' },
                                 { callback: () => navigate('/home/swap'), icon: 'icon-swap', name: 'Swap' },
-                                { callback: () => setState('record'), icon: 'icon-historys', name: 'History' },
+                                // { callback: () => setState('record'), icon: 'icon-historys', name: 'History' },
                             ].map(({ callback, icon, name }) => (
                                 <div
                                     key={icon}

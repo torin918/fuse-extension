@@ -14,7 +14,6 @@ export type SettingPageState = 'home';
 
 function FunctionSettingsPage() {
     const current_state = useCurrentState();
-
     const { setHide, goto } = useGoto();
 
     const account_count = useIdentityKeysCount();
