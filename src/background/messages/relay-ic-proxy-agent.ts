@@ -146,7 +146,7 @@ const restore_service = async (service: [string, string][]): Promise<IDL.Service
         const single_api = `${name}: ${func}`.replaceAll('→', '->');
         // console.debug(`🚀 ~ const restore_service= ~ single_api:`, single_api);
         const [_name, wrapped_func] = await parse_func_candid(single_api, (s) => s, false);
-        fields[_name] = mapping_func(IDL, wrapped_func) as any; // TODO version is not match, check plug wallet again
+        fields[_name] = mapping_func(IDL, wrapped_func) as any;
     }
     return new IDL.ServiceClass(fields);
 };
@@ -163,12 +163,11 @@ const intercept_request = async (
 ): Promise<MessageResult<ApprovedIcRecord | undefined, ResponseBody>> => {
     switch (msg.type) {
         case ProxyMessageKind.Query: {
-            break; // TODO query
+            break; // pass query
         }
         case ProxyMessageKind.Call: {
             // * intercept
             const [canister_id, { methodName: method, arg }] = msg.args;
-            // TODO pass canister_id.method or not
             // do approve
             const window_timeout_and_func = find_window_timeout_and_func(origin, canister_id, method);
             if (window_timeout_and_func === undefined)
@@ -218,6 +217,12 @@ const intercept_request = async (
                     args_text,
                     state: { err: 'dummy' },
                 };
+
+                // ! check pass canister_id.method or not
+                const approved = await find_approved(approve_action, current_info, approve_id);
+                if (approved !== undefined) {
+                    return approved ? { ok: approve_ic } : { err: handle_error(msg.id, `User refused`) };
+                }
 
                 action = { approve_ic: approve_action };
                 await push_popup_action(action); // * push action

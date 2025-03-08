@@ -9,7 +9,7 @@ import type { GotoFunction } from '~hooks/memo/goto';
 import { useCurrentConnectedIcIdentity } from '~hooks/memo/identity';
 import { identity_network_callback } from '~hooks/store/common';
 import { push_local_record, useTokenBalanceIcByRefreshing, useTokenInfoIcByInitial } from '~hooks/store/local';
-import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { useCurrentIdentity, useRecentAddresses } from '~hooks/store/local-secure';
 import { icrc1_transfer, transfer } from '~lib/canisters/icrc1';
 import type { MessageResult } from '~lib/messages';
 import { truncate_principal, truncate_text } from '~lib/utils/text';
@@ -27,6 +27,7 @@ function FunctionTransferTokenIcAmountPage({
     goto: GotoFunction;
 }) {
     const { current_identity, current_identity_network } = useCurrentIdentity();
+    const [, { pushRecentAddress }] = useRecentAddresses();
 
     const token = useTokenInfoIcByInitial(canister_id);
 
@@ -120,9 +121,22 @@ function FunctionTransferTokenIcAmountPage({
                 );
             }
 
+            pushRecentAddress({ type: 'ic', address: to });
+
             setTransferring(false);
         }
-    }, [token, to, amount, identity, balance, _goto, transferring, refreshBalance, current_identity_network]);
+    }, [
+        token,
+        to,
+        amount,
+        identity,
+        balance,
+        _goto,
+        transferring,
+        refreshBalance,
+        current_identity_network,
+        pushRecentAddress,
+    ]);
 
     const sendRef = useRef<HTMLInputElement>(null);
 
