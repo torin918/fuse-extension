@@ -29,7 +29,7 @@ export const FunctionHeader = ({
                     <Icon
                         name="icon-close"
                         className="h-5 w-5 cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                    ></Icon>
+                    />
                 </div>
             ) : (
                 <div></div>

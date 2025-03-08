@@ -76,7 +76,7 @@ function FunctionTokenIcPage() {
                                     <Icon
                                         name={icon}
                                         className="h-[20px] w-[20px] cursor-pointer font-semibold text-[#FFCF13]"
-                                    ></Icon>
+                                    />
                                     <span className="pt-1 text-xs text-[#EEEEEE]">{name}</span>
                                 </div>
                             ))}

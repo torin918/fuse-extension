@@ -127,7 +127,7 @@ function FunctionSettingsAddressesPage() {
                                                                 <Icon
                                                                     name="icon-copy"
                                                                     className="mr-2 h-3 w-3 shrink-0 cursor-pointer text-[#999999]"
-                                                                ></Icon>
+                                                                />
                                                                 <span>Copy</span>
                                                             </div>
                                                         </CopyToClipboard>
@@ -142,7 +142,7 @@ function FunctionSettingsAddressesPage() {
                                                             <Icon
                                                                 name="icon-edit"
                                                                 className="mr-2 h-4 w-4 shrink-0 cursor-pointer text-[#999999]"
-                                                            ></Icon>
+                                                            />
                                                             <span>Edit</span>
                                                         </div>
                                                         <div
@@ -157,7 +157,7 @@ function FunctionSettingsAddressesPage() {
                                                             <Icon
                                                                 name="icon-delete"
                                                                 className="mr-2 h-4 w-4 shrink-0 cursor-pointer text-[#999999]"
-                                                            ></Icon>
+                                                            />
                                                             <span>Delete</span>
                                                         </div>
                                                     </div>
@@ -191,7 +191,7 @@ function FunctionSettingsAddressesPage() {
                                             <Icon
                                                 name="icon-add"
                                                 className="ml-4 h-4 w-4 shrink-0 cursor-pointer text-[#FFCF13] duration-300 hover:opacity-80"
-                                            ></Icon>
+                                            />
                                         </div>
                                     </div>
                                 ))}

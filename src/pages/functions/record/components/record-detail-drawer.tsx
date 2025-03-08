@@ -86,7 +86,7 @@ const RecordDetailDrawer = ({
                                                 <Icon
                                                     name="icon-copy"
                                                     className="ml-2 h-3 w-3 cursor-pointer text-[#EEEEEE] duration-300 hover:text-[#FFCF13]"
-                                                ></Icon>
+                                                />
                                             </CopyToClipboard>
                                         </div>
                                     </div>
@@ -100,7 +100,7 @@ const RecordDetailDrawer = ({
                                                 <Icon
                                                     name="icon-copy"
                                                     className="ml-2 h-3 w-3 cursor-pointer text-[#EEEEEE] duration-300 hover:text-[#FFCF13]"
-                                                ></Icon>
+                                                />
                                             </CopyToClipboard>
                                         </div>
                                     </div>

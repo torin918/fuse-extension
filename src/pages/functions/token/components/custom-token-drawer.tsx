@@ -62,7 +62,7 @@ const CustomTokenDrawer = ({
                             </DrawerClose>
                         </div>
                     </DrawerTitle>
-                    <DrawerDescription className="hidden"></DrawerDescription>
+                    <DrawerDescription className="hidden" />
                 </DrawerHeader>
 
                 <div className="flex h-full w-full shrink flex-col justify-between bg-[#0a0600] px-5 pb-5">

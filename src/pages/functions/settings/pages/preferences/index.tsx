@@ -41,7 +41,7 @@ function FunctionSettingsPreferencesPage() {
                         arrow={false}
                         right={
                             <div className="switch-xs">
-                                <Switch defaultSelected color="success" size="sm"></Switch>
+                                <Switch defaultSelected color="success" size="sm" />
                             </div>
                         }
                     />

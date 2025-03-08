@@ -8,6 +8,7 @@ import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store/local';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import type { ShowIdentityKey } from '~types/identity';
 import { get_token_unique_id, match_combined_token_info } from '~types/tokens';
@@ -36,6 +37,7 @@ function HomePage() {
 export default HomePage;
 
 function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey }) {
+    const toast = useSonnerToast();
     const navigate = useNavigate();
 
     const current_tokens = useTokenInfoCurrentRead();
@@ -190,8 +192,22 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                     {[
                         { callback: () => navigate('/home/transfer'), icon: 'icon-send', name: 'Send' },
                         { callback: () => navigate('/home/receive'), icon: 'icon-receive', name: 'Receive' },
-                        { callback: () => navigate('/home/swap'), icon: 'icon-swap', name: 'Swap' },
-                        { callback: () => navigate('/home/dapps'), icon: 'icon-dapps', name: 'Dapps' },
+                        {
+                            callback: () => {
+                                toast.info('not implemented');
+                                // navigate('/home/swap')
+                            },
+                            icon: 'icon-swap',
+                            name: 'Swap',
+                        },
+                        {
+                            callback: () => {
+                                toast.info('not implemented');
+                                // navigate('/home/dapps')
+                            },
+                            icon: 'icon-dapps',
+                            name: 'Dapps',
+                        },
                     ].map(({ callback, icon, name }) => (
                         <div
                             key={icon}
@@ -201,7 +217,7 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                             <Icon
                                 name={icon}
                                 className="h-[20px] w-[20px] cursor-pointer font-semibold text-[#FFCF13]"
-                            ></Icon>
+                            />
                             <span className="pt-1 text-xs text-[#EEEEEE]">{name}</span>
                         </div>
                     ))}

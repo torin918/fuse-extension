@@ -58,7 +58,11 @@ function FunctionTransferTokenIcPage() {
         >
             <FusePageTransition setHide={setHide}>
                 <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
-                    <FunctionHeader title={'Send'} onBack={() => _goto(-1)} onClose={() => _goto('/')} />
+                    <FunctionHeader
+                        title={'Send'}
+                        onBack={() => (state === 'amount' ? setState('address') : _goto(-1))}
+                        onClose={() => _goto('/')}
+                    />
 
                     {state === 'address' && (
                         <FunctionTransferTokenIcAddressPage

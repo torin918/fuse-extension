@@ -52,7 +52,7 @@ export const AddAddressDrawer = ({
         <Drawer open={open} onOpenChange={setOpen} container={container}>
             <DrawerTrigger>
                 {/* {trigger} */}
-                <div className="p-5 w-full">
+                <div className="w-full p-5">
                     <Button
                         className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
                         onPress={() => setOpen(true)}
@@ -64,7 +64,7 @@ export const AddAddressDrawer = ({
             <DrawerContent>
                 <DrawerHeader className="border-t border-[#333333] bg-[#0a0600] text-left">
                     <DrawerTitle>
-                        <div className="flex justify-between items-center py-3 w-full text-white">
+                        <div className="flex w-full items-center justify-between py-3 text-white">
                             <span className="text-sm">Add Address</span>
                             <span
                                 className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
@@ -74,7 +74,7 @@ export const AddAddressDrawer = ({
                             </span>
                         </div>
                     </DrawerTitle>
-                    <DrawerDescription></DrawerDescription>
+                    <DrawerDescription />
                 </DrawerHeader>
                 <div className="flex h-full w-full flex-col justify-between bg-[#0a0600] px-5 pb-5">
                     <div className="w-full">
@@ -181,7 +181,7 @@ export const EditAddressDrawer = ({
             <DrawerContent>
                 <DrawerHeader className="border-t border-[#333333] bg-[#0a0600] text-left">
                     <DrawerTitle>
-                        <div className="flex justify-between items-center py-3 w-full text-white">
+                        <div className="flex w-full items-center justify-between py-3 text-white">
                             <span className="text-sm">Edit Address</span>
                             <span
                                 className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
@@ -191,7 +191,7 @@ export const EditAddressDrawer = ({
                             </span>
                         </div>
                     </DrawerTitle>
-                    <DrawerDescription></DrawerDescription>
+                    <DrawerDescription />
                 </DrawerHeader>
                 <div className="flex h-full w-full flex-col justify-between bg-[#0a0600] px-5 pb-5">
                     <div className="w-full">
@@ -229,7 +229,7 @@ export const EditAddressDrawer = ({
                                     <Icon
                                         name="icon-delete"
                                         className="mr-2 h-4 w-4 shrink-0 cursor-pointer text-[#FF2C40]"
-                                    ></Icon>
+                                    />
                                     Delete Address
                                 </div>
                             )}

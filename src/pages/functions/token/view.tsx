@@ -153,7 +153,7 @@ function FunctionTokenViewPage() {
 
                         <div className="w-full px-5">
                             <div className="flex h-12 w-full items-center rounded-xl border border-[#333333] px-3 transition duration-300 hover:border-[#FFCF13]">
-                                <Icon name="icon-search" className="h-[16px] w-[16px] text-[#999999]"></Icon>
+                                <Icon name="icon-search" className="h-[16px] w-[16px] text-[#999999]" />
                                 <input
                                     type="text"
                                     className="h-full w-full border-transparent bg-transparent pl-3 text-base outline-none placeholder:text-sm"
@@ -221,13 +221,10 @@ function FunctionTokenViewPage() {
                                                     <Icon
                                                         name="icon-empty"
                                                         className="h-[70px] w-[70px] text-[#999999]"
-                                                    ></Icon>
+                                                    />
                                                     <p className="text-sm text-[#999999]">No data found</p>
                                                     <span className="mt-6 flex cursor-pointer items-center rounded-full bg-[#222222] px-3 py-2 text-sm duration-300 hover:bg-[#333333]">
-                                                        <Icon
-                                                            name="icon-add"
-                                                            className="mr-2 h-4 w-4 text-[#FFCF13]"
-                                                        ></Icon>
+                                                        <Icon name="icon-add" className="mr-2 h-4 w-4 text-[#FFCF13]" />
                                                         Add
                                                     </span>
                                                 </div>

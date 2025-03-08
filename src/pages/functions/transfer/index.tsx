@@ -91,7 +91,7 @@ function FunctionTransferPage() {
 
                     <div className="w-full px-5">
                         <div className="flex h-12 w-full items-center rounded-xl border border-[#333333] px-3 transition duration-300 hover:border-[#FFCF13]">
-                            <Icon name="icon-search" className="h-[16px] w-[16px] text-[#999999]"></Icon>
+                            <Icon name="icon-search" className="h-[16px] w-[16px] text-[#999999]" />
                             <input
                                 type="text"
                                 className="h-full w-full border-transparent bg-transparent pl-3 text-base outline-none placeholder:text-sm"
