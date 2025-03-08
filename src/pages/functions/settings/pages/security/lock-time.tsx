@@ -3,16 +3,18 @@ import { useState } from 'react';
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
-import { showToast } from '~components/toast';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { useSonnerToast } from '~hooks/toast';
 
 import { FunctionHeader } from '../../../components/header';
 
-function FunctionSettingsScreenLock() {
+function FunctionSettingsSecurityLockTimePage() {
+    const toast = useSonnerToast();
     const current_state = useCurrentState();
-
     const { setHide, goto } = useGoto();
+
+    // const [idle, setIdle] = useUserSettingsIdle();
 
     const [selectedId, setSelectedId] = useState(1);
     const customTimes = [
@@ -26,7 +28,7 @@ function FunctionSettingsScreenLock() {
 
     const confirm = (item: { id: any; expired?: string }) => {
         setSelectedId(item.id);
-        showToast('Successfully set', 'success');
+        toast.success('Successfully set');
         goto(-1);
     };
     return (
@@ -63,4 +65,4 @@ function FunctionSettingsScreenLock() {
     );
 }
 
-export default FunctionSettingsScreenLock;
+export default FunctionSettingsSecurityLockTimePage;

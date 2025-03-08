@@ -4,25 +4,33 @@ import { useState } from 'react';
 import InputPassword from '~components/input-password';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
-import { showToast } from '~components/toast';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { useSonnerToast } from '~hooks/toast';
 
 import { FunctionHeader } from '../../../components/header';
 
-function FunctionSettingsChangePwdPage() {
-    const current_address = useCurrentState();
+function FunctionSettingsSecurityChangePasswordPage() {
+    const toast = useSonnerToast();
+    const current_state = useCurrentState();
+
+    // const changePassword = useChangePassword();
+    // changePassword('1111qqqq', 'qqqq1111').then((r) => {
+    //     if (r === undefined) return;
+    //     if (r === false) return;
+    //     // notice successful
+    // });
 
     const { setHide, goto } = useGoto();
-    const [oldpassword, setOldPassword] = useState('');
-    const [newpassword, setNewPassword] = useState('');
+    const [old_password, setOldPassword] = useState('');
+    const [new_password, setNewPassword] = useState('');
 
     const confirm = () => {
-        showToast('Successfully set', 'success');
+        toast.success('Successfully set');
         goto(-1);
     };
     return (
-        <FusePage current_state={current_address}>
+        <FusePage current_state={current_state}>
             <FusePageTransition
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 setHide={setHide}
@@ -40,21 +48,21 @@ function FunctionSettingsChangePwdPage() {
                             <label className="my-3 block text-sm">Old Password</label>
                             <InputPassword
                                 placeholder="Enter old password"
-                                onChange={() => setOldPassword(oldpassword)}
+                                onChange={() => setOldPassword(old_password)}
                             />
                         </div>
                         <div className="mt-5 w-full">
                             <label className="my-3 block text-sm">New Password</label>
                             <InputPassword
                                 placeholder="At least 8 characters"
-                                onChange={() => setNewPassword(newpassword)}
+                                onChange={() => setNewPassword(new_password)}
                             />
                         </div>
                         <div className="mt-5 w-full">
                             <label className="my-3 block text-sm">Confirm New Password</label>
                             <InputPassword
                                 placeholder="Confirm Password"
-                                onChange={() => setNewPassword(newpassword)}
+                                onChange={() => setNewPassword(new_password)}
                             />
                         </div>
                     </div>
@@ -73,4 +81,4 @@ function FunctionSettingsChangePwdPage() {
     );
 }
 
-export default FunctionSettingsChangePwdPage;
+export default FunctionSettingsSecurityChangePasswordPage;

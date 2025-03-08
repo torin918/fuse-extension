@@ -9,9 +9,9 @@ import { useIdentityKeys } from '~hooks/store/local-secure';
 import type { IdentityId } from '~types/identity';
 
 import { FunctionHeader } from '../../../components/header';
-import BackupMnemonic from '../../components/backup_mnemonic';
+import BackupMnemonicDrawer from '../../components/show-mnemonic-drawer';
 
-function FunctionSettingsBackup() {
+function FunctionSettingsSecurityBackupPage() {
     const current_state = useCurrentState();
 
     const { setHide, goto } = useGoto();
@@ -68,7 +68,7 @@ function FunctionSettingsBackup() {
                         </div>
                     ))}
 
-                    <BackupMnemonic
+                    <BackupMnemonicDrawer
                         isOpen={isOpenSeedPhrase}
                         setIsOpen={(isOpen: boolean) => {
                             if (!isOpen) {
@@ -87,4 +87,4 @@ function FunctionSettingsBackup() {
     );
 }
 
-export default FunctionSettingsBackup;
+export default FunctionSettingsSecurityBackupPage;

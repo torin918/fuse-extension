@@ -15,7 +15,7 @@ import { useIdentityKeys } from '~hooks/store/local-secure';
 import { truncate_text } from '~lib/utils/text';
 
 import { FunctionHeader } from '../../../components/header';
-import BackupMnemonic from '../../components/backup_mnemonic';
+import BackupMnemonicDrawer from '../../components/show-mnemonic-drawer';
 
 function FunctionSettingsAccountsSinglePage() {
     const current_state = useCurrentState();
@@ -207,7 +207,7 @@ const InnerSingleAccountPage = ({ goto: _goto }: { goto: GotoFunction }) => {
                 onDelete={() => removeAccount(current.id)}
             />
 
-            <BackupMnemonic
+            <BackupMnemonicDrawer
                 isOpen={isOpenSeedPhrase}
                 setIsOpen={setIsOpenSeedPhrase}
                 onShowSeed={() => showSeedPhrase(current.id)}
@@ -215,7 +215,7 @@ const InnerSingleAccountPage = ({ goto: _goto }: { goto: GotoFunction }) => {
                 type="seed"
             />
 
-            <BackupMnemonic
+            <BackupMnemonicDrawer
                 isOpen={isOpenPrivatekey}
                 setIsOpen={setIsOpenPrivateKey}
                 onShowSeed={() => showPrivate(current.id)}

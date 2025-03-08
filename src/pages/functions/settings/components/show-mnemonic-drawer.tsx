@@ -10,7 +10,7 @@ import { verify_password } from '~lib/password';
 import { cn } from '~lib/utils/cn';
 
 type BackupType = 'seed' | 'private';
-const BackupMnemonic = ({
+const BackupMnemonicDrawer = ({
     isOpen,
     setIsOpen,
     onShowSeed,
@@ -144,4 +144,4 @@ const BackupMnemonic = ({
     );
 };
 
-export default BackupMnemonic;
+export default BackupMnemonicDrawer;

@@ -13,9 +13,9 @@ import CreateRestorePage from './initial/restore';
 import LockedPage from './locked';
 import WelcomePage from './welcome';
 import FunctionSettingsSecurityPage from './functions/settings/pages/security';
-import FunctionSettingsChangePwdPage from './functions/settings/pages/security/changepwd';
-import FunctionSettingsScreenLock from './functions/settings/pages/security/screenlock';
-import FunctionSettingsBackup from './functions/settings/pages/security/backup';
+import FunctionSettingsSecurityChangePasswordPage from './functions/settings/pages/security/password';
+import FunctionSettingsSecurityLockTimePage from './functions/settings/pages/security/lock-time';
+import FunctionSettingsSecurityBackupPage from './functions/settings/pages/security/backup';
 import FunctionSettingsPreferencesPage from './functions/settings/pages/preferences';
 import FunctionSettingsCurrency from './functions/settings/pages/preferences/currency';
 import FunctionSettingsLanguage from './functions/settings/pages/preferences/language';
@@ -72,9 +72,9 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/:id', element: <AccountsSinglePage /> }] : []),
         // settings/security
         ...(hit(wt, []) ? [{ path: '/home/settings/security', element: <FunctionSettingsSecurityPage /> }] : []),
-        ...(hit(wt, []) ? [{ path: '/home/settings/security/changepwd', element: <FunctionSettingsChangePwdPage /> }] : []),
-        ...(hit(wt, []) ? [{ path: '/home/settings/security/screenlock', element: <FunctionSettingsScreenLock /> }] : []),
-        ...(hit(wt, []) ? [{ path: '/home/settings/security/backup', element: <FunctionSettingsBackup /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/security/password', element: <FunctionSettingsSecurityChangePasswordPage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/security/lock-time', element: <FunctionSettingsSecurityLockTimePage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/security/backup', element: <FunctionSettingsSecurityBackupPage /> }] : []),
         // settings/preferences
         ...(hit(wt, []) ? [{ path: '/home/settings/preferences', element: <FunctionSettingsPreferencesPage /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/preferences/currency', element: <FunctionSettingsCurrency /> }] : []),
