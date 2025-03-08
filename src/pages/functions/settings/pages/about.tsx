@@ -13,11 +13,11 @@ import { SettingsGroup } from '../components/group';
 import { SettingsItem } from '../components/item';
 
 function FunctionSettingsAboutPage() {
-    const current_address = useCurrentState();
+    const current_state = useCurrentState();
 
     const { setHide, goto } = useGoto();
     return (
-        <FusePage current_state={current_address}>
+        <FusePage current_state={current_state}>
             <FusePageTransition
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 setHide={setHide}

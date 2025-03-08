@@ -12,7 +12,7 @@ import { FunctionHeader } from '../../../components/header';
 import BackupMnemonic from '../../components/backup_mnemonic';
 
 function FunctionSettingsBackup() {
-    const current_address = useCurrentState();
+    const current_state = useCurrentState();
 
     const { setHide, goto } = useGoto();
 
@@ -34,7 +34,7 @@ function FunctionSettingsBackup() {
     };
 
     return (
-        <FusePage current_state={current_address}>
+        <FusePage current_state={current_state}>
             <FusePageTransition
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 setHide={setHide}

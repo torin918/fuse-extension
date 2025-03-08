@@ -16,7 +16,7 @@ import { FunctionHeader } from '../../../components/header';
 import { AddAddressDrawer, EditAddressDrawer } from './components/drawer';
 
 function FunctionSettingsAddressesPage() {
-    const current_address = useCurrentState();
+    const current_state = useCurrentState();
 
     const { setHide, goto } = useGoto();
 
@@ -67,7 +67,7 @@ function FunctionSettingsAddressesPage() {
     const ref = useRef<HTMLDivElement>(null);
 
     return (
-        <FusePage current_state={current_address}>
+        <FusePage current_state={current_state}>
             <div ref={ref} className="relative h-full w-full overflow-hidden">
                 <FusePageTransition
                     className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"

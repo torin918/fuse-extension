@@ -10,7 +10,7 @@ import { useGoto } from '~hooks/memo/goto';
 import { FunctionHeader } from '../../../components/header';
 
 function FunctionSettingsLanguage() {
-    const current_address = useCurrentState();
+    const current_state = useCurrentState();
 
     const { setHide, goto } = useGoto();
 
@@ -34,7 +34,7 @@ function FunctionSettingsLanguage() {
         goto(-1);
     };
     return (
-        <FusePage current_state={current_address}>
+        <FusePage current_state={current_state}>
             <FusePageTransition
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 setHide={setHide}
