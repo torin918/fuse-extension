@@ -4,7 +4,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import Icon from '~components/icon';
 import { useSonnerToast } from '~hooks/toast';
 
-const ShowHistory = ({
+const RecordDetailDrawer = ({
     isOpen,
     setIsOpen,
     currentDetail,
@@ -143,4 +143,4 @@ const ShowHistory = ({
     );
 };
 
-export default ShowHistory;
+export default RecordDetailDrawer;

@@ -9,7 +9,7 @@ import { useCurrentIdentity } from '~hooks/store/local-secure';
 import { useFuseRecordList } from '~hooks/store/local/memo/record';
 
 import { FunctionHeader } from '../components/header';
-import ShowHistory from '../components/historydetail';
+import RecordDetailDrawer from './components/record-detail-drawer';
 
 function FunctionRecordsPage() {
     const current_state = useCurrentState();
@@ -173,7 +173,7 @@ function FunctionRecordsPage() {
                         </div>
                     </div>
                     {currentDetail && (
-                        <ShowHistory isOpen={isOpen} setIsOpen={setIsOpen} currentDetail={currentDetail} />
+                        <RecordDetailDrawer isOpen={isOpen} setIsOpen={setIsOpen} currentDetail={currentDetail} />
                     )}
                 </div>
             </FusePageTransition>
