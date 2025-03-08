@@ -11,6 +11,7 @@ import { FusePageTransition } from '~components/layouts/transition';
 import { ConfirmModal } from '~components/modals/confirm';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { useMounted } from '~hooks/memo/mounted';
 import { useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store/local';
 import { cn } from '~lib/utils/cn';
 import { resort_list } from '~lib/utils/sort';
@@ -125,8 +126,7 @@ function FunctionTokenViewPage() {
 
     // ! Switch has this problem.
     // ! Can't perform a React state update on a component that hasn't mounted yet
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
+    const mounted = useMounted();
 
     const isTokenExist = useCallback(
         (token: { ic: string }) => {

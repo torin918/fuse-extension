@@ -109,18 +109,20 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                 <div className="flex items-center">
                     <div
                         className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#333333] text-lg font-semibold text-[#999999]"
-                        onClick={() => navigate('/home/wallet/switch')}
+                        onClick={() => navigate('/home/switch/account')}
                     >
                         <div
                             style={{
                                 lineHeight: '22px',
                                 fontSize: '22px',
+                                transform: 'translateY(1.5px)',
                             }}
                         >
                             {current_identity.icon}
                         </div>
                     </div>
 
+                    {/** copy address  */}
                     <AddressTooltip
                         container={ref.current ?? undefined}
                         trigger={
@@ -151,6 +153,8 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                         }
                     />
                 </div>
+
+                {/** right icons */}
                 <div className="flex items-center gap-3">
                     {[
                         { callback: () => navigate('/home/token/view'), icon: 'icon-search' },

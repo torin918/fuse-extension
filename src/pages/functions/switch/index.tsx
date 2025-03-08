@@ -11,14 +11,16 @@ import { cn } from '~lib/utils/cn';
 import { format_number } from '~lib/utils/number';
 
 import { FunctionHeader } from '../components/header';
-import { AddWallet } from './components/addWallet';
+import { AddWalletDrawer } from './components/add-wallet-drawer';
 
-function SwitchWalletPage() {
-    const current_state = useCurrentState();
+function FunctionSwitchAccountPage() {
     const toast = useSonnerToast();
-    const { setHide, goto: _goto, navigate } = useGoto();
 
-    const { current_identity, identity_list, switchIdentity, pushIdentityByMainMnemonic } = useIdentityKeys();
+    const current_state = useCurrentState();
+    const { setHide, goto: _goto } = useGoto();
+
+    const { current_identity, main_mnemonic_identity, identity_list, switchIdentity, pushIdentityByMainMnemonic } =
+        useIdentityKeys();
 
     const ref = useRef<HTMLDivElement>(null);
 
@@ -27,7 +29,7 @@ function SwitchWalletPage() {
             <div ref={ref} className="relative h-full w-full overflow-hidden">
                 <FusePageTransition setHide={setHide}>
                     <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
-                        <FunctionHeader title={'Switch wallets'} onBack={() => _goto(-1)} onClose={() => _goto('/')} />
+                        <FunctionHeader title={'Switch Wallets'} onBack={() => _goto(-1)} onClose={() => _goto('/')} />
 
                         <div className="flex h-full w-full flex-col justify-between">
                             <div className="flex w-full flex-1 flex-col gap-y-4 overflow-y-auto px-5 pb-5 pt-5">
@@ -66,7 +68,7 @@ function SwitchWalletPage() {
                                 ))}
                             </div>
 
-                            <AddWallet
+                            <AddWalletDrawer
                                 trigger={
                                     <div className="p-5">
                                         <div className="flex h-12 w-full items-center justify-center rounded-xl bg-[#FFCF13] text-lg font-semibold text-black">
@@ -75,15 +77,16 @@ function SwitchWalletPage() {
                                     </div>
                                 }
                                 container={ref.current ?? undefined}
-                                onAddWallet={() => {
+                                onAddWalletByMainMnemonic={() => {
                                     pushIdentityByMainMnemonic().then((r) => {
                                         if (r === undefined) return;
                                         if (r === false) return;
                                         // notice successful
                                         toast.success('Create Account Success');
-                                        navigate(-2); // back 2 pages
                                     });
                                 }}
+                                goto={_goto}
+                                has_main_mnemonic={!!main_mnemonic_identity}
                             />
                         </div>
                     </div>
@@ -93,4 +96,4 @@ function SwitchWalletPage() {
     );
 }
 
-export default SwitchWalletPage;
+export default FunctionSwitchAccountPage;

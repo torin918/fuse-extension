@@ -29,9 +29,10 @@ import FunctionTransferTokenIcPage from './functions/transfer/token/ic';
 import FunctionTransferPage from './functions/transfer';
 import FunctionTokenIcPage from './functions/token/ic';
 import FunctionTokenViewPage from './functions/token/view';
-import FunctionSwitchWalletPage from './functions/switch';
+import FunctionSwitchAccountPage from './functions/switch';
 import FunctionRecordsPage from './functions/record';
 import HomePage from './home';
+import ImportExtraAccountPage from './functions/switch/pages/import-extra-account';
 
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
@@ -49,8 +50,9 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/', element: <HomePage /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home', element: <HomePage /> }] : []),
 
-        // wallet select
-        ...(hit(wt, []) ? [{ path: '/home/wallet/switch', element: <FunctionSwitchWalletPage /> }] : []),
+        // select wallet
+        ...(hit(wt, []) ? [{ path: '/home/switch/account', element: <FunctionSwitchAccountPage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/switch/account/import/:type', element: <ImportExtraAccountPage /> }] : []),
 
         // receive
         ...(hit(wt, []) ? [{ path: '/home/receive', element: <FunctionReceivePage /> }] : []),
