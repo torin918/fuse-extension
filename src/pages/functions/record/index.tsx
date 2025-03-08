@@ -2,11 +2,17 @@ import { useState } from 'react';
 
 import logo_icp from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
+import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { useFuseRecordList } from '~hooks/store/local/memo/record';
 import type { MainPageState } from '~pages/functions';
 
 import ShowHistory from '../components/historydetail';
 
 function RecordPage({ setState }: { setState: (state: MainPageState) => void }) {
+    const { current_identity_network } = useCurrentIdentity();
+    const [list, { done, load }] = useFuseRecordList(current_identity_network);
+    console.debug(`🚀 ~ RecordPage ~ list:`, list, done);
+
     const [isOpen, setIsOpen] = useState(false);
     const [currentDetail, setCurrentDetail] = useState<null>(null);
     const handleOpenDetail = (item: { type: string }) => {

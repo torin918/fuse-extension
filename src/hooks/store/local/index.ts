@@ -1,10 +1,9 @@
-import dayjs from 'dayjs';
-
 import { Storage } from '@plasmohq/storage';
 
 import type { IdentityNetwork } from '~types/network';
 import type { FuseRecord, FuseRecordList } from '~types/records';
 
+import { format_record_date } from '../common';
 import {
     LOCAL_KEY_CACHED_KEY,
     LOCAL_KEY_PASSWORD_HASHED,
@@ -27,6 +26,7 @@ import { useWelcomedInner } from './welcome';
 // * local -> current browser
 const LOCAL_STORAGE = new Storage({ area: 'local' }); // local
 // const LOCAL_SECURE_STORAGE = new SecureStorage({ area: 'local' }); // local
+export const __get_local_storage = () => LOCAL_STORAGE;
 
 // ================ hooks ================
 
@@ -88,6 +88,25 @@ export const get_cached_data = async (
 };
 
 // ---------- record ----------
+export const get_local_record_started = async (identity_network: IdentityNetwork): Promise<number> => {
+    const key = LOCAL_KEY_RECORD_STARTED(identity_network);
+    const value = (await LOCAL_STORAGE.get<number>(key)) ?? 0;
+    return value;
+};
+export const get_local_record_count = async (identity_network: IdentityNetwork): Promise<number> => {
+    const key = LOCAL_KEY_RECORD_COUNT(identity_network);
+    const value = (await LOCAL_STORAGE.get<number>(key)) ?? 0;
+    return value;
+};
+export const get_local_record_list = async (
+    identity_network: IdentityNetwork,
+    now: number,
+): Promise<FuseRecordList> => {
+    const date = format_record_date(now);
+    const key = LOCAL_KEY_RECORD_DATE(identity_network, date);
+    const value = (await LOCAL_STORAGE.get<FuseRecordList>(key)) ?? [];
+    return value;
+};
 export const assure_local_record_started = async (identity_network: IdentityNetwork, now: number) => {
     const key = LOCAL_KEY_RECORD_STARTED(identity_network);
     const value = await LOCAL_STORAGE.get<number>(key);
@@ -100,7 +119,7 @@ export const increment_local_record_count = async (identity_network: IdentityNet
     await LOCAL_STORAGE.set(key, value + 1);
 };
 export const push_local_record = async (identity_network: IdentityNetwork, now: number, record: FuseRecord) => {
-    const date = dayjs(now).format('YYYYMMDD');
+    const date = format_record_date(now);
     const key = LOCAL_KEY_RECORD_DATE(identity_network, date);
     const value = (await LOCAL_STORAGE.get<FuseRecordList>(key)) ?? [];
     const next = [...value, record];
