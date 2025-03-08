@@ -4,15 +4,18 @@ import Img_logo from '~assets/svg/logo.svg';
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
-import { showToast } from '~components/toast';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { useSonnerToast } from '~hooks/toast';
 
 import { FunctionHeader } from '../../components/header';
 import { SettingsGroup } from '../components/group';
 import { SettingsItem } from '../components/item';
 
+const email = 'dev@fusewallet.top';
+
 function FunctionSettingsAboutPage() {
+    const toast = useSonnerToast();
     const current_state = useCurrentState();
 
     const { setHide, goto } = useGoto();
@@ -35,13 +38,13 @@ function FunctionSettingsAboutPage() {
                             <img src={Img_logo} className="w-full" />
                         </div>
                         <span className="py-3 text-3xl font-bold text-[#FFCF13]">FUSE</span>
-                        <span className="text-sm text-[#999999]">Version 1.0</span>
+                        <span className="text-sm text-[#999999]">Version 1.0.0</span>
                     </div>
 
                     <SettingsGroup className="mt-6 w-full">
                         <SettingsItem
                             path={() => {
-                                showToast('not implemented');
+                                toast.info('not implemented');
                             }}
                             title="Terms of Service"
                             arrow={false}
@@ -54,7 +57,7 @@ function FunctionSettingsAboutPage() {
                         />
                         <SettingsItem
                             path={() => {
-                                showToast('not implemented');
+                                toast.info('not implemented');
                             }}
                             title="Privacy policy"
                             arrow={false}
@@ -67,23 +70,23 @@ function FunctionSettingsAboutPage() {
                         />
                         <SettingsItem
                             path={() => {
-                                showToast('not implemented');
+                                /** do nothing */
                             }}
                             title="Contact"
                             arrow={false}
                             right={
                                 <CopyToClipboard
-                                    text="Contact@Fuse.com"
+                                    text={email}
                                     onCopy={() => {
-                                        showToast('Copied', 'success');
+                                        toast.info('Copied');
                                     }}
                                 >
                                     <div className="flex items-center">
-                                        <span className="pr-3 text-sm text-[#999999]">Contact@Fuse.com</span>
+                                        <span className="pr-3 text-sm text-[#999999]">{email}</span>
                                         <Icon
                                             name="icon-copy"
                                             className="h-[14px] w-[14px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                                        ></Icon>
+                                        />
                                     </div>
                                 </CopyToClipboard>
                             }
