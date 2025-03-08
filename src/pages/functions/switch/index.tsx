@@ -43,7 +43,6 @@ function FunctionSwitchAccountPage() {
                                         onClick={() => {
                                             if (current_identity !== wallet.id) {
                                                 switchIdentity(wallet.id).then((r) => {
-                                                    console.error('switch identity', r);
                                                     if (r === undefined) return;
                                                     if (r === false) throw Error('switch identity failed');
                                                     // notice successful
@@ -87,6 +86,7 @@ function FunctionSwitchAccountPage() {
                                 }}
                                 goto={_goto}
                                 has_main_mnemonic={!!main_mnemonic_identity}
+                                import_prefix={'/home/switch/account/import'}
                             />
                         </div>
                     </div>

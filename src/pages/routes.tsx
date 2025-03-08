@@ -5,12 +5,11 @@ import type { WindowType } from '~types/pages';
 import ActionsPage from './actions';
 import FunctionDappsPage from './functions/dapps';
 import FunctionSettingsPage from './functions/settings';
-import SettingsAccountsPage from './functions/settings/pages/account';
-import AccountsSinglePage from './functions/settings/pages/account/edit';
+import SettingsAccountsPage from './functions/settings/pages/accounts';
+import AccountsSinglePage from './functions/settings/pages/accounts/edit';
 import InitialPage from './initial';
 import InnerCreatePage from './initial/create';
 import CreateRestorePage from './initial/restore';
-import CreateImportPage from './initial/create_import';
 import LockedPage from './locked';
 import WelcomePage from './welcome';
 import FunctionSettingsSecurityPage from './functions/settings/pages/security';
@@ -50,24 +49,14 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/', element: <HomePage /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home', element: <HomePage /> }] : []),
 
+        // -------------- home header --------------
+
         // select wallet
         ...(hit(wt, []) ? [{ path: '/home/switch/account', element: <FunctionSwitchAccountPage /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/switch/account/import/:type', element: <ImportExtraAccountPage /> }] : []),
 
-        // receive
-        ...(hit(wt, []) ? [{ path: '/home/receive', element: <FunctionReceivePage /> }] : []),
-
-        // send
-        ...(hit(wt, []) ? [{ path: '/home/transfer', element: <FunctionTransferPage   /> }] : []),
-        // send token
-        ...(hit(wt, []) ? [{ path: '/home/transfer/token/ic', element: <FunctionTransferTokenIcPage   /> }] : []),
-
-        // token
-        // token gallery
+        // token `gallery
         ...(hit(wt, []) ? [{ path: '/home/token/view', element: <FunctionTokenViewPage   /> }] : []),
-        // token ic
-        ...(hit(wt, []) ? [{ path: '/home/token/ic', element: <FunctionTokenIcPage   /> }] : []),
-        ...(hit(wt, []) ? [{ path: '/home/token/ic/transfer', element: <FunctionTransferTokenIcPage   /> }] : []),
 
         // records
         ...(hit(wt, []) ? [{ path: '/home/records', element: <FunctionRecordsPage   /> }] : []),
@@ -79,7 +68,7 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/extra', element: <InitialPage extra={true} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/extra/create', element: <InnerCreatePage wt={wt} extra={true} /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/extra/restore', element: <CreateRestorePage wt={wt} extra={true} /> }] : []),
-        ...(hit(wt, []) ? [{ path: '/home/settings/accounts/import/:type', element: <CreateImportPage wt={wt} extra={true} /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/settings/accounts/import/:type', element: <ImportExtraAccountPage /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/settings/accounts/:id', element: <AccountsSinglePage /> }] : []),
         // settings/security
         ...(hit(wt, []) ? [{ path: '/home/settings/security', element: <FunctionSettingsSecurityPage /> }] : []),
@@ -97,11 +86,28 @@ export const getRoutes = (wt: WindowType) => {
         // settings/about
         ...(hit(wt, []) ? [{ path: '/home/settings/about', element: <FunctionSettingsAboutPage /> }] : []),
 
+        // -------------- home icons --------------
+
+        // send
+        ...(hit(wt, []) ? [{ path: '/home/transfer', element: <FunctionTransferPage   /> }] : []),
+        // send token
+        ...(hit(wt, []) ? [{ path: '/home/transfer/token/ic', element: <FunctionTransferTokenIcPage   /> }] : []),
+
+        // receive
+        ...(hit(wt, []) ? [{ path: '/home/receive', element: <FunctionReceivePage /> }] : []),
+
         // swap
         ...(hit(wt, []) ? [{ path: '/home/swap', element: <FunctionSwapPage   /> }] : []),
 
         // dapps
         ...(hit(wt, []) ? [{ path: '/home/dapps', element: <FunctionDappsPage wt={wt} /> }] : []),
+
+        // -------------- home tokens --------------
+
+        // token ic
+        ...(hit(wt, []) ? [{ path: '/home/token/ic', element: <FunctionTokenIcPage   /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/token/ic/transfer', element: <FunctionTransferTokenIcPage   /> }] : []),
+
 
         // action
         ...(hit(wt, []) ? [{ path: '/action', element: <ActionsPage wt={wt} /> }] : []),

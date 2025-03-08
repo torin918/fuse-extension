@@ -47,6 +47,7 @@ function FunctionSettingsPage() {
                             title="Preferences Settings"
                         />
                     </SettingsGroup>
+
                     <SettingsGroup>
                         <SettingsItem
                             icon={<Icon name="icon-address" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
@@ -62,6 +63,7 @@ function FunctionSettingsPage() {
                             tip={apps.ic.length}
                         />
                     </SettingsGroup>
+
                     <SettingsGroup>
                         <SettingsItem
                             icon={<Icon name="icon-locked" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}
@@ -70,6 +72,7 @@ function FunctionSettingsPage() {
                             arrow={false}
                         />
                     </SettingsGroup>
+
                     <SettingsGroup>
                         <SettingsItem
                             icon={<Icon name="icon-tips" className="h-4 w-4 cursor-pointer text-[#FFCF13]" />}

@@ -20,12 +20,14 @@ export const AddWalletDrawer = ({
     onAddWalletByMainMnemonic,
     goto,
     has_main_mnemonic,
+    import_prefix,
 }: {
     trigger: React.ReactNode;
     container?: HTMLElement | null;
     onAddWalletByMainMnemonic: () => void;
     goto: GotoFunction;
     has_main_mnemonic: boolean;
+    import_prefix: string;
 }) => {
     const toast = useSonnerToast();
 
@@ -70,7 +72,7 @@ export const AddWalletDrawer = ({
                                       ]
                                     : []),
                                 {
-                                    callback: () => goto(`/home/switch/account/import/mnemonic`),
+                                    callback: () => goto(`${import_prefix}/mnemonic`),
                                     icon: 'icon-file',
                                     name: 'Import Seed Phrase',
                                     description: 'Import accounts from another wallet',
@@ -78,7 +80,7 @@ export const AddWalletDrawer = ({
                                 {
                                     callback: () => {
                                         toast.error('not implemented');
-                                        // goto(`/home/switch/account/import/private_key`)
+                                        // goto(`${import_prefix}/private_key`)
                                     },
                                     icon: 'icon-import',
                                     name: 'Import Private Key',
