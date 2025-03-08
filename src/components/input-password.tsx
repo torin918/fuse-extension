@@ -24,7 +24,7 @@ function InputPassword({
         setTimeout(() => {
             onChange('1111qqqq');
             setValue('1111qqqq');
-        }, 1000);
+        }, 300);
     }, [onChange]);
 
     return (
@@ -53,7 +53,8 @@ function InputPassword({
                     aria-label="toggle password visibility"
                     className="focus:outline-none"
                     type="button"
-                    onClick={toggleVisibility}>
+                    onClick={toggleVisibility}
+                >
                     {isVisible ? (
                         <Icon
                             name="icon-eye"

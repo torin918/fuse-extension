@@ -6,10 +6,9 @@ import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useNavigatePages } from '~hooks/navigate';
-import type { WindowType } from '~types/pages';
 import { CurrentState } from '~types/state';
 
-function InitialPage({ wt, extra }: { wt: WindowType; extra?: boolean }) {
+function InitialPage({ extra }: { extra?: boolean }) {
     const current_state = useCurrentState();
     useNavigatePages(current_state, false); // can go back
 
@@ -19,6 +18,7 @@ function InitialPage({ wt, extra }: { wt: WindowType; extra?: boolean }) {
         <FusePage current_state={current_state} states={extra ? CurrentState.ALIVE : CurrentState.INITIAL}>
             <div className={'flex h-full w-full items-center justify-center'}>
                 <div className="relative h-full w-full">
+                    {/* extra account */}
                     {extra && (
                         <div className="absolute left-5 top-5 flex items-center" onClick={() => navigate(-1)}>
                             <Icon
@@ -27,6 +27,7 @@ function InitialPage({ wt, extra }: { wt: WindowType; extra?: boolean }) {
                             />
                         </div>
                     )}
+
                     <div className="flex h-full flex-col justify-between px-5 pb-5">
                         <div className="flex w-full flex-1 flex-col items-center justify-center">
                             <img src={logo_svg} width={80} />

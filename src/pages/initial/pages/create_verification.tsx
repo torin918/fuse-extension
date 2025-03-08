@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Icon from '~components/icon';
-import { showToast } from '~components/toast';
+import { useSonnerToast } from '~hooks/toast';
 import { pick_word_exclude_appeared } from '~lib/mnemonic';
 import { cn } from '~lib/utils/cn';
 
@@ -22,6 +22,8 @@ function CreateVerificationPage({
     mnemonic: string;
     onNext: () => void;
 }) {
+    const toast = useSonnerToast();
+
     const [words, setWords] = useState<string[]>([]);
 
     useEffect(() => {
@@ -70,25 +72,25 @@ function CreateVerificationPage({
         if (!chosen) return;
         for (const question of questions) {
             if (question.words[answers[question.index]] !== question.word) {
-                showToast('Verification failed, Please verify again. ', 'error');
+                toast.error('Verification failed, Please verify again. ');
                 return;
             }
         }
         onNext();
-    }, [questions, answers, chosen, onNext]);
+    }, [questions, answers, chosen, onNext, toast]);
 
-    // TODO TEST
-    useEffect(() => {
-        if (!questions.length) return;
-        if (chosen) return;
-        setTimeout(() => {
-            for (const question of questions) {
-                const answer = question.words.indexOf(question.word);
-                answers[question.index] = answer;
-            }
-            setAnswers({ ...answers });
-        }, 500);
-    }, [questions, answers, chosen]);
+    // auto answer when testing
+    // useEffect(() => {
+    //     if (!questions.length) return;
+    //     if (chosen) return;
+    //     setTimeout(() => {
+    //         for (const question of questions) {
+    //             const answer = question.words.indexOf(question.word);
+    //             answers[question.index] = answer;
+    //         }
+    //         setAnswers({ ...answers });
+    //     }, 500);
+    // }, [questions, answers, chosen]);
 
     return (
         <div className="slide-in-right relative flex h-full w-full flex-col justify-between">

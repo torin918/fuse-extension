@@ -37,6 +37,7 @@ function InnerCreatePage({ wt, extra }: { wt: WindowType; extra?: boolean }) {
     const onCompleted = useCallback(async () => {
         if (!current_mnemonic || !validate_mnemonic(current_mnemonic)) return;
 
+        // ! extra account
         if (extra) {
             // push new account by mnemonic
             const key: CombinedIdentityKey = {
