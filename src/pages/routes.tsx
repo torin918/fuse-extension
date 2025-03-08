@@ -107,6 +107,7 @@ export const getRoutes = (wt: WindowType) => {
         // token ic
         ...(hit(wt, []) ? [{ path: '/home/token/ic', element: <FunctionTokenIcPage   /> }] : []),
         ...(hit(wt, []) ? [{ path: '/home/token/ic/transfer', element: <FunctionTransferTokenIcPage   /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/token/ic/receive', element: <FunctionReceivePage   /> }] : []),
 
 
         // action

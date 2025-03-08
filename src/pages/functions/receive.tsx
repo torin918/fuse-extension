@@ -23,7 +23,11 @@ function FunctionReceivePage() {
         <FusePage current_state={current_state}>
             <FusePageTransition setHide={setHide}>
                 <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
-                    <FunctionHeader title={'Receive'} onBack={() => goto('/')} onClose={() => goto('/')} />
+                    <FunctionHeader
+                        title={'Receive'}
+                        onBack={() => goto(-1)}
+                        onClose={() => goto('/', { replace: true })}
+                    />
 
                     <div className="h-full w-full flex-1 overflow-y-auto px-5">
                         <div className="flex justify-center py-10">
