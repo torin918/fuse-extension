@@ -10,16 +10,15 @@ export const FusePage = ({
     current_state,
     states = CurrentState.ALIVE,
     replace = false,
-    pathname = false,
     children,
     options,
 }: {
     current_state: CurrentState;
     states?: CurrentState | CurrentState[] | null;
     replace?: boolean; // can go back or not
-    pathname?: boolean;
     children: React.ReactNode;
     options?: {
+        update_pathname?: boolean;
         refresh_token_info_ic_sleep?: number;
         refresh_token_price_ic_sleep?: number;
     };
@@ -33,10 +32,10 @@ export const FusePage = ({
     const location = useLocation();
     const [, setPathname] = usePathname();
     useEffect(() => {
-        if (!pathname) return;
+        if (!options?.update_pathname) return;
         const path = location.pathname;
         setPathname(path);
-    }, [pathname, location, setPathname]);
+    }, [options, location, setPathname]);
 
     if (states !== undefined && states !== null) {
         if (Array.isArray(states)) {

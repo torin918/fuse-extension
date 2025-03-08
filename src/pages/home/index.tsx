@@ -23,8 +23,8 @@ function HomePage() {
     return (
         <FusePage
             current_state={current_state}
-            pathname={true}
             options={{
+                update_pathname: true,
                 refresh_token_price_ic_sleep: 1000 * 60,
             }}
         >

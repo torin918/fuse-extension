@@ -22,7 +22,7 @@ export const FusePageTransition = ({
     const location = useLocation();
     const _show = useMemo(() => {
         const path = location.pathname;
-        if (path === pathname) return true;
+        if (path === pathname) return false;
         setPathname(path);
         if (pathname.startsWith(path)) return true;
         return false;
