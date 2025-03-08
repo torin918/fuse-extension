@@ -3,7 +3,6 @@ import type { RouteObject } from 'react-router-dom';
 import type { WindowType } from '~types/pages';
 
 import ActionsPage from './actions';
-import MainPage from './functions';
 import FunctionDappsPage from './functions/dapps';
 import FunctionSettingsPage from './functions/settings';
 import SettingsAccountsPage from './functions/settings/pages/account';
@@ -32,6 +31,7 @@ import FunctionTokenIcPage from './functions/token/ic';
 import FunctionTokenViewPage from './functions/token/view';
 import FunctionSwitchWalletPage from './functions/switch';
 import FunctionRecordsPage from './functions/record';
+import HomePage from './home';
 
 export const getRoutes = (wt: WindowType) => {
     const routes: RouteObject[] = [
@@ -46,8 +46,8 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/locked', element: <LockedPage wt={wt} /> }] : []),
 
         // home
-        ...(hit(wt, []) ? [{ path: '/', element: <MainPage wt={wt} /> }] : []),
-        ...(hit(wt, []) ? [{ path: '/home', element: <MainPage wt={wt} /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/', element: <HomePage /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home', element: <HomePage /> }] : []),
 
         // wallet select
         ...(hit(wt, []) ? [{ path: '/home/wallet/switch', element: <FunctionSwitchWalletPage /> }] : []),
@@ -105,7 +105,7 @@ export const getRoutes = (wt: WindowType) => {
         ...(hit(wt, []) ? [{ path: '/action', element: <ActionsPage wt={wt} /> }] : []),
 
         // others
-        { path: '*', element: <MainPage wt={wt} /> },
+        { path: '*', element: <HomePage /> },
     ];
     return routes;
 };

@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
+import { FusePage } from '~components/layouts/page';
+import { useCurrentState } from '~hooks/memo/current_state';
 import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store/local';
+import { useCurrentIdentity } from '~hooks/store/local-secure';
 import { truncate_text } from '~lib/utils/text';
 import type { ShowIdentityKey } from '~types/identity';
 import { get_token_unique_id, match_combined_token_info } from '~types/tokens';
@@ -13,7 +16,26 @@ import { AddressTooltip } from './components/address-tooltip';
 import { ShowSingleAddress } from './components/show-address';
 import { HomeShowToken } from './components/show-token';
 
-function HomePage({ current_identity }: { current_identity: ShowIdentityKey }) {
+function HomePage() {
+    const current_state = useCurrentState();
+    const { current_identity } = useCurrentIdentity();
+
+    return (
+        <FusePage
+            current_state={current_state}
+            pathname={true}
+            options={{
+                refresh_token_price_ic_sleep: 1000 * 60,
+            }}
+        >
+            {current_identity && <InnerHomePage current_identity={current_identity} />}
+        </FusePage>
+    );
+}
+
+export default HomePage;
+
+function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey }) {
     const navigate = useNavigate();
 
     const current_tokens = useTokenInfoCurrentRead();
@@ -199,5 +221,3 @@ function HomePage({ current_identity }: { current_identity: ShowIdentityKey }) {
         </div>
     );
 }
-
-export default HomePage;
