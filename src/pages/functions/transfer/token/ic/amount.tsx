@@ -8,7 +8,12 @@ import { showToast } from '~components/toast';
 import type { GotoFunction } from '~hooks/memo/goto';
 import { useCurrentConnectedIcIdentity } from '~hooks/memo/identity';
 import { identity_network_callback } from '~hooks/store/common';
-import { push_local_record, useTokenBalanceIcByRefreshing, useTokenInfoIcByInitial } from '~hooks/store/local';
+import {
+    push_local_record,
+    useTokenBalanceIcByRefreshing,
+    useTokenInfoIcByInitial,
+    useTokenPriceIcRead,
+} from '~hooks/store/local';
 import { useCurrentIdentity, useRecentAddresses } from '~hooks/store/local-secure';
 import { icrc1_transfer, transfer } from '~lib/canisters/icrc1';
 import type { MessageResult } from '~lib/messages';
@@ -28,6 +33,8 @@ function FunctionTransferTokenIcAmountPage({
 }) {
     const { current_identity, current_identity_network } = useCurrentIdentity();
     const [, { pushRecentAddress }] = useRecentAddresses();
+
+    const all_ic_prices = useTokenPriceIcRead();
 
     const token = useTokenInfoIcByInitial(canister_id);
 
@@ -97,6 +104,7 @@ function FunctionTransferTokenIcAmountPage({
             showToast(`${e}`, 'error');
         } finally {
             if (state !== undefined) {
+                const price = all_ic_prices[token.canister_id];
                 // ! push record
                 const now = Date.now();
                 const record: FuseRecord = {
@@ -112,7 +120,12 @@ function FunctionTransferTokenIcAmountPage({
                         fee: isPrincipalText(to) ? undefined : token.fee,
                         memo: isPrincipalText(to) ? undefined : '0',
                         created_at_time: undefined,
-                        usd: undefined, // TODO use price
+                        usd: price?.price
+                            ? BigNumber(price.price)
+                                  .times(BigNumber(amount_text))
+                                  .div(BigNumber(10).pow(BigNumber(token.decimals)))
+                                  .toFixed(2)
+                            : undefined,
                         state,
                     },
                 };
@@ -136,6 +149,7 @@ function FunctionTransferTokenIcAmountPage({
         refreshBalance,
         current_identity_network,
         pushRecentAddress,
+        all_ic_prices,
     ]);
 
     const sendRef = useRef<HTMLInputElement>(null);

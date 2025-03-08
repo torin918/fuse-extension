@@ -7,6 +7,7 @@ import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useTokenInfoCustom } from '~hooks/store/local';
+import { MILLISECOND, MINUTE } from '~lib/utils/datetime';
 import { FunctionHeader } from '~pages/functions/components/header';
 import { match_combined_token_info } from '~types/tokens';
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
@@ -51,7 +52,10 @@ function FunctionTransferTokenIcPage() {
 
     if (!canister_id) return <></>;
     return (
-        <FusePage current_state={current_state} options={{ refresh_token_info_ic_sleep: 1000 * 60 * 5 }}>
+        <FusePage
+            current_state={current_state}
+            options={{ refresh_token_info_ic_sleep: MINUTE * 5, refresh_token_price_ic_sleep: MILLISECOND * 15 }}
+        >
             <FusePageTransition setHide={setHide}>
                 <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
                     <FunctionHeader title={'Send'} onBack={() => _goto(-1)} onClose={() => _goto('/')} />
