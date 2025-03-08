@@ -36,6 +36,7 @@ function CreateRestorePage({ wt, extra }: { wt: WindowType; extra?: boolean }) {
     const onMnemonicCompleted = useCallback(async () => {
         if (!mnemonic || !validate_mnemonic(mnemonic)) return;
 
+        // ! extra account
         if (extra) {
             const key: CombinedIdentityKey = {
                 mnemonic: {

@@ -1,15 +1,14 @@
 import { Button } from '@heroui/react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import Icon from '~components/icon';
-import { get_address_by_mnemonic, random_mnemonic } from '~lib/mnemonic';
+import { random_mnemonic } from '~lib/mnemonic';
 import { cn } from '~lib/utils/cn';
 
 function CreateMnemonicPage({
     onBack,
     mnemonic12,
     setMnemonic12,
-    mnemonic24,
     setMnemonic24,
     onNext,
 }: {
@@ -20,11 +19,6 @@ function CreateMnemonicPage({
     setMnemonic24: (mnemonic: string) => void;
     onNext: (mnemonic: string) => void;
 }) {
-    const address12 = useMemo(() => get_address_by_mnemonic(mnemonic12, 0), [mnemonic12]);
-    console.assert(address12); // TODO maybe useful
-    const address24 = useMemo(() => get_address_by_mnemonic(mnemonic24, 0), [mnemonic24]);
-    console.assert(address24); // TODO maybe useful
-
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -40,7 +34,7 @@ function CreateMnemonicPage({
                     <Icon
                         name="icon-arrow-left"
                         className="h-[14px] w-[19px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                    ></Icon>
+                    />
                 </div>
                 <div></div>
             </div>
@@ -62,9 +56,7 @@ function CreateMnemonicPage({
                                 isHovered ? 'bg-transparent' : 'bg-[#333333] opacity-30',
                             )}
                         >
-                            {!isHovered && (
-                                <Icon name="icon-eye-slash" className="h-[20px] w-[31px] text-[#999999]"></Icon>
-                            )}
+                            {!isHovered && <Icon name="icon-eye-slash" className="h-[20px] w-[31px] text-[#999999]" />}
                         </div>
                         {mnemonic12.split(' ').map((word, index) => (
                             <span

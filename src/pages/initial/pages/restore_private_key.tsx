@@ -20,15 +20,10 @@ function RestorePrivateKeyPage({
                     <Icon
                         name="icon-arrow-left"
                         className="mr-3 h-[14px] w-[19px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                    ></Icon>
+                    />
                     <span className="text-base font-semibold text-[#FFCF13]">Private key</span>
                 </div>
-                {/* <div>
-                    <Icon
-                        name="icon-close"
-                        className="h-[20px] w-[20px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                    ></Icon>
-                </div> */}
+                <div></div>
             </div>
             <div className="flex w-full flex-1 flex-col justify-between px-5 pb-5">
                 <div className="mt-5 h-full w-full">

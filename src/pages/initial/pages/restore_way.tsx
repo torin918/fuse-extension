@@ -2,8 +2,11 @@ import { Button, cn } from '@heroui/react';
 import { useState } from 'react';
 
 import Icon from '~components/icon';
+import { useSonnerToast } from '~hooks/toast';
 
 function RestoreWayPage({ onBack, onNext }: { onBack: () => void; onNext: (way: 'mnemonic' | 'private_key') => void }) {
+    const toast = useSonnerToast();
+
     const [selected, setSelected] = useState<'mnemonic' | 'private_key'>();
     return (
         <div className="slide-in-right flex h-full w-full flex-col justify-between">
@@ -11,7 +14,7 @@ function RestoreWayPage({ onBack, onNext }: { onBack: () => void; onNext: (way: 
                 <Icon
                     name="icon-arrow-left"
                     className="h-[14px] w-[19px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                ></Icon>
+                />
             </div>
             <div className="flex w-full flex-1 flex-col justify-between px-5 pb-5">
                 <div className="w-full">
@@ -32,7 +35,7 @@ function RestoreWayPage({ onBack, onNext }: { onBack: () => void; onNext: (way: 
                                     <Icon
                                         name="icon-ok"
                                         className="h-[22px] w-[22px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                                    ></Icon>
+                                    />
                                 )}
                             </div>
                             <h3 className="text-lg font-semibold text-[#EEEEEE]">Seed phrase</h3>
@@ -43,14 +46,17 @@ function RestoreWayPage({ onBack, onNext }: { onBack: () => void; onNext: (way: 
                                 `relative mt-5 w-full cursor-pointer rounded-2xl border p-4`,
                                 selected === 'private_key' ? 'border-[#FFCF13]' : 'border-[#333333]',
                             )}
-                            onClick={() => setSelected('private_key')}
+                            onClick={() => {
+                                toast.warning('not implemented');
+                                // setSelected('private_key') // TODO not implemented
+                            }}
                         >
                             <div className="absolute right-4 top-1/2 -translate-y-1/2 transform">
                                 {selected === 'private_key' && (
                                     <Icon
                                         name="icon-ok"
                                         className="h-[22px] w-[22px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                                    ></Icon>
+                                    />
                                 )}
                             </div>
                             <h3 className="text-lg font-semibold text-[#EEEEEE]">Private key</h3>

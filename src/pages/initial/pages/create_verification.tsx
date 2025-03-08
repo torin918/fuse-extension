@@ -99,13 +99,13 @@ function CreateVerificationPage({
                     <Icon
                         name="icon-arrow-left"
                         className="h-[14px] w-[19px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                    ></Icon>
+                    />
                 </div>
                 <div onClick={onNext}>
                     <Icon
                         name="icon-close"
                         className="h-[20px] w-[20px] cursor-pointer text-[#FFCF13] duration-300 hover:opacity-85"
-                    ></Icon>
+                    />
                 </div>
             </div>
 
