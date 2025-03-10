@@ -6,14 +6,16 @@ import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
-import { showToast } from '~components/toast';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { useSonnerToast } from '~hooks/toast';
 
 import { FunctionHeader } from './components/header';
 
 function FunctionReceivePage() {
+    const toast = useSonnerToast();
+
     const current_state = useCurrentState();
 
     const { setHide, goto } = useGoto();
@@ -66,9 +68,7 @@ function FunctionReceivePage() {
                                             <span className="text-sm text-[#999999]">Principal ID</span>
                                             <CopyToClipboard
                                                 text={current_identity?.address?.ic?.owner}
-                                                onCopy={() => {
-                                                    showToast('Copied', 'success');
-                                                }}
+                                                onCopy={() => toast.success('Copied')}
                                             >
                                                 <div className="flex cursor-pointer items-center text-sm text-[#FFCF13] duration-300 hover:opacity-85">
                                                     <Icon name="icon-copy" className="mr-2 h-3 w-3" />
@@ -90,9 +90,7 @@ function FunctionReceivePage() {
                                             <span className="text-sm text-[#999999]">Account ID</span>
                                             <CopyToClipboard
                                                 text={current_identity?.address?.ic?.account_id}
-                                                onCopy={() => {
-                                                    showToast('Copied', 'success');
-                                                }}
+                                                onCopy={() => toast.success('Copied')}
                                             >
                                                 <div className="flex cursor-pointer items-center text-sm text-[#FFCF13] duration-300 hover:opacity-85">
                                                     <Icon name="icon-copy" className="mr-2 h-3 w-3" />

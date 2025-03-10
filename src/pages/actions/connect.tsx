@@ -3,11 +3,11 @@ import { useCallback } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
 import Icon from '~components/icon';
-import { showToast } from '~components/toast';
 import { identity_network_callback } from '~hooks/store/common';
 import { push_local_record } from '~hooks/store/local';
 import { useCurrentConnectedApps } from '~hooks/store/local-secure';
 import { set_current_session_connected_app_once } from '~hooks/store/session';
+import { useSonnerToast } from '~hooks/toast';
 import { MINUTE } from '~lib/utils/datetime';
 import type { PopupAction } from '~types/actions';
 import type { ConnectAction } from '~types/actions/connect';
@@ -23,6 +23,8 @@ function ConnectActionPage({
     connect: ConnectAction;
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) {
+    const toast = useSonnerToast();
+
     const [, , { current_identity_network, pushOrUpdateConnectedApp }] = useCurrentConnectedApps();
 
     const onAction = useCallback(
@@ -115,12 +117,7 @@ function ConnectActionPage({
             <div className="flex w-full items-center border-b border-[#333333] px-5 py-2">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#181818] text-2xl">😄</div>
                 <span className="px-2 text-sm font-semibold">Wallet 1</span>
-                <CopyToClipboard
-                    text={'wallet'}
-                    onCopy={() => {
-                        showToast('Copied', 'success');
-                    }}
-                >
+                <CopyToClipboard text={'wallet'} onCopy={() => toast.success('Copied')}>
                     <Icon name="icon-copy" className="h-3 w-3 cursor-pointer text-[#999999] hover:text-[#FFCF13]" />
                 </CopyToClipboard>
             </div>

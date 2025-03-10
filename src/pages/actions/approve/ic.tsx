@@ -3,9 +3,9 @@ import { useCallback, useMemo } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
 import Icon from '~components/icon';
-import { showToast } from '~components/toast';
 import { set_local_secure_approved, useCurrentConnectedApps } from '~hooks/store/local-secure';
 import { set_current_session_approve_once } from '~hooks/store/session';
+import { useSonnerToast } from '~hooks/toast';
 import { get_popup_action_id, type PopupAction } from '~types/actions';
 import type { ApprovedState } from '~types/actions/approve';
 import type { ApproveIcAction } from '~types/actions/approve/ic';
@@ -19,6 +19,8 @@ function ApproveIcActionPage({
     approve_ic: ApproveIcAction;
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) {
+    const toast = useSonnerToast();
+
     const [current_connected_apps, , { current_identity_network }] = useCurrentConnectedApps();
 
     const app = useMemo(() => {
@@ -71,12 +73,7 @@ function ApproveIcActionPage({
                         😄
                     </div>
                     <span className="px-2 text-sm font-semibold">Wallet 1</span>
-                    <CopyToClipboard
-                        text={'wallet'}
-                        onCopy={() => {
-                            showToast('Copied', 'success');
-                        }}
-                    >
+                    <CopyToClipboard text={'wallet'} onCopy={() => toast.success('Copied')}>
                         <Icon name="icon-copy" className="h-3 w-3 cursor-pointer text-[#999999] hover:text-[#FFCF13]" />
                     </CopyToClipboard>
                 </div>
