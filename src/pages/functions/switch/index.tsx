@@ -113,7 +113,7 @@ const AccountItem = ({
                 </div>
                 <div className="ml-3 flex flex-col">
                     <span className="text-base">{wallet.name}</span>
-                    {/* TODO: wallet amount */}
+                    {/* wallet amount */}
                     <span className="text-sm text-[#FFCF13]">${usd}</span>
                 </div>
             </div>

@@ -1,12 +1,12 @@
 import { useRef } from 'react';
 
-import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useIdentityKeys } from '~hooks/store/local-secure';
 import { useSonnerToast } from '~hooks/toast';
+import { cn } from '~lib/utils/cn';
 import { AddWalletDrawer } from '~pages/functions/switch/components/add-wallet-drawer';
 
 import { FunctionHeader } from '../../../components/header';
@@ -42,7 +42,10 @@ function FunctionSettingsAccountsPage() {
                             {(identity_list ?? []).map((identity) => (
                                 <div
                                     key={identity.id}
-                                    className="mt-3 block w-full cursor-pointer rounded-xl bg-[#181818] p-4 duration-300 hover:bg-[#2B2B2B]"
+                                    className={cn(
+                                        `mt-3 block w-full cursor-pointer rounded-xl border border-[#181818] bg-[#181818] p-3 duration-300 hover:bg-[#2B2B2B]`,
+                                        identity.id === current_identity && 'border-[#FFCF13]',
+                                    )}
                                     onClick={() => navigate(`/home/settings/accounts/${identity.id}`)}
                                 >
                                     <div className="flex items-center justify-between">
@@ -65,21 +68,23 @@ function FunctionSettingsAccountsPage() {
                                             </div>
                                             <span className="pl-3 text-sm">{identity.name}</span>
                                         </div>
-                                        {identity.id === current_identity && <div>CURRENT</div>}
-                                        <svg
-                                            stroke="currentColor"
-                                            fill="currentColor"
-                                            stroke-width="0"
-                                            viewBox="0 0 16 16"
-                                            height="16"
-                                            width="16"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"
-                                            ></path>
-                                        </svg>
+                                        <div className="flex items-center justify-center gap-2">
+                                            {identity.id === current_identity && <div>CURRENT</div>}
+                                            <svg
+                                                stroke="currentColor"
+                                                fill="currentColor"
+                                                stroke-width="0"
+                                                viewBox="0 0 16 16"
+                                                height="16"
+                                                width="16"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"
+                                                ></path>
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
