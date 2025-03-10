@@ -98,7 +98,6 @@ function FunctionTransferPage() {
         return { tokens, canisters };
     }, [tab_tokens, currentTokens, search]);
 
-    const [ic_balances] = useTokenBalanceIcByRefreshing(current_identity?.address.ic?.owner, canisters, 15000);
     const all_ic_prices = useTokenPriceIcRead();
     const ic_prices = useMemo<[string | undefined, string | undefined][]>(
         () =>
@@ -108,6 +107,8 @@ function FunctionTransferPage() {
             }),
         [canisters, all_ic_prices],
     );
+
+    const [ic_balances] = useTokenBalanceIcByRefreshing(current_identity?.address.ic?.owner, canisters, 15000);
 
     return (
         <FusePage current_state={current_state} options={{ refresh_token_info_ic_sleep: 1000 * 60 * 10 }}>
