@@ -85,6 +85,12 @@ function FunctionSettingsAddressesPage() {
 
                     <div className="flex h-full flex-col justify-between">
                         <div className="flex-1 overflow-y-auto">
+                            {addressesWithShow.length === 0 && recentAddresses.length === 0 && (
+                                <div className="flex h-full w-full flex-col items-center justify-center py-10">
+                                    <Icon name="icon-empty" className="h-[70px] w-[70px] text-[#999999]" />
+                                    <p className="text-sm text-[#999999]">No data found</p>
+                                </div>
+                            )}
                             <div className="w-full px-5">
                                 {addressesWithShow.map((item, index) => (
                                     <div
@@ -167,35 +173,37 @@ function FunctionSettingsAddressesPage() {
                                     </div>
                                 ))}
                             </div>
-                            <div className="w-full">
-                                <h2 className="font-xs px-5 pb-2 pt-5 text-[#999999]">Recent Address</h2>
-                                {recentAddresses.map((item, index) => (
-                                    <div
-                                        key={index + JSON.stringify(item)}
-                                        className="flex items-center justify-between px-5"
-                                    >
-                                        <div className="flex-1 cursor-pointer break-all py-2 text-xs text-[#EEEEEE]">
-                                            {item.address.address}
-                                        </div>
+                            {recentAddresses.length > 0 && (
+                                <div className="w-full">
+                                    <h2 className="font-xs px-5 pb-2 pt-5 text-[#999999]">Recent Address</h2>
+                                    {recentAddresses.map((item, index) => (
                                         <div
-                                            onClick={() => {
-                                                setEditAddress({
-                                                    ...item,
-                                                    name: '',
-                                                    updated: item.created,
-                                                });
-                                                setIsRecent(true);
-                                                setIsOpen(true);
-                                            }}
+                                            key={index + JSON.stringify(item)}
+                                            className="flex items-center justify-between px-5"
                                         >
-                                            <Icon
-                                                name="icon-add"
-                                                className="ml-4 h-4 w-4 shrink-0 cursor-pointer text-[#FFCF13] duration-300 hover:opacity-80"
-                                            />
+                                            <div className="flex-1 cursor-pointer break-all py-2 text-xs text-[#EEEEEE]">
+                                                {item.address.address}
+                                            </div>
+                                            <div
+                                                onClick={() => {
+                                                    setEditAddress({
+                                                        ...item,
+                                                        name: '',
+                                                        updated: item.created,
+                                                    });
+                                                    setIsRecent(true);
+                                                    setIsOpen(true);
+                                                }}
+                                            >
+                                                <Icon
+                                                    name="icon-add"
+                                                    className="ml-4 h-4 w-4 shrink-0 cursor-pointer text-[#FFCF13] duration-300 hover:opacity-80"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <AddAddressDrawer
