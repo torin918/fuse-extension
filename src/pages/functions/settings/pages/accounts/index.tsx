@@ -67,9 +67,13 @@ function FunctionSettingsAccountsPage() {
                                                 {identity.icon}
                                             </div>
                                             <span className="pl-3 text-sm">{identity.name}</span>
+                                            {identity.id === current_identity && (
+                                                <span className="ml-3 rounded-full bg-[#333333] px-2 py-[2px] text-xs">
+                                                    CURRENT
+                                                </span>
+                                            )}
                                         </div>
                                         <div className="flex items-center justify-center gap-2">
-                                            {identity.id === current_identity && <div>CURRENT</div>}
                                             <svg
                                                 stroke="currentColor"
                                                 fill="currentColor"
