@@ -144,11 +144,13 @@ function CreateVerificationPage({
                         </div>
                     </div>
 
-                    {chosen && (
-                        <Button className="h-[48px] bg-[#FFCF13] text-lg font-semibold text-black" onPress={onConfirm}>
+                    <Button
+                        className="h-[48px] bg-[#FFCF13] text-lg font-semibold text-black"
+                        isDisabled={!chosen}
+                        onPress={onConfirm}
+                    >
                             Confirm
                         </Button>
-                    )}
                 </div>
             )}
         </div>

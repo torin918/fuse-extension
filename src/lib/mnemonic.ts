@@ -4,6 +4,7 @@ import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { Secp256k1KeyIdentity } from '@dfinity/identity-secp256k1';
 import * as bip39 from 'bip39';
 import { HDKey } from 'ethereum-cryptography/hdkey.js';
+import _ from 'lodash';
 // import hdkey from 'hdkey';
 import * as secp256k1 from 'secp256k1';
 
@@ -11,7 +12,10 @@ import type { IdentityAddress } from '~types/identity';
 import type { MnemonicParsed } from '~types/keys/mnemonic';
 
 export const random_mnemonic = (words: 12 | 24) => {
-    const mnemonic = bip39.generateMnemonic(words === 12 ? 128 : 256);
+    let mnemonic = bip39.generateMnemonic(words === 12 ? 128 : 256);
+    while (!validate_mnemonic(mnemonic) || _.uniq(mnemonic.split(' ')).length < mnemonic.split(' ').length) {
+        mnemonic = bip39.generateMnemonic(words === 12 ? 128 : 256);
+    }
     return mnemonic;
 };
 
