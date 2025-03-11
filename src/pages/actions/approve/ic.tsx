@@ -6,11 +6,14 @@ import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import { set_local_secure_approved, useCurrentConnectedApps, useCurrentIdentity } from '~hooks/store/local-secure';
 import { set_current_session_approve_once } from '~hooks/store/session';
+import { parse_factory } from '~lib/utils/json';
 import { truncate_text } from '~lib/utils/text';
 import { AddressTooltip } from '~pages/home/components/address-tooltip';
 import { get_popup_action_id, type PopupAction } from '~types/actions';
 import type { ApprovedState } from '~types/actions/approve';
 import type { ApproveIcAction } from '~types/actions/approve/ic';
+
+const parse = parse_factory(JSON.parse);
 
 function ApproveIcActionPage({
     action,
@@ -22,6 +25,8 @@ function ApproveIcActionPage({
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) {
     const [current_connected_apps, , { current_identity_network }] = useCurrentConnectedApps();
+
+    const args = useMemo(() => parse(approve_ic.args_json), [approve_ic]);
 
     const app = useMemo(() => {
         if (!current_connected_apps) return undefined;
@@ -154,7 +159,7 @@ function ApproveIcActionPage({
                         <br />
                         <strong>Transaction Details:</strong>
                         <br />
-                        {approve_ic.args_text}
+                        {approve_ic.args_json}
                     </div>
                 </div>
             </div>
