@@ -1,7 +1,7 @@
 import { Button } from '@heroui/react';
 import { useMemo } from 'react';
+import { PiLinkBreakBold } from 'react-icons/pi';
 
-import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
@@ -84,10 +84,7 @@ function FunctionSettingsConnectedAppPage() {
                                                     removeConnectedApp('ic', app);
                                                 }}
                                             >
-                                                <Icon
-                                                    name="icon-unlink"
-                                                    className="h-[18px] w-[18px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]"
-                                                />
+                                                <PiLinkBreakBold className="h-[18px] w-[18px] cursor-pointer text-[#999999] duration-300 hover:text-[#FFCF13]" />
                                             </div>
                                         </div>
                                     </div>
