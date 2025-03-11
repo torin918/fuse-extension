@@ -6,7 +6,6 @@ import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import { set_local_secure_approved, useCurrentConnectedApps, useCurrentIdentity } from '~hooks/store/local-secure';
 import { set_current_session_approve_once } from '~hooks/store/session';
-import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import { AddressTooltip } from '~pages/home/components/address-tooltip';
 import { get_popup_action_id, type PopupAction } from '~types/actions';
@@ -22,8 +21,6 @@ function ApproveIcActionPage({
     approve_ic: ApproveIcAction;
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) {
-    const toast = useSonnerToast();
-
     const [current_connected_apps, , { current_identity_network }] = useCurrentConnectedApps();
 
     const app = useMemo(() => {
@@ -144,7 +141,7 @@ function ApproveIcActionPage({
                 {/* {JSON.stringify(approve_ic)} */}
                 <div className="mt-4 w-full rounded-xl bg-[#181818] px-4 py-3">
                     <h3 className="block text-lg font-semibold">Message</h3>
-                    <div className="block w-full break-words pt-2 text-sm text-[#999999]">
+                    <div className="block max-h-[250px] w-full overflow-y-scroll break-words pt-2 text-sm text-[#999999]">
                         This application wants you to authorize a transaction with your ICP account:
                         <br />
                         <strong>Request Hash:</strong> {approve_ic.request_hash}
