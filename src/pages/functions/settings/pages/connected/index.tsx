@@ -95,7 +95,7 @@ function FunctionSettingsConnectedAppPage() {
                             </div>
                         ))}
                     </div>
-                    {1 < apps.ic.length && (
+                    {1 <= apps.ic.length && (
                         <div className="w-full p-5">
                             <Button
                                 className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
