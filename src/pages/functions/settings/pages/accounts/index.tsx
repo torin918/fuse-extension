@@ -1,7 +1,7 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { BsArrowsMove } from 'react-icons/bs';
 
-import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
@@ -54,7 +54,7 @@ const AccountItem = ({
                 )}
             </div>
             <div>
-                <Icon name="icon-move" className="h-4 w-4 text-[#999999]" />
+                <BsArrowsMove className="h-4 w-4 text-[#999999]" />
             </div>
         </div>
     );
