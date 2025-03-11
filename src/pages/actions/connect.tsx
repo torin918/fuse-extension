@@ -8,6 +8,7 @@ import { identity_network_callback } from '~hooks/store/common';
 import { push_local_record } from '~hooks/store/local';
 import { useCurrentConnectedApps, useCurrentIdentity } from '~hooks/store/local-secure';
 import { set_current_session_connected_app_once } from '~hooks/store/session';
+import { useSonnerToast } from '~hooks/toast';
 import { MINUTE } from '~lib/utils/datetime';
 import { truncate_text } from '~lib/utils/text';
 import { AddressTooltip } from '~pages/home/components/address-tooltip';
@@ -25,6 +26,8 @@ function ConnectActionPage({
     connect: ConnectAction;
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) {
+    const toast = useSonnerToast();
+
     const [, , { current_identity_network, pushOrUpdateConnectedApp }] = useCurrentConnectedApps();
 
     const onAction = useCallback(

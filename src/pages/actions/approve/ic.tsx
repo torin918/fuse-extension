@@ -6,6 +6,7 @@ import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import { set_local_secure_approved, useCurrentConnectedApps, useCurrentIdentity } from '~hooks/store/local-secure';
 import { set_current_session_approve_once } from '~hooks/store/session';
+import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import { AddressTooltip } from '~pages/home/components/address-tooltip';
 import { get_popup_action_id, type PopupAction } from '~types/actions';
@@ -21,6 +22,8 @@ function ApproveIcActionPage({
     approve_ic: ApproveIcAction;
     deletePopupAction: (action: PopupAction) => Promise<void>;
 }) {
+    const toast = useSonnerToast();
+
     const [current_connected_apps, , { current_identity_network }] = useCurrentConnectedApps();
 
     const app = useMemo(() => {
