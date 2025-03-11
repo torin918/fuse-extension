@@ -11,6 +11,7 @@ import {
     push_local_record,
     useTokenBalanceIcByRefreshing,
     useTokenInfoIcByInitial,
+    useTokenPriceIcByInitial,
     useTokenPriceIcRead,
 } from '~hooks/store/local';
 import { useCurrentIdentity, useRecentAddresses } from '~hooks/store/local-secure';
@@ -56,6 +57,15 @@ function FunctionTransferTokenIcAmountPage({
     }, [token, balance]);
 
     const [amount, setAmount] = useState('0');
+
+    const current_token = useTokenPriceIcByInitial(canister_id);
+
+    const showUsd = useMemo<string | undefined>(() => {
+        if (current_token === undefined) return '0.00';
+        if (!amount) return '0.00';
+
+        return (Number(current_token.price) * Number(amount)).toFixed(2);
+    }, [current_token, amount]);
 
     const [transferring, setTransferring] = useState(false);
     const onConfirm = useCallback(async () => {
@@ -187,7 +197,7 @@ function FunctionTransferTokenIcAmountPage({
                     />
                     <span className="text-5xl font-bold text-white">{token?.symbol}</span>
                 </div>
-                <span className="block w-full py-2 text-center text-base text-[#999999]">$0.00</span>
+                <span className="block w-full py-2 text-center text-base text-[#999999]">${showUsd}</span>
                 <div className="flex items-center justify-center text-sm">
                     <span className="pr-2 text-[#999999]">Available:</span>
                     <span className="pr-3 text-[#EEEEEE]">{showBalance}</span>
