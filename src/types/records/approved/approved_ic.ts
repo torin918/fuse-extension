@@ -9,6 +9,10 @@ export interface ApprovedIcRecord {
 
     chain: Chain;
 
+    origin: string;
+    title: string;
+    favicon?: string;
+
     canister_id: string;
     method: string;
 

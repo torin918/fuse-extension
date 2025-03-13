@@ -16,7 +16,8 @@ interface SingleIdentityNetworkResult {
 
 export const useFuseRecordList = (
     current_identity_network: CurrentIdentityNetwork | undefined,
-): [FuseRecordList, { done: boolean; load: (target: number) => Promise<void> }] => {
+): [FuseRecordList, { loading: boolean; done: boolean; load: (target: number) => Promise<void> }] => {
+    const [loading, setLoading] = useState(false);
     const [list, setList] = useState<FuseRecordList>([]);
     const [done, setDone] = useState(false);
 
@@ -26,45 +27,55 @@ export const useFuseRecordList = (
         async (target: number) => {
             if (!current_identity_network) return;
 
-            let _next = next;
-            const done: SingleIdentityNetworkResult[] = [];
-            let temp: SingleIdentityNetworkResult[] = [];
-            let identity_networks = [...(current_identity_network.ic ? [current_identity_network.ic] : [])];
-            while (
-                0 < identity_networks.length && // empty
-                [...done, ...temp].map((r) => r.list.length).reduce((a, b) => a + b, 0) < target // too less
-            ) {
-                const all_records: [IdentityNetwork, SingleIdentityNetworkResult][] = await Promise.all(
-                    identity_networks.map(async (identity_network) => [
-                        identity_network,
-                        await query_local_record(identity_network, _next),
-                    ]),
-                );
-                temp = [];
-                identity_networks = [];
-                for (const [identity_network, result] of all_records) {
-                    if (next < result.started - DAY || result.count <= result.list.length) {
-                        done.push(result);
-                    } else {
-                        temp.push(result);
-                        identity_networks.push(identity_network);
-                    }
-                }
-                _next -= DAY;
-            }
+            if (loading) return;
 
-            setNext(_next);
-            let total = 0;
-            let _list: FuseRecordList = [];
-            for (const r of [...done, ...temp]) {
-                total += r.count;
-                _list.push(...r.list);
+            setLoading(true);
+
+            try {
+                let _next = next;
+                const done: SingleIdentityNetworkResult[] = [];
+                let temp: SingleIdentityNetworkResult[] = [];
+                let identity_networks = [...(current_identity_network.ic ? [current_identity_network.ic] : [])];
+                while (
+                    0 < identity_networks.length && // empty
+                    [...done, ...temp].map((r) => r.list.length).reduce((a, b) => a + b, 0) < target // too less
+                ) {
+                    const all_records: [IdentityNetwork, SingleIdentityNetworkResult][] = await Promise.all(
+                        identity_networks.map(async (identity_network) => [
+                            identity_network,
+                            await query_local_record(identity_network, _next),
+                        ]),
+                    );
+                    temp = [];
+                    identity_networks = [];
+                    for (const [identity_network, result] of all_records) {
+                        if (next < result.started - DAY || result.count <= result.list.length) {
+                            done.push(result);
+                        } else {
+                            temp.push(result);
+                            identity_networks.push(identity_network);
+                        }
+                    }
+                    _next -= DAY;
+                }
+
+                setNext(_next);
+                let total = 0;
+                let _list: FuseRecordList = [];
+                for (const r of [...done, ...temp]) {
+                    total += r.count;
+                    _list.push(...r.list);
+                }
+                _list = _.sortBy(_list, (r) => -get_fuse_record_created(r));
+                setDone(total <= _list.length);
+                setList(_list);
+            } catch (e) {
+                console.debug(`🚀 ~ e:`, e);
+            } finally {
+                setLoading(false);
             }
-            _list = _.sortBy(_list, (r) => -get_fuse_record_created(r));
-            setDone(total <= _list.length);
-            setList(_list);
         },
-        [current_identity_network, next],
+        [current_identity_network, next, loading, setLoading],
     );
 
     useEffect(() => {
@@ -74,7 +85,7 @@ export const useFuseRecordList = (
         load(10);
     }, [current_identity_network, load, list, done]);
 
-    return [list, { done, load }];
+    return [list, { loading, done, load }];
 };
 
 const CACHED: Record<string, FuseRecordList> = {};

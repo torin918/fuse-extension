@@ -35,7 +35,9 @@ interface RequestBodyService {
     service: [string, string][];
 }
 
-export type RequestBody = { service: RequestBodyService } | { request: { origin: string; request: string } }; // ! stringify ProxyMessage cause Uint8Array will be change to plain object
+export type RequestBody =
+    | { service: RequestBodyService }
+    | { request: { origin: string; title: string; favicon?: string; request: string } }; // ! stringify ProxyMessage cause Uint8Array will be change to plain object
 export type ResponseBody = string; // ! stringify ProxyMessage cause Uint8Array will be change to plain object
 
 const services = new Map<string, Map<string, { window?: CurrentWindow; timeout: number; list: IDL.ServiceClass[] }>>();
@@ -83,7 +85,13 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
             if (!agent) return handle_error(msg.id, `disconnected`);
 
             // Intercept messages that require popup confirmation
-            const intercepted = await intercept_request(request.origin, msg, current_info);
+            const intercepted = await intercept_request(
+                request.origin,
+                request.title,
+                request.favicon,
+                msg,
+                current_info,
+            );
             if (intercepted.err !== undefined) return intercepted.err;
 
             // ? do request
@@ -132,7 +140,7 @@ const match_ic_proxy_agent_async = async <T>(
         request,
     }: {
         service: (service: RequestBodyService) => Promise<T>;
-        request: (request: { origin: string; request: string }) => Promise<T>;
+        request: (request: { origin: string; title: string; favicon?: string; request: string }) => Promise<T>;
     },
 ): Promise<T> => {
     if ('service' in self) return service(self.service);
@@ -158,6 +166,8 @@ const handle_error = (id: number, error: string): ResponseBody => {
 
 const intercept_request = async (
     origin: string,
+    title: string,
+    favicon: string | undefined,
     msg: ProxyMessage,
     current_info: CurrentInfo,
 ): Promise<MessageResult<ApprovedIcRecord | undefined, ResponseBody>> => {
@@ -205,6 +215,9 @@ const intercept_request = async (
                     type: 'approved_ic',
                     created: now,
                     chain: 'ic',
+                    origin,
+                    title,
+                    favicon,
                     canister_id,
                     method,
                     func_text,

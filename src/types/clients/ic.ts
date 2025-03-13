@@ -58,16 +58,23 @@ export class FuseClient {
         const agent = self.agent as ProxyAgent;
         const body = stringify_proxy_message(msg);
         console.debug('===>>> 📦 before send message', [msg], '->', [body]);
-        relay_message_ic_proxy_agent({
-            request: {
-                origin: window.location.origin,
-                request: body,
-            },
-        }).then((response) => {
-            const msg: ProxyMessage = parse_proxy_message(response);
-            console.debug('<<<=== 🎁 got message after sent message', [response], '->', [msg]);
-            agent.onmessage(msg);
-        });
+        const origin = window.location.origin;
+        find_favicon(window.document, origin)
+            .then((favicon) =>
+                relay_message_ic_proxy_agent({
+                    request: {
+                        origin,
+                        title: window.document.title,
+                        favicon,
+                        request: body,
+                    },
+                }),
+            )
+            .then((response) => {
+                const msg: ProxyMessage = parse_proxy_message(response);
+                console.debug('<<<=== 🎁 got message after sent message', [response], '->', [msg]);
+                agent.onmessage(msg);
+            });
     }
     #reset_agent(connected: boolean) {
         if (connected && !this.agent) this.agent = new ProxyAgent((body: ProxyMessage) => this.#backend(this, body));
@@ -226,6 +233,7 @@ class InnerVisitor extends IDL.Visitor<undefined, string> {
     visitOpt<T>(_t: IDL.OptClass<T>, ty: IDL.Type<T>): string {
         return display_candid(ty);
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     visitTuple<T extends any[]>(_t: IDL.TupleClass<T>, components: IDL.Type[]): string {
         const _fields = components.map((value) => display_candid(value));
         return _fields.join('; ');
