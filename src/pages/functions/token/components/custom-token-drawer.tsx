@@ -3,6 +3,7 @@ import { Button, Skeleton } from '@heroui/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useState } from 'react';
 
+import Icon from '~components/icon';
 import {
     Drawer,
     DrawerClose,
@@ -151,7 +152,7 @@ const LoadCanisterInfo = ({
         <div className="text-sm">
             {loading && (
                 <div className="w-full rounded-xl bg-[#181818] px-4 py-1 dark">
-                    <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm">
+                    <div className="flex w-full items-center justify-between border-b border-[#222222] py-3 text-sm">
                         <span>
                             <Skeleton className="h-4 w-[60px] rounded-lg" />
                         </span>
@@ -163,7 +164,10 @@ const LoadCanisterInfo = ({
                         </div>
                     </div>
                     {Array.from({ length: 5 }).map((_, _index) => (
-                        <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm last:border-b-0">
+                        <div
+                            key={_index}
+                            className="flex w-full items-center justify-between border-b border-[#222222] py-3 text-sm last:border-b-0"
+                        >
                             <span>
                                 <Skeleton className="h-4 w-[60px] rounded-lg" />
                             </span>
@@ -177,26 +181,30 @@ const LoadCanisterInfo = ({
             {error && <div className="text-sm text-red-500">{error}</div>}
             {token && (
                 <div className="w-full rounded-xl bg-[#181818] px-4 py-1">
-                    <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm">
+                    <div className="flex w-full items-center justify-between border-b border-[#222222] py-3 text-sm">
                         <span className="text-[#999999]">Name</span>
                         <div className="flex items-center">
-                            {logo && (
+                            {logo ? (
                                 <div className="mr-2">
                                     <img src={logo} className="h-5 w-5 rounded-full" />
+                                </div>
+                            ) : (
+                                <div className="mr-2">
+                                    <Icon name="icon-defaultImg" className="h-5 w-5"></Icon>
                                 </div>
                             )}
                             <span>{token.name}</span>
                         </div>
                     </div>
-                    <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm">
+                    <div className="flex w-full items-center justify-between border-b border-[#222222] py-3 text-sm">
                         <span className="text-[#999999]">Symbol</span>
                         <span>{token.symbol}</span>
                     </div>
-                    <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm">
+                    <div className="flex w-full items-center justify-between border-b border-[#222222] py-3 text-sm">
                         <span className="text-[#999999]">Decimals</span>
                         <span>{token.decimals}</span>
                     </div>
-                    <div className="items-cente flex w-full justify-between border-b border-[#222222] py-3 text-sm">
+                    <div className="flex w-full items-center justify-between border-b border-[#222222] py-3 text-sm">
                         <span className="text-[#999999]">Fee</span>
                         <span>
                             {BigNumber(token.fee)
@@ -205,7 +213,7 @@ const LoadCanisterInfo = ({
                         </span>
                     </div>
                     {0 < token.standards.length && (
-                        <div className="items-cente flex w-full items-center justify-between py-3">
+                        <div className="flex w-full items-center justify-between py-3">
                             <span className="text-[#999999]">Standards</span>
                             <div className="flex items-center">
                                 {token.standards.map((s) => (
