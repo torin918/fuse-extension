@@ -294,6 +294,10 @@ const ShowTokenItem = ({
                 </div>
             </div>
             <div className="flex items-center">
+                <div className="mr-2 flex flex-col">
+                    <strong className="text-base text-[#EEEEEE]">23.46</strong>
+                    <span className="text-xs text-[#999999]">$234.88</span>
+                </div>
                 {tab === 'current' && sort ? (
                     <BsArrowsMove size={16} className="mr-2" />
                 ) : (
