@@ -295,7 +295,7 @@ const ShowTokenItem = ({
             </div>
             <div className="flex items-center">
                 <div className="mr-2 flex flex-col">
-                    <strong className="text-base text-[#EEEEEE]">23.46</strong>
+                    <strong className="text-sm text-[#EEEEEE]">23.46</strong>
                     <span className="text-xs text-[#999999]">$234.88</span>
                 </div>
                 {tab === 'current' && sort ? (
