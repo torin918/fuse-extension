@@ -1,6 +1,5 @@
-import { Avatar, AvatarGroup, useDisclosure } from '@heroui/react';
+import { useDisclosure } from '@heroui/react';
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { toast } from 'sonner';
 
@@ -13,7 +12,7 @@ import {
     DrawerHeader,
     DrawerTitle,
 } from '~components/ui/drawer';
-import type { FuseRecord } from '~types/records';
+import { match_fuse_record, type FuseRecord } from '~types/records';
 import type { ApprovedIcRecord } from '~types/records/approved/approved_ic';
 import type { ConnectedRecord } from '~types/records/connected';
 import type { TokenTransferredIcRecord } from '~types/records/token/transferred_ic';
@@ -102,18 +101,14 @@ const RecordDetailTransferred = ({ value }: { value: TokenTransferredIcRecord })
 
 const RecordDetailDrawer = ({
     container,
-    setIsOpen,
+    handleCloseDetail,
     currentDetail,
 }: {
     container?: HTMLElement | null;
-    setIsOpen: (isOpen: undefined) => void;
+    handleCloseDetail: () => void;
     currentDetail: FuseRecord;
 }) => {
     const { onOpenChange } = useDisclosure();
-
-    const key = Object.keys(currentDetail)[0] as 'connected' | 'token_transferred_ic' | 'approved_ic';
-    const value = Object.values(currentDetail)[0] as ConnectedRecord | TokenTransferredIcRecord | ApprovedIcRecord;
-    console.log('🚀 ~ value:', value);
 
     return (
         <Drawer open={!!currentDetail} onOpenChange={onOpenChange} container={container}>
@@ -125,13 +120,15 @@ const RecordDetailDrawer = ({
                     <DrawerTitle>
                         <div className="flex w-full items-center justify-between py-3">
                             <span className="text-sm text-white">
-                                {key === 'connected' && 'Connected'}
-                                {key === 'token_transferred_ic' && 'Transferred'}
-                                {key === 'approved_ic' && 'Approved'}
+                                {match_fuse_record(currentDetail, {
+                                    connected: () => `Connected`,
+                                    token_transferred_ic: () => `Transferred`,
+                                    approved_ic: () => `Approved`,
+                                })}
                             </span>
                             <DrawerClose>
                                 <span
-                                    onClick={() => setIsOpen(undefined)}
+                                    onClick={handleCloseDetail}
                                     className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
                                 >
                                     Close
@@ -143,13 +140,13 @@ const RecordDetailDrawer = ({
                 </DrawerHeader>
 
                 <div className="flex h-full w-full flex-col bg-[#0a0600] px-5 pb-5">
-                    {key === 'connected' && value && <RecordDetailConnected value={value as ConnectedRecord} />}
-
-                    {key === 'approved_ic' && value && <RecordDetailApproved value={value as ApprovedIcRecord} />}
-
-                    {key === 'token_transferred_ic' && value && (
-                        <RecordDetailTransferred value={value as TokenTransferredIcRecord} />
-                    )}
+                    {match_fuse_record(currentDetail, {
+                        connected: (connected) => <RecordDetailConnected value={connected} />,
+                        token_transferred_ic: (token_transferred_ic) => (
+                            <RecordDetailTransferred value={token_transferred_ic} />
+                        ),
+                        approved_ic: (approved_ic) => <RecordDetailApproved value={approved_ic} />,
+                    })}
                 </div>
             </DrawerContent>
         </Drawer>

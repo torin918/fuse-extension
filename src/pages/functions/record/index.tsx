@@ -7,46 +7,41 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
 import { useFuseRecordList } from '~hooks/store/local/memo/record';
-import type { FuseRecord } from '~types/records';
-import type { ApprovedIcRecord } from '~types/records/approved/approved_ic';
-import type { ConnectedRecord } from '~types/records/connected';
-import type { TokenTransferredIcRecord } from '~types/records/token/transferred_ic';
+import { get_fuse_record_created, type FuseRecord } from '~types/records';
 
 import { FunctionHeader } from '../components/header';
 import RecordDetailDrawer from './components/record-detail-drawer';
-import { RecordItem, RecordNoData, RecordSkeleton } from './components/record-list';
+import { RecordItem, RecordNoData } from './components/record-list';
+
+const getDateString = (timestamp: number) => dayjs(timestamp).format('MM/DD/YYYY');
 
 function FunctionRecordsPage() {
     const current_state = useCurrentState();
     const { setHide, goto } = useGoto();
     const { current_identity_network } = useCurrentIdentity();
 
-    const [list, { done }] = useFuseRecordList(current_identity_network);
+    const [list, { done, load }] = useFuseRecordList(current_identity_network);
     // console.debug(`🚀 ~ RecordPage ~ list:`, list, done, load);
 
     const [currentDetail, setCurrentDetail] = useState<FuseRecord | undefined>(undefined);
 
-    const handleOpenDetail = (item: FuseRecord) => {
-        setCurrentDetail(item);
-    };
-
-    const getDateString = (timestamp: number) => dayjs(timestamp).format('MM/DD/YYYY');
-
     const groupedRecords = useMemo(() => {
         return list.reduce<Record<string, FuseRecord[]>>((acc, item) => {
-            const entryType = Object.keys(item)[0] as keyof FuseRecord;
-            const created = (item[entryType] as ConnectedRecord | TokenTransferredIcRecord | ApprovedIcRecord)?.created;
+            const created = get_fuse_record_created(item);
+            const dateKey = getDateString(created);
 
-            if (created) {
-                const dateKey = getDateString(created);
-                (acc[dateKey] ||= []).push(item);
-            }
+            (acc[dateKey] ||= []).push(item);
 
             return acc;
         }, {});
     }, [list]);
 
+    const loadMore = () => {
+        load(list.length + 10);
+    };
+
     const ref = useRef<HTMLDivElement>(null);
+
     return (
         <FusePage current_state={current_state}>
             <FusePageTransition setHide={setHide}>
@@ -54,9 +49,7 @@ function FunctionRecordsPage() {
                     <FunctionHeader title="History" onBack={() => goto('/')} />
 
                     <div className="w-full flex-1 overflow-y-auto">
-                        {!done ? (
-                            <RecordSkeleton />
-                        ) : list.length === 0 ? (
+                        {!list || list.length === 0 ? (
                             <RecordNoData />
                         ) : (
                             <div className="flex flex-col">
@@ -67,7 +60,7 @@ function FunctionRecordsPage() {
                                             <RecordItem
                                                 key={idx}
                                                 itemData={record}
-                                                handleOpenDetail={handleOpenDetail}
+                                                handleOpenDetail={() => setCurrentDetail(record)}
                                             />
                                         ))}
                                     </div>
@@ -79,7 +72,7 @@ function FunctionRecordsPage() {
                     {currentDetail && (
                         <RecordDetailDrawer
                             container={ref.current ?? undefined}
-                            setIsOpen={setCurrentDetail}
+                            handleCloseDetail={() => setCurrentDetail(undefined)}
                             currentDetail={currentDetail}
                         />
                     )}
