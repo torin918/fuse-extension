@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, type NavigateFunction } from 'react-router-dom';
 
@@ -15,44 +16,119 @@ import {
     useTokenPriceIcByInitial,
 } from '~hooks/store/local';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { useFuseRecordList } from '~hooks/store/local/memo/record';
 import { useSonnerToast } from '~hooks/toast';
+import { truncate_text } from '~lib/utils/text';
 import { FunctionHeader } from '~pages/functions/components/header';
+import { match_fuse_record, type FuseRecord } from '~types/records';
+import type { TokenTransferredIcRecord } from '~types/records/token/transferred_ic';
 import { match_combined_token_info } from '~types/tokens';
+import type { IcTokenInfo } from '~types/tokens/ic';
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 
-function FunctionTokenIcPage() {
-    const current_state = useCurrentState();
+const TransferItem = ({
+    key,
+    item,
+    logo,
+    token,
+}: {
+    key: string;
+    item: TokenTransferredIcRecord;
+    logo: string | undefined;
+    token: IcTokenInfo;
+}) => {
+    const toAccount = useMemo(() => {
+        if (item.to === undefined) return '';
+        if (typeof item.to === 'string') {
+            return item.to;
+        } else {
+            return item.to.owner;
+        }
+    }, [item.to]);
 
-    const { setHide, goto: _goto, navigate } = useGoto();
+    const amount = useMemo(() => {
+        return new BigNumber(item.amount).dividedBy(new BigNumber(10).pow(new BigNumber(token.decimals))).toFixed(2);
+    }, [item, token]);
 
-    const location = useLocation();
-    const [canister_id, setCanisterId] = useState<string>();
+    const method = useMemo(() => {
+        if (item.method === undefined) return '';
+        if (item.method === 'icrc1_transfer' || item.method === 'transfer') {
+            return 'Send';
+        }
+        // TODO: receive and swap check
+        return 'Receive';
+    }, [item.method]);
 
-    useEffect(() => {
-        const canister_id = location.state.canister_id;
-        if (!canister_id) return _goto(-1);
-        setCanisterId(canister_id);
-    }, [_goto, location]);
-
-    if (!canister_id) return <></>;
     return (
-        <FusePage current_state={current_state} options={{ refresh_token_info_ic_sleep: 1000 * 60 * 5 }}>
-            <FusePageTransition setHide={setHide}>
-                <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
-                    <InnerPage canister_id={canister_id} navigate={navigate} />
+        <div
+            key={key}
+            className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]"
+        >
+            <div className="flex items-center">
+                <img
+                    src={logo ?? 'https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png'}
+                    className="w-10 h-10 rounded-full"
+                />
+                <div className="ml-[10px]">
+                    <strong className="block text-base text-[#EEEEEE]">{method}</strong>
+                    <span className="text-xs text-[#999999]">To {truncate_text(toAccount)}</span>
+                    {/* TODO: swap */}
+                    {/* <span className="text-xs text-[#999999]">To ICS</span> */}
                 </div>
-            </FusePageTransition>
-        </FusePage>
-    );
-}
+            </div>
 
-export default FunctionTokenIcPage;
+            <div className="text-base font-semibold text-[#EEEEEE]">
+                -{amount} {token.symbol}
+            </div>
+
+            {/* TODO: receive */}
+            {/* <div className="text-base font-semibold text-[#00C431]">+36.98 {token.symbol}</div> */}
+
+            {/* TODO: swap */}
+            {/* <div className="flex flex-col items-end">
+                <div className="text-sm text-[#999999]">-1.34 {token.symbol}</div>
+                <div className="text-base font-semibold text-[#00C431]">+42,582.76 {token.symbol}</div>
+            </div> */}
+        </div>
+    );
+};
 
 const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: NavigateFunction }) => {
     const { goto: _goto } = useGoto();
     const toast = useSonnerToast();
-    const { current_identity } = useCurrentIdentity();
+    const { current_identity, current_identity_network } = useCurrentIdentity();
     const [custom] = useTokenInfoCustom();
+
+    // , { done, load }
+    const [list] = useFuseRecordList(current_identity_network);
+
+    const getDateString = (timestamp: number) => dayjs(timestamp).format('MM/DD/YYYY');
+
+    // only show records of the current canister and token_transferred_ic type
+    const token_transferred_ic_list = useMemo<Record<string, TokenTransferredIcRecord[]>>(() => {
+        const all_list = list.filter((r) => {
+            return match_fuse_record(r, {
+                connected: () => false,
+                token_transferred_ic: (token_transferred_ic) => {
+                    return token_transferred_ic.canister_id === canister_id;
+                },
+                approved_ic: () => false,
+            });
+        });
+
+        return all_list.reduce<Record<string, TokenTransferredIcRecord[]>>((acc, item) => {
+            const entryType = Object.keys(item)[0] as keyof FuseRecord;
+            const entries: [string, TokenTransferredIcRecord][] = Object.entries(item);
+
+            const created = (item[entryType] as TokenTransferredIcRecord)?.created;
+            const trans_item = entries[0][1] as TokenTransferredIcRecord;
+            if (created) {
+                const dateKey = getDateString(created);
+                (acc[dateKey] ||= []).push(trans_item);
+            }
+            return acc;
+        }, {});
+    }, [canister_id, list]);
 
     const allTokens = useMemo(() => [...PRESET_ALL_TOKEN_INFO, ...custom.map((t) => t.token)], [custom]);
 
@@ -60,8 +136,6 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
     const [logo, setLogo] = useState<string>();
 
     useEffect(() => {
-        if (!canister_id) return;
-
         const token = allTokens.find((t) =>
             match_combined_token_info(t.info, { ic: (ic) => ic.canister_id === canister_id }),
         );
@@ -101,6 +175,8 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
     const [isExpanded, setIsExpanded] = useState(false);
     const truncatedText = text.slice(0, 200);
     const shouldTruncate = text.length > 200;
+
+    if (!token) return <></>;
 
     return (
         <>
@@ -244,97 +320,53 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
                     <h3 className="block px-5 pb-4 text-sm text-[#999999]">Transactions</h3>
                     {/* test data */}
                     <div className="flex flex-col w-full">
-                        <span className="px-5 py-[5px] text-xs text-[#999999]">02/24/2025</span>
-                        <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
-                            <div className="flex items-center">
-                                <img
-                                    src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                    className="w-10 h-10 rounded-full"
-                                />
-                                <div className="ml-[10px]">
-                                    <strong className="block text-base text-[#EEEEEE]">Send</strong>
-                                    <span className="text-xs text-[#999999]">To uyrhg...cqe</span>
-                                </div>
+                        {Object.entries(token_transferred_ic_list).map(([date, records]) => (
+                            <div key={date} className="flex flex-col">
+                                <div className="px-5 py-[5px] text-xs text-[#999999]">{date}</div>
+                                {records &&
+                                    records.map((record, idx) => {
+                                        return (
+                                            <TransferItem
+                                                item={record}
+                                                logo={logo}
+                                                key={`transfer_item_${idx}`}
+                                                token={token}
+                                            />
+                                        );
+                                    })}
                             </div>
-                            <div className="text-base font-semibold text-[#EEEEEE]">-11.55 ICP</div>
-                        </div>
-                        <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
-                            <div className="flex items-center">
-                                <img
-                                    src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                    className="w-10 h-10 rounded-full"
-                                />
-                                <div className="ml-[10px]">
-                                    <strong className="block text-base text-[#EEEEEE]">Swap</strong>
-                                    <span className="text-xs text-[#999999]">To ICS</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <div className="text-sm text-[#999999]">-1.34 ICP</div>
-                                <div className="text-base font-semibold text-[#00C431]">+42,582.76 ICS</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="px-5 py-[5px] text-xs text-[#999999]">01/20/2025</span>
-                        <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
-                            <div className="flex items-center">
-                                <img
-                                    src="https://metrics.icpex.org/images/xevnm-gaaaa-aaaar-qafnq-cai.png"
-                                    className="w-10 h-10 rounded-full"
-                                />
-                                <div className="ml-[10px]">
-                                    <strong className="block text-base text-[#EEEEEE]">Send</strong>
-                                    <span className="text-xs text-[#999999]">To uyrhg...cqe</span>
-                                </div>
-                            </div>
-                            <div className="text-base font-semibold text-[#EEEEEE]">-374 ckUSDC</div>
-                        </div>
-                        <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
-                            <div className="flex items-center">
-                                <img
-                                    src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                    className="w-10 h-10 rounded-full"
-                                />
-                                <div className="ml-[10px]">
-                                    <strong className="block text-base text-[#EEEEEE]">Reveive</strong>
-                                    <span className="text-xs text-[#999999]">From 87bba...413</span>
-                                </div>
-                            </div>
-                            <div className="text-base font-semibold text-[#00C431]">+36.98 ICP</div>
-                        </div>
-                        <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
-                            <div className="flex items-center">
-                                <img
-                                    src="https://metrics.icpex.org/images/o64gq-3qaaa-aaaam-acfla-cai.png"
-                                    className="w-10 h-10 rounded-full"
-                                />
-                                <div className="ml-[10px]">
-                                    <strong className="block text-base text-[#EEEEEE]">Reveive</strong>
-                                    <span className="text-xs text-[#999999]">From 87bba...413</span>
-                                </div>
-                            </div>
-                            <div className="text-base font-semibold text-[#00C431]">+92,387,862 ICU</div>
-                        </div>
-                        <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
-                            <div className="flex items-center">
-                                <img
-                                    src="https://app.icpswap.com/images/tokens/ca6gz-lqaaa-aaaaq-aacwa-cai.png"
-                                    className="w-10 h-10 rounded-full"
-                                />
-                                <div className="ml-[10px]">
-                                    <strong className="block text-base text-[#EEEEEE]">Swap</strong>
-                                    <span className="text-xs text-[#999999]">To ICS</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <div className="text-sm text-[#999999]">-3.8 ICP</div>
-                                <div className="text-base font-semibold text-[#00C431]">+89,452.34 ICS</div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>
         </>
     );
 };
+
+function FunctionTokenIcPage() {
+    const current_state = useCurrentState();
+
+    const { setHide, goto: _goto, navigate } = useGoto();
+
+    const location = useLocation();
+    const [canister_id, setCanisterId] = useState<string>();
+
+    useEffect(() => {
+        const canister_id = location.state.canister_id;
+        if (!canister_id) return _goto(-1);
+        setCanisterId(canister_id);
+    }, [_goto, location]);
+
+    if (!canister_id) return <></>;
+    return (
+        <FusePage current_state={current_state} options={{ refresh_token_info_ic_sleep: 1000 * 60 * 5 }}>
+            <FusePageTransition setHide={setHide}>
+                <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
+                    <InnerPage canister_id={canister_id} navigate={navigate} />
+                </div>
+            </FusePageTransition>
+        </FusePage>
+    );
+}
+
+export default FunctionTokenIcPage;
