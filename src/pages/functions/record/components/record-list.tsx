@@ -27,8 +27,6 @@ export const RecordSkeleton = () => {
 };
 
 const RecordItemConnected = ({ value }: { value: ConnectedRecord }) => {
-    console.log('🚀 ~ RecordItemConnected ~ value:', value);
-
     return (
         <>
             <div className="flex items-center">
@@ -63,6 +61,7 @@ const RecordItemApprovedIc = ({ value }: { value: ApprovedIcRecord }) => {
     useEffect(() => {
         if (!value) return;
 
+        console.log(value.args_json);
         const arg = {
             owner: 'ylpwz-52h2c-fvw26-jp5os-4e4r6-lh4tk-iqbjd-qve3t-t3qtz-nwylo-wae',
             amount: 1000000000000,

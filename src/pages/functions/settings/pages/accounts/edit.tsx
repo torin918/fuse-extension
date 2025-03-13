@@ -1,7 +1,7 @@
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { Button, Drawer, DrawerBody, DrawerContent, useDisclosure } from '@heroui/react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useParams } from 'react-router-dom';
 
@@ -92,9 +92,11 @@ const InnerSingleAccountPage = ({ goto: _goto }: { goto: GotoFunction }) => {
     const [isOpenAvatar, setIsOpenAvatar] = useState(false);
     const [isOpenAccountName, setIsOpenAccountName] = useState(false);
 
+    const ref = useRef<HTMLDivElement>(null);
+
     if (!current || !identity_list) return <></>;
     return (
-        <div className="w-full px-5">
+        <div ref={ref} className="w-full px-5">
             <div className="flex items-center justify-center py-7">
                 <div className="relative flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#333333] text-4xl">
                     {current.icon}
@@ -205,6 +207,7 @@ const InnerSingleAccountPage = ({ goto: _goto }: { goto: GotoFunction }) => {
                 onShowSeed={() => showSeedPhrase(current.id)}
                 mnemonic={mnemonic}
                 type="seed"
+                container={ref.current ?? undefined}
             />
 
             <BackupMnemonicDrawer
@@ -213,6 +216,7 @@ const InnerSingleAccountPage = ({ goto: _goto }: { goto: GotoFunction }) => {
                 onShowSeed={() => showPrivate(current.id)}
                 mnemonic={private_key}
                 type="private"
+                container={ref.current ?? undefined}
             />
             <SetName
                 isOpen={isOpenAccountName}

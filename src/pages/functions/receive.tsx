@@ -48,17 +48,20 @@ function FunctionReceivePage() {
                             </span>
                         </div>
                         <div className="flex justify-center py-10">
-                            {current_identity?.address?.ic?.owner && (
-                                <div className="relative h-[160px] w-[160px] overflow-hidden rounded-xl bg-white">
-                                    <img
-                                        src={ic_svg}
-                                        className="absolute left-1/2 top-1/2 z-10 h-10 w-10 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-[2px] border-white"
-                                    />
-                                    <div className="flex h-full w-full items-center justify-center">
+                            <div className="relative h-[160px] w-[160px] overflow-hidden rounded-xl bg-white">
+                                <img
+                                    src={ic_svg}
+                                    className="absolute left-1/2 top-1/2 z-10 h-10 w-10 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-[2px] border-white"
+                                />
+                                <div className="flex h-full w-full items-center justify-center">
+                                    {activeTab === 'principal' && current_identity?.address?.ic?.owner && (
                                         <QRCodeSVG value={current_identity?.address?.ic?.owner} size={140} />
-                                    </div>
+                                    )}
+                                    {activeTab === 'account' && current_identity?.address?.ic?.account_id && (
+                                        <QRCodeSVG value={current_identity?.address?.ic?.account_id} size={140} />
+                                    )}
                                 </div>
-                            )}
+                            </div>
                         </div>
                         {activeTab === 'principal' ? (
                             <div className="w-full rounded-xl bg-[#181818] px-3">
