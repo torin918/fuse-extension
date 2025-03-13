@@ -1,7 +1,6 @@
 import { Button, useDisclosure } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { AiOutlineMinusCircle } from 'react-icons/ai';
 
 import Icon from '~components/icon';
 import InputPassword from '~components/input-password';
@@ -12,7 +11,6 @@ import {
     DrawerDescription,
     DrawerHeader,
     DrawerTitle,
-    DrawerTrigger,
 } from '~components/ui/drawer';
 import { usePasswordHashed } from '~hooks/store/local';
 import { useSonnerToast } from '~hooks/toast';

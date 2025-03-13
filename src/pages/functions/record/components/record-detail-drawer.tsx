@@ -1,143 +1,156 @@
-import { Avatar, AvatarGroup, Drawer, DrawerBody, DrawerContent, useDisclosure } from '@heroui/react';
+import { Avatar, AvatarGroup, useDisclosure } from '@heroui/react';
+import dayjs from 'dayjs';
+import { useMemo } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import { toast } from 'sonner';
 
 import Icon from '~components/icon';
-import { useSonnerToast } from '~hooks/toast';
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerHeader,
+    DrawerTitle,
+} from '~components/ui/drawer';
+import type { FuseRecord } from '~types/records';
+import type { ApprovedIcRecord } from '~types/records/approved/approved_ic';
+import type { ConnectedRecord } from '~types/records/connected';
+import type { TokenTransferredIcRecord } from '~types/records/token/transferred_ic';
+
+const RecordDetailConnected = ({ value }: { value: ConnectedRecord }) => {
+    return (
+        <>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">title</span>
+                <span className="flex items-center text-sm">
+                    {value?.favicon ? (
+                        <img src={value.favicon} className="mr-1 h-[18px] w-[18px] rounded-full" />
+                    ) : (
+                        <Icon name="icon-web" className="mr-1 h-[18px] w-[18px] rounded-full"></Icon>
+                    )}
+                    <p className="max-w-[220px] truncate">{value.title}</p>
+                </span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Chain</span>
+                <span className="text-sm">{value.chain}</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Origin</span>
+                <span className="max-w-[220px] truncate text-sm">{value.origin}</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Created Time</span>
+                <span className="text-sm">{dayjs(value.created).format('MM/DD/YYYY HH:mm:ss')}</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Type</span>
+                <span className="text-sm">{value.type}</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">State</span>
+                <span className="text-sm">
+                    {typeof value.state === 'string' ? value.state : Object.keys(value.state)}
+                </span>
+            </div>
+        </>
+    );
+};
+
+const RecordDetailApproved = ({ value }: { value: ApprovedIcRecord }) => {
+    return (
+        <>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Type</span>
+                <span className="text-sm">{value.type}</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Chain</span>
+                <span className="text-sm">{value.chain}</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Canister id</span>
+                <span className="flex items-center text-sm">
+                    {value.canister_id}
+                    <CopyToClipboard text={value.canister_id} onCopy={() => toast.success('Copied')}>
+                        <div>
+                            <Icon
+                                name="icon-copy"
+                                className="ml-2 h-3 w-3 cursor-pointer text-[#EEEEEE] duration-300 hover:text-[#FFCF13]"
+                            />
+                        </div>
+                    </CopyToClipboard>
+                </span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Method</span>
+                <span className="text-sm">{value.method}</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Created Time</span>
+                <span className="text-sm">{dayjs(value.created).format('MM/DD/YYYY HH:mm:ss')}</span>
+            </div>
+        </>
+    );
+};
+
+const RecordDetailTransferred = ({ value }: { value: TokenTransferredIcRecord }) => {
+    console.log('🚀 ~ RecordDetailTransferred ~ value:', value);
+    return <></>;
+};
 
 const RecordDetailDrawer = ({
-    isOpen,
+    container,
     setIsOpen,
     currentDetail,
 }: {
-    isOpen: boolean;
-    setIsOpen: (isOpen: boolean) => void;
-    currentDetail: {};
+    container?: HTMLElement | null;
+    setIsOpen: (isOpen: undefined) => void;
+    currentDetail: FuseRecord;
 }) => {
     const { onOpenChange } = useDisclosure();
-    const toast = useSonnerToast();
+
+    const key = Object.keys(currentDetail)[0] as 'connected' | 'token_transferred_ic' | 'approved_ic';
+    const value = Object.values(currentDetail)[0] as ConnectedRecord | TokenTransferredIcRecord | ApprovedIcRecord;
+    console.log('🚀 ~ value:', value);
+
     return (
-        <Drawer isOpen={isOpen} placement="bottom" onOpenChange={onOpenChange}>
-            <DrawerContent>
-                <DrawerBody>
-                    <div className="fixed bottom-0 left-0 top-[60px] z-20 flex w-full flex-col justify-between border-t border-[#333333] bg-[#0a0600] px-5">
+        <Drawer open={!!currentDetail} onOpenChange={onOpenChange} container={container}>
+            <DrawerContent
+                className="flex h-full !max-h-full w-full flex-col items-center justify-between border-0 bg-transparent pt-[50px]"
+                overlayClassName="bg-black/50"
+            >
+                <DrawerHeader className="w-full shrink-0 border-t border-[#333333] bg-[#0a0600] px-5 pb-0 pt-1 text-left">
+                    <DrawerTitle>
                         <div className="flex w-full items-center justify-between py-3">
-                            <span className="text-sm">Details</span>
-                            <span
-                                className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Close
+                            <span className="text-sm text-white">
+                                {key === 'connected' && 'Connected'}
+                                {key === 'token_transferred_ic' && 'Transferred'}
+                                {key === 'approved_ic' && 'Approved'}
                             </span>
+                            <DrawerClose>
+                                <span
+                                    onClick={() => setIsOpen(undefined)}
+                                    className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
+                                >
+                                    Close
+                                </span>
+                            </DrawerClose>
                         </div>
-                        <div className="w-full flex-1 overflow-y-auto">
-                            {currentDetail.type === 'send' && (
-                                <div className="flex w-full flex-col items-center justify-center">
-                                    <img
-                                        src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                        className="h-[50px] w-[50px] rounded-full"
-                                    />
-                                    <span className="pt-2 text-[28px]">-5.6 ICP</span>
-                                </div>
-                            )}
-                            {currentDetail.type === 'receive' && (
-                                <div className="flex w-full flex-col items-center justify-center">
-                                    <img
-                                        src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png"
-                                        className="h-[50px] w-[50px] rounded-full"
-                                    />
-                                    <span className="pt-2 text-[28px] text-[#00C431]">+36.98 ICP</span>
-                                </div>
-                            )}
-                            {currentDetail.type === 'swap' && (
-                                <div className="flex w-full flex-col items-center justify-center">
-                                    <AvatarGroup size="lg">
-                                        <Avatar src="https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png" />
-                                        <Avatar src="https://app.icpswap.com/images/tokens/ca6gz-lqaaa-aaaaq-aacwa-cai.png" />
-                                    </AvatarGroup>
-                                    <div className="mt-2 flex items-center justify-center text-[28px]">
-                                        <span>ICP</span>
-                                        <Icon
-                                            name="icon-arrow-left"
-                                            className="mx-2 h-5 w-5 rotate-180 transform text-[#EEEEEE]"
-                                        />
-                                        <span>ICS</span>
-                                    </div>
-                                </div>
-                            )}
-                            <div className="mt-5 w-full rounded-xl bg-[#181818]">
-                                <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
-                                    <span className="text-sm text-[#999999]">Time</span>
-                                    <span className="text-sm">01/16/2025 13:22:45</span>
-                                </div>
-                                <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
-                                    <span className="text-sm text-[#999999]">Type</span>
-                                    <span className="text-sm">{currentDetail.type}</span>
-                                </div>
-                                <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
-                                    <span className="text-sm text-[#999999]">Status</span>
-                                    <span className="text-sm text-[#00C431]">Completed</span>
-                                </div>
-                                {currentDetail.type === 'receive' && (
-                                    <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
-                                        <span className="text-sm text-[#999999]">From</span>
-                                        <div className="flex items-center text-sm">
-                                            <span>shg8b...32h</span>
-                                            <CopyToClipboard text="" onCopy={() => toast.success('Copied')}>
-                                                <Icon
-                                                    name="icon-copy"
-                                                    className="ml-2 h-3 w-3 cursor-pointer text-[#EEEEEE] duration-300 hover:text-[#FFCF13]"
-                                                />
-                                            </CopyToClipboard>
-                                        </div>
-                                    </div>
-                                )}
-                                {currentDetail.type === 'send' && (
-                                    <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
-                                        <span className="text-sm text-[#999999]">To</span>
-                                        <div className="flex items-center text-sm">
-                                            <span>uyrhg...cqe</span>
-                                            <CopyToClipboard text="" onCopy={() => toast.success('Copied')}>
-                                                <Icon
-                                                    name="icon-copy"
-                                                    className="ml-2 h-3 w-3 cursor-pointer text-[#EEEEEE] duration-300 hover:text-[#FFCF13]"
-                                                />
-                                            </CopyToClipboard>
-                                        </div>
-                                    </div>
-                                )}
-                                {currentDetail.type === 'swap' && (
-                                    <div className="w-full">
-                                        <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
-                                            <span className="text-sm text-[#999999]">Provider</span>
-                                            <div className="flex items-center">
-                                                <img
-                                                    src="https://app.icpswap.com/images/tokens/ca6gz-lqaaa-aaaaq-aacwa-cai.png"
-                                                    className="mr-2 h-5 w-5 rounded-full"
-                                                />
-                                                <span className="text-sm">ICPSwap</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
-                                            <span className="text-sm text-[#999999]">You paid</span>
-                                            <span className="text-sm">-10.83 ICP</span>
-                                        </div>
-                                        <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
-                                            <span className="text-sm text-[#999999]">You Received</span>
-                                            <span className="text-sm text-[#00C431]">+293,847 ICS</span>
-                                        </div>
-                                    </div>
-                                )}
-                                <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
-                                    <span className="text-sm text-[#999999]">Network Fee</span>
-                                    <span className="text-sm">0000001ICP</span>
-                                </div>
-                                <div className="block w-full p-3 text-center text-sm text-[#FFCF13] duration-300 hover:opacity-85">
-                                    View on ICP DASHBOARD
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </DrawerBody>
+                    </DrawerTitle>
+                    <DrawerDescription className="hidden" />
+                </DrawerHeader>
+
+                <div className="flex h-full w-full flex-col bg-[#0a0600] px-5 pb-5">
+                    {key === 'connected' && value && <RecordDetailConnected value={value as ConnectedRecord} />}
+
+                    {key === 'approved_ic' && value && <RecordDetailApproved value={value as ApprovedIcRecord} />}
+
+                    {key === 'token_transferred_ic' && value && (
+                        <RecordDetailTransferred value={value as TokenTransferredIcRecord} />
+                    )}
+                </div>
             </DrawerContent>
         </Drawer>
     );

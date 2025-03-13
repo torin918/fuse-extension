@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
@@ -21,14 +21,12 @@ function FunctionRecordsPage() {
     const { setHide, goto } = useGoto();
     const { current_identity_network } = useCurrentIdentity();
 
-    const [list, { done, load }] = useFuseRecordList(current_identity_network);
-    console.debug(`🚀 ~ RecordPage ~ list:`, list, done, load);
+    const [list, { done }] = useFuseRecordList(current_identity_network);
+    // console.debug(`🚀 ~ RecordPage ~ list:`, list, done, load);
 
-    const [isOpen, setIsOpen] = useState(false);
     const [currentDetail, setCurrentDetail] = useState<FuseRecord | undefined>(undefined);
 
     const handleOpenDetail = (item: FuseRecord) => {
-        setIsOpen(true);
         setCurrentDetail(item);
     };
 
@@ -48,10 +46,11 @@ function FunctionRecordsPage() {
         }, {});
     }, [list]);
 
+    const ref = useRef<HTMLDivElement>(null);
     return (
         <FusePage current_state={current_state}>
             <FusePageTransition setHide={setHide}>
-                <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
+                <div ref={ref} className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
                     <FunctionHeader title="History" onBack={() => goto('/')} />
 
                     <div className="w-full flex-1 overflow-y-auto">
@@ -78,7 +77,11 @@ function FunctionRecordsPage() {
                     </div>
 
                     {currentDetail && (
-                        <RecordDetailDrawer isOpen={isOpen} setIsOpen={setIsOpen} currentDetail={currentDetail} />
+                        <RecordDetailDrawer
+                            container={ref.current ?? undefined}
+                            setIsOpen={setCurrentDetail}
+                            currentDetail={currentDetail}
+                        />
                     )}
                 </div>
             </FusePageTransition>
