@@ -214,10 +214,25 @@ function FunctionTokenViewPage() {
                                                         className="h-[70px] w-[70px] text-[#999999]"
                                                     />
                                                     <p className="text-sm text-[#999999]">No data found</p>
-                                                    <span className="mt-6 flex cursor-pointer items-center rounded-full bg-[#222222] px-3 py-2 text-sm duration-300 hover:bg-[#333333]">
-                                                        <Icon name="icon-add" className="mr-2 h-4 w-4 text-[#FFCF13]" />
-                                                        Add
-                                                    </span>
+
+                                                    <CustomTokenDrawer
+                                                        trigger={
+                                                            <span className="mt-3 flex cursor-pointer items-center rounded-full bg-[#222222] px-3 py-2 text-sm duration-300 hover:bg-[#333333]">
+                                                                <Icon
+                                                                    name="icon-add"
+                                                                    className="mr-2 h-4 w-4 text-[#FFCF13]"
+                                                                />
+                                                                Add
+                                                            </span>
+                                                        }
+                                                        container={ref.current ?? undefined}
+                                                        isTokenExist={isTokenExist}
+                                                        pushIcToken={async (ic_token) => {
+                                                            pushCustomIcToken(ic_token).then((token) => {
+                                                                if (token) pushToken(token);
+                                                            });
+                                                        }}
+                                                    />
                                                 </div>
                                             )}
                                             {wrapped.map((token, index) => (

@@ -3,8 +3,8 @@ import { v4 as uuid } from 'uuid';
 
 import { setPasswordHashedDirectly } from '~hooks/store/local';
 import { setKeyRingsDirectly } from '~hooks/store/local-secure';
-import { inner_get_identity_address } from '~hooks/store/local-secure/memo/identity';
 import { __get_actual_password, refreshUnlockedDirectly } from '~hooks/store/session';
+import { inner_get_identity_address } from '~lib/address';
 import { validate_mnemonic } from '~lib/mnemonic';
 import { check_password, hash_password } from '~lib/password';
 import type { CombinedIdentityKey, KeyRings } from '~types/identity';

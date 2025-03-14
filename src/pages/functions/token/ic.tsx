@@ -23,7 +23,7 @@ import { FunctionHeader } from '~pages/functions/components/header';
 import { match_fuse_record, type FuseRecord } from '~types/records';
 import type { TokenTransferredIcRecord } from '~types/records/token/transferred_ic';
 import { match_combined_token_info } from '~types/tokens';
-import type { IcTokenInfo } from '~types/tokens/ic';
+import type { IcTokenInfo } from '~types/tokens/chain/ic';
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 
 import TransferDetailDrawer from './components/transfer-detail-drawer';

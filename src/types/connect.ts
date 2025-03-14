@@ -102,7 +102,7 @@ export const find_favicon = async (document: Document, origin: string): Promise<
     const url = (() => {
         const elements = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]');
         for (const element of elements) {
-            const href: string = (element as any).href;
+            const href: string = (element as HTMLLinkElement).href;
             if (href) {
                 if (!href.startsWith('http')) return `${origin}${href}`;
                 return href;

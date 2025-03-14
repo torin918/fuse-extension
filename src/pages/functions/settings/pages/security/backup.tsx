@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
@@ -33,6 +33,7 @@ function FunctionSettingsSecurityBackupPage() {
         });
     };
 
+    const ref = useRef<HTMLDivElement>(null);
     return (
         <FusePage current_state={current_state}>
             <FusePageTransition
@@ -46,7 +47,7 @@ function FunctionSettingsSecurityBackupPage() {
                     />
                 }
             >
-                <div className="h-full w-full overflow-y-auto px-5">
+                <div ref={ref} className="h-full w-full overflow-y-auto px-5">
                     {(identity_list ?? []).map((identity) => (
                         <div
                             key={identity.id}
@@ -80,6 +81,7 @@ function FunctionSettingsSecurityBackupPage() {
                         onShowSeed={() => showSeedPhrase(`${identityId}`)}
                         mnemonic={mnemonic}
                         type="seed"
+                        container={ref.current ?? undefined}
                     />
                 </div>
             </FusePageTransition>

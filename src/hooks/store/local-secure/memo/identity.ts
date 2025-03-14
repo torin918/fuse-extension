@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
-import { get_address_by_mnemonic } from '~lib/mnemonic';
+import { inner_get_identity_address } from '~lib/address';
 import { verify_password } from '~lib/password';
 import { random_account_icon } from '~lib/utils/account_icon';
 import { same } from '~lib/utils/same';
@@ -301,13 +301,3 @@ export const inner_show_identity_key = (key_rings: KeyRings, identity_key: Ident
             private_key: () => true,
         }),
 });
-
-export const inner_get_identity_address = (key: CombinedIdentityKey) => {
-    const current_address = match_combined_identity_key(key, {
-        mnemonic: (mnemonic) => get_address_by_mnemonic(mnemonic.mnemonic, mnemonic.subaccount, mnemonic.parsed),
-        private_key: () => {
-            throw new Error(`Unimplemented identity type: private_key`);
-        },
-    });
-    return current_address;
-};
