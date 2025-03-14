@@ -7,6 +7,7 @@ import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useChangePassword } from '~hooks/store/local-secure';
+import { lockDirectly } from '~hooks/store/session';
 import { useSonnerToast } from '~hooks/toast';
 
 import { FunctionHeader } from '../../../components/header';
@@ -31,12 +32,17 @@ function FunctionSettingsSecurityChangePasswordPage() {
             toast.error('New password is empty');
             return;
         }
+        if (old_password === new_password) {
+            toast.error('Same password');
+            return;
+        }
         changePassword(old_password, new_password).then((r) => {
             if (r === undefined) return;
             if (r === false) return;
             // notice successful
             toast.success('Successfully set');
             goto(-1);
+            lockDirectly();
         });
     }, [changePassword, old_password, new_password, toast, goto]);
 

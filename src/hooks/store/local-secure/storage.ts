@@ -2,20 +2,22 @@ import { useEffect, useState } from 'react';
 
 import type { SecureStorage } from '@plasmohq/storage/secure';
 
+import { __get_password } from '../session';
+
 const CACHED: Record<string, SecureStorage> = {};
 
 export const useSecureStorageInner = (
-    password: string,
+    unlocked: string,
     new_secure_storage: () => SecureStorage,
 ): SecureStorage | undefined => {
-    const [storage, setStorage] = useState<SecureStorage | undefined>(CACHED[password]);
+    const [storage, setStorage] = useState<SecureStorage | undefined>(CACHED[unlocked]);
 
     useEffect(() => {
-        if (!password) return setStorage(undefined);
+        if (!unlocked) return setStorage(undefined);
         if (storage !== undefined) return; // ? already had
         const new_storage = new_secure_storage();
-        new_storage.setPassword(password).then(() => setStorage((CACHED[password] = new_storage)));
-    }, [new_secure_storage, password, storage]);
+        new_storage.setPassword(__get_password(unlocked)).then(() => setStorage((CACHED[unlocked] = new_storage)));
+    }, [new_secure_storage, unlocked, storage]);
 
     return storage;
 };
