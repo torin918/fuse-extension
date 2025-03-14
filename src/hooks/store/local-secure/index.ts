@@ -150,7 +150,7 @@ const get_unlocked_secure_storage = async () => {
     if (!unlocked) return; // locked
 
     const storage = LOCAL_SECURE_STORAGE();
-    await storage.setPassword(__get_password(unlocked)); // set password before any action
+    await storage.setPassword(await __get_password(unlocked)); // set password before any action
 
     return storage;
 };

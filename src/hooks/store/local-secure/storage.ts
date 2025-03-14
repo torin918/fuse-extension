@@ -16,7 +16,10 @@ export const useSecureStorageInner = (
         if (!unlocked) return setStorage(undefined);
         if (storage !== undefined) return; // ? already had
         const new_storage = new_secure_storage();
-        new_storage.setPassword(__get_password(unlocked)).then(() => setStorage((CACHED[unlocked] = new_storage)));
+        __get_password(unlocked).then((password) => {
+            if (!password) return;
+            new_storage.setPassword(password).then(() => setStorage((CACHED[unlocked] = new_storage)));
+        });
     }, [new_secure_storage, unlocked, storage]);
 
     return storage;

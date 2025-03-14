@@ -3,6 +3,7 @@ export type MessageResult<T, E> = { ok: T; err?: undefined } | { ok?: undefined;
 // message
 // * Extension-Pages/CS	-> BGSW
 export const MESSAGE_PING = 'ping';
+export const DIRECT_MESSAGE_UNLOCKED = 'direct-unlocked';
 
 // message via relay
 // * Website -> CS/BGSW

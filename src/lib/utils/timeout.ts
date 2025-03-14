@@ -1,5 +1,7 @@
 import { sendToBackground, sendToBackgroundViaRelay } from '@plasmohq/messaging';
 
+import { is_development } from './env';
+
 const call_with_timeout = async <T>(timeout: number, call: Promise<T>): Promise<T | undefined> => {
     return await Promise.race([
         call,
@@ -19,7 +21,7 @@ export const message_with_timeout = async <B, T>(
             sendToBackground<B, T>({ name: name as never, body })
                 .then((d) => {
                     const e = Date.now();
-                    console.debug(`message ${name} spend ${e - s}ms.`, [body, '->', d]);
+                    if (is_development()) console.debug(`message ${name} spend ${e - s}ms.`, [body, '->', d]);
                     resolve(d);
                 })
                 .catch(reject);
@@ -39,7 +41,7 @@ export const relay_message_with_timeout = async <B, T>(
             sendToBackgroundViaRelay({ name: name as never, body })
                 .then((d) => {
                     const e = Date.now();
-                    console.debug(`relay message ${name} spend ${e - s}ms.`, [body, '->', d]);
+                    if (is_development()) console.debug(`relay message ${name} spend ${e - s}ms.`, [body, '->', d]);
                     resolve(d);
                 })
                 .catch(reject);

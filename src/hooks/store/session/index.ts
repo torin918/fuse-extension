@@ -1,5 +1,6 @@
 import { Storage } from '@plasmohq/storage';
 
+import { direct_message_unlocked } from '~lib/messages/direct/direct-unlocked';
 import { sha256_hash } from '~lib/utils/hash';
 import { is_same_popup_action, type PopupAction, type PopupActions } from '~types/actions';
 import { type Chain } from '~types/chain';
@@ -26,10 +27,8 @@ import { useUnlockedAliveInner } from './unlocked_alive';
 const SESSION_STORAGE = new Storage({ area: 'session' }); // session
 // const session_secure_storage = new SecureStorage({ area: 'session' }); // session
 export const __get_session_storage = () => SESSION_STORAGE;
-
-const CACHED_PASSWORD: Record<string, string> = {};
-export const __set_password = (hash: string, password: string) => (CACHED_PASSWORD[hash] = password);
-export const __get_password = (hash: string) => CACHED_PASSWORD[hash] ?? '';
+export const __set_password = async (hash: string, password: string) => direct_message_unlocked(hash, password);
+export const __get_password = async (hash: string) => direct_message_unlocked(hash);
 export const __get_actual_password = async (
     password: string,
 ): Promise<{ unlocked: string; actual_password: string }> => {
@@ -41,7 +40,7 @@ export const __get_actual_password = async (
         for (let i = 0; i < 2048; i++) actual_password = await sha256_hash(`${password}:${actual_password}`); // hash 2048
         return [hashed, actual_password];
     })();
-    __set_password(unlocked, actual_password); // map
+    await __set_password(unlocked, actual_password); // map
     return { unlocked, actual_password };
 };
 
