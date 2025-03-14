@@ -20,7 +20,7 @@ import {
     get_token_symbol,
     get_token_unique_id,
     is_same_token_info,
-    match_combined_token_info,
+    search_tokens,
     TokenTag,
     type TokenInfo,
 } from '~types/tokens';
@@ -58,26 +58,18 @@ function FunctionTokenViewPage() {
     const [tab, setTab] = useState<Tab>('current');
 
     const tokens = useMemo<(TokenInfo & { id: string; current: boolean })[]>(() => {
-        return (() => {
-            const tokens: Record<Tab, TokenInfo[]> = {
-                current: currentTokens,
-                all: allTokens,
-                ck: ckTokens,
-                sns: snsTokens,
-                custom: customTokens,
-            };
-            return tokens[tab].map((t) => ({
-                ...t,
-                id: get_token_unique_id(t),
-                current: !!currentTokens.find((c) => is_same_token_info(c, t)),
-            }));
-        })().filter((t) => {
-            const s = search.trim().toLowerCase();
-            if (!s) return true;
-            return match_combined_token_info(t.info, {
-                ic: (ic) => 0 <= ic.name.toLowerCase().indexOf(s) || 0 <= ic.symbol.toLowerCase().indexOf(s),
-            });
-        });
+        const tokens: Record<Tab, TokenInfo[]> = {
+            current: currentTokens,
+            all: allTokens,
+            ck: ckTokens,
+            sns: snsTokens,
+            custom: customTokens,
+        };
+        return search_tokens(tokens[tab], search).map((t) => ({
+            ...t,
+            id: get_token_unique_id(t),
+            current: !!currentTokens.find((c) => is_same_token_info(c, t)),
+        }));
     }, [search, tab, currentTokens, allTokens, ckTokens, snsTokens, customTokens]);
 
     const [sort, setSort] = useState(false);
@@ -116,14 +108,10 @@ function FunctionTokenViewPage() {
 
     const isTokenExist = useCallback(
         (token: { ic: string }) => {
-            const found = allTokens.find((t) =>
-                match_combined_token_info(t.info, {
-                    ic: (ic) => {
-                        if ('ic' in token) return ic.canister_id === token.ic;
-                        return false;
-                    },
-                }),
-            );
+            const found = (() => {
+                if ('ic' in token) return allTokens.find((t) => 'ic' in t.info && t.info.ic.canister_id === token.ic);
+                return undefined;
+            })();
             return found !== undefined;
         },
         [allTokens],

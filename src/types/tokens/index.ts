@@ -154,6 +154,13 @@ export const get_token_symbol = (token: TokenInfo): string => {
         bsc_test: (bsc_test) => bsc_test.symbol,
     });
 };
+export const search_tokens = (tokens: TokenInfo[], search: string) => {
+    const s = search.trim().toLowerCase();
+    if (!s) return tokens;
+    return tokens.filter(
+        (t) => 0 <= get_token_name(t).toLowerCase().indexOf(s) || 0 <= get_token_symbol(t).toLowerCase().indexOf(s),
+    );
+};
 
 export interface CustomToken {
     created: number;

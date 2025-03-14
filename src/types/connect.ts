@@ -23,9 +23,23 @@ export type ConnectedApps = ConnectedApp[];
 
 export interface CurrentConnectedApps {
     ic: ConnectedApps;
+    ethereum: ConnectedApps;
+    ethereum_test_sepolia: ConnectedApps;
+    polygon: ConnectedApps;
+    polygon_test_amoy: ConnectedApps;
+    bsc: ConnectedApps;
+    bsc_test: ConnectedApps;
 }
 
-export const DEFAULT_CURRENT_CONNECTED_APPS: CurrentConnectedApps = { ic: [] };
+export const DEFAULT_CURRENT_CONNECTED_APPS: CurrentConnectedApps = {
+    ic: [],
+    ethereum: [],
+    ethereum_test_sepolia: [],
+    polygon: [],
+    polygon_test_amoy: [],
+    bsc: [],
+    bsc_test: [],
+};
 
 export const update_connected_app = (old: ConnectedApp, app: ConnectedApp) => {
     old.title = app.title;

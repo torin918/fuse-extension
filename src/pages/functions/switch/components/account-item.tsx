@@ -6,23 +6,28 @@ import { useTokenBalanceIcByRefreshing } from '~hooks/store/local';
 import { useIdentityKeys } from '~hooks/store/local-secure';
 import { cn } from '~lib/utils/cn';
 import type { ShowIdentityKey } from '~types/identity';
-import { match_combined_token_info, type CurrentTokens } from '~types/tokens';
+import { get_token_unique_id, match_combined_token_info, type CurrentTokens } from '~types/tokens';
 
 export const AccountItem = ({
     wallet,
     current_identity,
-    canisters,
+    token_prices,
     current_tokens,
-    ic_prices,
 }: {
     wallet: ShowIdentityKey;
     current_identity: string | undefined;
-    canisters: string[];
+    token_prices: Record<string, { price?: string; price_change_24h?: string }>;
     current_tokens: CurrentTokens;
-    ic_prices: [string | undefined, string | undefined][];
 }) => {
     const { switchIdentity } = useIdentityKeys();
 
+    const canisters = useMemo(() => {
+        const canisters: string[] = [];
+        for (const token of current_tokens) {
+            if ('ic' in token.info) canisters.push(token.info.ic.canister_id);
+        }
+        return canisters;
+    }, [current_tokens]);
     const [ic_balances] = useTokenBalanceIcByRefreshing(wallet.address.ic?.owner, canisters, 15000);
 
     const { usd } = useMemo(() => {
@@ -33,20 +38,18 @@ export const AccountItem = ({
         for (const token of current_tokens) {
             match_combined_token_info(token.info, {
                 ic: (ic) => {
-                    const index = canisters.findIndex((c) => c == ic.canister_id);
-                    if (index < 0) return;
-                    const balance = ic_balances[index];
+                    const balance = ic_balances[ic.canister_id];
                     if (!balance) return;
                     if (balance === '0') return;
-                    const [price, price_changed_24h] = ic_prices[index];
+                    const { price, price_change_24h } = token_prices[get_token_unique_id(token)] ?? {};
                     let b: BigNumber | undefined = undefined;
                     if (price !== undefined) {
                         b = BigNumber(balance).times(BigNumber(price)).div(BigNumber(10).pow(ic.decimals));
                         usd = usd.plus(b);
-                        if (price_changed_24h !== undefined) {
+                        if (price_change_24h !== undefined) {
                             usd_now = usd_now.plus(b);
                             const old_price = BigNumber(price).div(
-                                BigNumber(1).plus(BigNumber(price_changed_24h).div(BigNumber(100))),
+                                BigNumber(1).plus(BigNumber(price_change_24h).div(BigNumber(100))),
                             );
                             const old_b = BigNumber(balance)
                                 .times(BigNumber(old_price))
@@ -55,6 +58,18 @@ export const AccountItem = ({
                         }
                     }
                 },
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                ethereum: () => {},
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                ethereum_test_sepolia: () => {},
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                polygon: () => {},
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                polygon_test_amoy: () => {},
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                bsc: () => {},
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                bsc_test: () => {},
             });
         }
 
@@ -65,7 +80,7 @@ export const AccountItem = ({
                 ? usd_now.times(BigNumber(100)).div(usd_24h).minus(BigNumber(100))
                 : BigNumber(0),
         };
-    }, [canisters, ic_balances, current_tokens, ic_prices]);
+    }, [ic_balances, current_tokens, token_prices]);
 
     return (
         <div

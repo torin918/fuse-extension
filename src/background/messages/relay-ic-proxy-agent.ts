@@ -154,7 +154,7 @@ const restore_service = async (service: [string, string][]): Promise<IDL.Service
         const single_api = `${name}: ${func}`.replaceAll('→', '->');
         // console.debug(`🚀 ~ const restore_service= ~ single_api:`, single_api);
         const [_name, wrapped_func] = await parse_func_candid(single_api, (s) => s, false);
-        fields[_name] = mapping_func(IDL, wrapped_func) as any;
+        fields[_name] = mapping_func(IDL, wrapped_func);
     }
     return new IDL.ServiceClass(fields);
 };

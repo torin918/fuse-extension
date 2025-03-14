@@ -19,6 +19,7 @@ export const get_canister_status = async (
 
     const time: Date = (map.get('time') as Date) ?? new Date();
     const controllers: Principal[] = (map.get('controllers') as Principal[]) ?? [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const subnet: { nodeKeys: Map<string, ArrayBuffer>; subnetId: string } | undefined = map.get('subnet') as any;
     const module_hash: string | undefined = map.get('module_hash') as string;
     const candid: string | undefined = map.get('candid') as string;

@@ -9,7 +9,6 @@ import { useGoto } from '~hooks/memo/goto';
 import { useTokenInfoCustom } from '~hooks/store/local';
 import { MILLISECOND, MINUTE } from '~lib/utils/datetime';
 import { FunctionHeader } from '~pages/functions/components/header';
-import { match_combined_token_info } from '~types/tokens';
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 
 import FunctionTransferTokenIcAddressPage from './address';
@@ -41,9 +40,7 @@ function FunctionTransferTokenIcPage() {
     useEffect(() => {
         if (!canister_id) return;
 
-        const token = allTokens.find((t) =>
-            match_combined_token_info(t.info, { ic: (ic) => ic.canister_id === canister_id }),
-        );
+        const token = allTokens.find((t) => 'ic' in t.info && t.info.ic.canister_id === canister_id);
 
         if (!token) throw new Error('Unknown token info');
 

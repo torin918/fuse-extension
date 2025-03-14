@@ -7,7 +7,7 @@ import { useGoto } from '~hooks/memo/goto';
 import { useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store/local';
 import { useIdentityKeys } from '~hooks/store/local-secure';
 import { useSonnerToast } from '~hooks/toast';
-import { match_combined_token_info } from '~types/tokens';
+import { get_token_unique_id, match_combined_token_info } from '~types/tokens';
 
 import { FunctionHeader } from '../components/header';
 import { AccountItem } from './components/account-item';
@@ -23,25 +23,27 @@ function FunctionSwitchAccountPage() {
 
     const current_tokens = useTokenInfoCurrentRead();
 
-    const canisters = useMemo(() => {
-        const canisters: string[] = [];
-        for (const token of current_tokens) {
-            match_combined_token_info(token.info, {
-                ic: (ic) => canisters.push(ic.canister_id),
-            });
-        }
-        return canisters;
-    }, [current_tokens]);
-
     const all_ic_prices = useTokenPriceIcRead();
-    const ic_prices = useMemo<[string | undefined, string | undefined][]>(
-        () =>
-            canisters.map((canister_id) => {
-                const price = all_ic_prices[canister_id];
-                return [price?.price, price?.price_change_24h];
-            }),
-        [canisters, all_ic_prices],
-    );
+    const token_prices = useMemo(() => {
+        const token_prices: Record<string, { price?: string; price_change_24h?: string }> = {};
+        for (const token of current_tokens) {
+            const unique_id = get_token_unique_id(token);
+            const price = match_combined_token_info<{ price?: string; price_change_24h?: string } | undefined>(
+                token.info,
+                {
+                    ic: (ic) => all_ic_prices[ic.canister_id],
+                    ethereum: () => undefined,
+                    ethereum_test_sepolia: () => undefined,
+                    polygon: () => undefined,
+                    polygon_test_amoy: () => undefined,
+                    bsc: () => undefined,
+                    bsc_test: () => undefined,
+                },
+            );
+            if (price !== undefined) token_prices[unique_id] = price;
+        }
+        return token_prices;
+    }, [current_tokens, all_ic_prices]);
 
     const ref = useRef<HTMLDivElement>(null);
     return (
@@ -58,9 +60,8 @@ function FunctionSwitchAccountPage() {
                                         key={wallet.id}
                                         wallet={wallet}
                                         current_identity={current_identity}
-                                        canisters={canisters}
+                                        token_prices={token_prices}
                                         current_tokens={current_tokens}
-                                        ic_prices={ic_prices}
                                     />
                                 ))}
                             </div>

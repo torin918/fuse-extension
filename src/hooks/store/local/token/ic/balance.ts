@@ -34,23 +34,21 @@ export const useTokenBalanceIcByRefreshingInner = (
     principal: string | undefined,
     canisters: string[],
     sleep: number,
-): [(string | undefined)[], { refreshBalance: () => void }] => {
+): [Record<string, string>, { refreshBalance: () => void }] => {
     const [balances, setBalances] = useTokenBalanceIcInner(storage, principal ?? '');
 
-    const [balance, setBalance] = useState<(string | undefined)[]>(
-        canisters.map((canister_id) => balances[canister_id]),
-    );
+    const [balance, setBalance] = useState<Record<string, string>>(get_balance_from_balances(canisters, balances));
 
     // init
     useEffect(() => {
         if (!storage) return;
         if (principal === undefined || principal === '') return;
         if (!canisters.length) return;
-        if (balance.length !== canisters.length)
-            return setBalance(canisters.map((canister_id) => balances[canister_id]));
+        if (Object.keys(balance).length !== canisters.length)
+            return setBalance(get_balance_from_balances(canisters, balances));
         if (canisters.find((canister_id, index) => !balance[index] && balances[canister_id]))
-            return setBalance(canisters.map((canister_id) => balances[canister_id]));
-        if (balance.findIndex((b) => b === undefined) < 0) return;
+            return setBalance(get_balance_from_balances(canisters, balances));
+        if (Object.values(balance).some((b) => b !== undefined)) return;
         update_token_balance(principal, canisters, setBalance, balances, setBalances);
     }, [storage, balance, balances, setBalances, canisters, principal]);
 
@@ -71,7 +69,7 @@ export const useTokenBalanceIcByRefreshingInner = (
 const update_token_balance = (
     principal: string,
     canisters: string[],
-    setBalance: (balance: string[]) => void,
+    setBalance: (balance: Record<string, string>) => void,
     balances: DataType,
     setBalances: (balances: DataType) => void,
 ) => {
@@ -83,9 +81,17 @@ const update_token_balance = (
             ],
         ),
     ).then((balance) => {
-        setBalance(balance.map(([, b]) => b));
+        const _balance: Record<string, string> = {};
+        for (const [canister_id, b] of balance) _balance[canister_id] = b;
+        setBalance(_balance);
         const bs = { ...balances };
         for (const [canister_id, b] of balance) bs[canister_id] = b;
         setBalances(bs);
     });
+};
+
+const get_balance_from_balances = (canisters: string[], balances: DataType) => {
+    const balance: Record<string, string> = {};
+    canisters.map((canister_id) => (balance[canister_id] = balances[canister_id]));
+    return balance;
 };

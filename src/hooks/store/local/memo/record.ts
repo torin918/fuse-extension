@@ -35,7 +35,17 @@ export const useFuseRecordList = (
                 let _next = next;
                 const done: SingleIdentityNetworkResult[] = [];
                 let temp: SingleIdentityNetworkResult[] = [];
-                let identity_networks = [...(current_identity_network.ic ? [current_identity_network.ic] : [])];
+                let identity_networks: IdentityNetwork[] = [
+                    ...(current_identity_network.ic ? [current_identity_network.ic] : []),
+                    ...(current_identity_network.ethereum ? [current_identity_network.ethereum] : []),
+                    ...(current_identity_network.ethereum_test_sepolia
+                        ? [current_identity_network.ethereum_test_sepolia]
+                        : []),
+                    ...(current_identity_network.polygon ? [current_identity_network.polygon] : []),
+                    ...(current_identity_network.polygon_test_amoy ? [current_identity_network.polygon_test_amoy] : []),
+                    ...(current_identity_network.bsc ? [current_identity_network.bsc] : []),
+                    ...(current_identity_network.bsc_test ? [current_identity_network.bsc_test] : []),
+                ];
                 while (
                     0 < identity_networks.length && // empty
                     [...done, ...temp].map((r) => r.list.length).reduce((a, b) => a + b, 0) < target // too less

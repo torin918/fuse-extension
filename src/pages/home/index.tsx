@@ -42,25 +42,35 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
 
     const current_tokens = useTokenInfoCurrentRead();
 
-    const canisters = useMemo(() => {
-        const canisters: string[] = [];
-        for (const token of current_tokens) {
-            match_combined_token_info(token.info, {
-                ic: (ic) => canisters.push(ic.canister_id),
-            });
-        }
-        return canisters;
-    }, [current_tokens]);
     const all_ic_prices = useTokenPriceIcRead();
-    const ic_prices = useMemo<[string | undefined, string | undefined][]>(
-        () =>
-            canisters.map((canister_id) => {
-                const price = all_ic_prices[canister_id];
-                return [price?.price, price?.price_change_24h];
-            }),
-        [canisters, all_ic_prices],
-    );
+    const token_prices = useMemo(() => {
+        const token_prices: Record<string, { price?: string; price_change_24h?: string }> = {};
+        for (const token of current_tokens) {
+            const unique_id = get_token_unique_id(token);
+            const price = match_combined_token_info<{ price?: string; price_change_24h?: string } | undefined>(
+                token.info,
+                {
+                    ic: (ic) => all_ic_prices[ic.canister_id],
+                    ethereum: () => undefined,
+                    ethereum_test_sepolia: () => undefined,
+                    polygon: () => undefined,
+                    polygon_test_amoy: () => undefined,
+                    bsc: () => undefined,
+                    bsc_test: () => undefined,
+                },
+            );
+            if (price !== undefined) token_prices[unique_id] = price;
+        }
+        return token_prices;
+    }, [current_tokens, all_ic_prices]);
 
+    const canisters = useMemo<string[]>(
+        () =>
+            current_tokens
+                .map((t) => ('ic' in t.info ? t.info.ic.canister_id : undefined))
+                .filter((s) => !!s) as string[],
+        [current_tokens],
+    );
     const [ic_balances] = useTokenBalanceIcByRefreshing(current_identity.address.ic?.owner, canisters, 15000);
 
     const { usd, usd_changed, usd_changed_24h } = useMemo(() => {
@@ -71,20 +81,18 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
         for (const token of current_tokens) {
             match_combined_token_info(token.info, {
                 ic: (ic) => {
-                    const index = canisters.findIndex((c) => c == ic.canister_id);
-                    if (index < 0) return;
-                    const balance = ic_balances[index];
+                    const balance = ic_balances[ic.canister_id];
                     if (!balance) return;
                     if (balance === '0') return;
-                    const [price, price_changed_24h] = ic_prices[index];
+                    const { price, price_change_24h } = token_prices[get_token_unique_id(token)] ?? {};
                     let b: BigNumber | undefined = undefined;
                     if (price !== undefined) {
                         b = BigNumber(balance).times(BigNumber(price)).div(BigNumber(10).pow(ic.decimals));
                         usd = usd.plus(b);
-                        if (price_changed_24h !== undefined) {
+                        if (price_change_24h !== undefined) {
                             usd_now = usd_now.plus(b);
                             const old_price = BigNumber(price).div(
-                                BigNumber(1).plus(BigNumber(price_changed_24h).div(BigNumber(100))),
+                                BigNumber(1).plus(BigNumber(price_change_24h).div(BigNumber(100))),
                             );
                             const old_b = BigNumber(balance)
                                 .times(BigNumber(old_price))
@@ -93,6 +101,18 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                         }
                     }
                 },
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                ethereum: () => {},
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                ethereum_test_sepolia: () => {},
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                polygon: () => {},
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                polygon_test_amoy: () => {},
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                bsc: () => {},
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                bsc_test: () => {},
             });
         }
 
@@ -103,7 +123,7 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                 ? usd_now.times(BigNumber(100)).div(usd_24h).minus(BigNumber(100))
                 : BigNumber(0),
         };
-    }, [canisters, ic_balances, current_tokens, ic_prices]);
+    }, [ic_balances, current_tokens, token_prices]);
 
     const ref = useRef<HTMLDivElement>(null);
     return (
@@ -232,9 +252,8 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                                 typeof path === 'number' ? navigate(path) : navigate(path, options)
                             }
                             token={token}
-                            canisters={canisters}
+                            token_prices={token_prices}
                             ic_balances={ic_balances}
-                            ic_prices={ic_prices}
                         />
                     ))}
                 </div>
