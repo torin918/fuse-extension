@@ -13,19 +13,19 @@ import {
     type CombinedShowIdentityKey,
     type IdentityId,
     type IdentityKey,
-    type PrivateKeys,
+    type KeyRings,
     type ShowIdentityKey,
 } from '~types/identity';
 
-export const useIdentityKeysCountBy = (private_keys: PrivateKeys | undefined): number => {
-    const count = useMemo(() => private_keys?.keys.length ?? 0, [private_keys]);
+export const useIdentityKeysCountBy = (key_rings: KeyRings | undefined): number => {
+    const count = useMemo(() => key_rings?.keys.length ?? 0, [key_rings]);
     return count;
 };
 
 export const useIdentityKeysBy = (
     password_hashed: string,
-    private_keys: PrivateKeys | undefined,
-    setPrivateKeys: (value: PrivateKeys) => Promise<void>,
+    key_rings: KeyRings | undefined,
+    setKeyRings: (value: KeyRings) => Promise<void>,
 ): {
     current_identity: IdentityId | undefined;
     identity_list: ShowIdentityKey[] | undefined;
@@ -43,33 +43,33 @@ export const useIdentityKeysBy = (
     switchIdentity: (id: IdentityId) => Promise<boolean | undefined>;
     resortIdentityKeys: ResortFunction;
 } => {
-    const current_identity = useMemo(() => private_keys?.current, [private_keys]);
+    const current_identity = useMemo(() => key_rings?.current, [key_rings]);
 
     // !React state update on a component that hasn't mounted
     // const identity_list = useMemo<ShowIdentityKey[] | undefined>(() => {
-    //     if (!private_keys) return undefined;
-    //     return private_keys.keys.map(show_identity_key);
-    // }, [private_keys]);
+    //     if (!key_rings) return undefined;
+    //     return key_rings.keys.map(show_identity_key);
+    // }, [key_rings]);
     const [identity_list, setIdentityList] = useState<ShowIdentityKey[] | undefined>();
     useEffect(() => {
         const new_identity_list = (() => {
-            if (!private_keys) return undefined;
-            return private_keys.keys.map((key) => inner_show_identity_key(private_keys, key));
+            if (!key_rings) return undefined;
+            return key_rings.keys.map((key) => inner_show_identity_key(key_rings, key));
         })();
         if (!same(new_identity_list, identity_list)) setIdentityList(new_identity_list);
-    }, [private_keys, identity_list]);
+    }, [key_rings, identity_list]);
 
     const main_mnemonic_identity = useMemo(() => {
-        if (!private_keys) return undefined;
-        if (!private_keys.mnemonic) return undefined;
+        if (!key_rings) return undefined;
+        if (!key_rings.mnemonic) return undefined;
 
-        return private_keys.keys.find((key) =>
+        return key_rings.keys.find((key) =>
             match_combined_identity_key(key.key, {
-                mnemonic: (m) => m.mnemonic === private_keys.mnemonic && m.subaccount === 0,
+                mnemonic: (m) => m.mnemonic === key_rings.mnemonic && m.subaccount === 0,
                 private_key: () => false,
             }),
         )?.id;
-    }, [private_keys]);
+    }, [key_rings]);
 
     // query
     const showMnemonic = useCallback(
@@ -79,36 +79,36 @@ export const useIdentityKeysBy = (
         ): Promise<{ mnemonic: string; subaccount: number } | boolean | undefined> => {
             const checked = await verify_password(password_hashed, password);
             if (!checked) return false;
-            if (!private_keys) return undefined;
-            const identity = private_keys.keys.find((i) => i.id === id);
+            if (!key_rings) return undefined;
+            const identity = key_rings.keys.find((i) => i.id === id);
             if (!identity) return undefined;
             return match_combined_identity_key(identity.key, {
                 mnemonic: (m) => ({ mnemonic: m.mnemonic, subaccount: m.subaccount }),
                 private_key: () => undefined,
             });
         },
-        [private_keys, password_hashed],
+        [key_rings, password_hashed],
     );
     const showPrivateKey = useCallback(
         async (id: IdentityId, password: string): Promise<string | boolean | undefined> => {
             const checked = await verify_password(password_hashed, password);
             if (!checked) return false;
-            if (!private_keys) return undefined;
-            const identity = private_keys.keys.find((i) => i.id === id);
+            if (!key_rings) return undefined;
+            const identity = key_rings.keys.find((i) => i.id === id);
             if (!identity) return undefined;
             return match_combined_identity_key(identity.key, {
                 mnemonic: () => undefined,
                 private_key: (pk) => pk.private_key,
             });
         },
-        [private_keys, password_hashed],
+        [key_rings, password_hashed],
     );
     const isKeyExist = useCallback(
         async (key: CombinedIdentityKey): Promise<boolean> => {
-            if (!private_keys) return false;
-            return !!private_keys.keys.find((identity) => is_same_combined_identity_key(identity.key, key));
+            if (!key_rings) return false;
+            return !!key_rings.keys.find((identity) => is_same_combined_identity_key(identity.key, key));
         },
-        [private_keys],
+        [key_rings],
     );
 
     // delete
@@ -116,67 +116,67 @@ export const useIdentityKeysBy = (
         async (id: IdentityId, password: string): Promise<boolean | undefined> => {
             const checked = await verify_password(password_hashed, password);
             if (!checked) return false;
-            if (!private_keys) return undefined;
-            if (private_keys.current === id) return false; // can not delete current identity
-            const identity = private_keys?.keys.find((i) => i.id === id);
+            if (!key_rings) return undefined;
+            if (key_rings.current === id) return false; // can not delete current identity
+            const identity = key_rings?.keys.find((i) => i.id === id);
             if (!identity) return undefined; // can not find account
             if (
-                private_keys.mnemonic &&
+                key_rings.mnemonic &&
                 match_combined_identity_key(identity.key, {
-                    mnemonic: (m) => m.mnemonic === private_keys.mnemonic && m.subaccount === 0, // main mnemonic
+                    mnemonic: (m) => m.mnemonic === key_rings.mnemonic && m.subaccount === 0, // main mnemonic
                     private_key: () => false,
                 })
             ) {
                 return undefined; // can not delete main account
             }
-            const new_keys = private_keys.keys.filter((i) => i.id !== id);
-            await setPrivateKeys({ mnemonic: private_keys.mnemonic, current: private_keys.current, keys: new_keys });
+            const new_keys = key_rings.keys.filter((i) => i.id !== id);
+            await setKeyRings({ mnemonic: key_rings.mnemonic, current: key_rings.current, keys: new_keys });
             return true;
         },
-        [password_hashed, private_keys, setPrivateKeys],
+        [password_hashed, key_rings, setKeyRings],
     );
 
     // push
     const pushIdentity = useCallback(
         async (key: CombinedIdentityKey): Promise<boolean | undefined> => {
-            if (!private_keys) return undefined;
+            if (!key_rings) return undefined;
 
-            if (private_keys.keys.find((identity) => is_same_combined_identity_key(identity.key, key))) {
+            if (key_rings.keys.find((identity) => is_same_combined_identity_key(identity.key, key))) {
                 return false; // already exist
             }
 
             const id = uuid();
             const now = Date.now();
             const new_keys: IdentityKey[] = [
-                ...private_keys.keys,
+                ...key_rings.keys,
                 {
                     id,
                     created: now,
                     updated: now,
-                    name: `Account #${private_keys.keys.length + 1}`,
+                    name: `Account #${key_rings.keys.length + 1}`,
                     icon: random_account_icon(),
                     key,
                     address: inner_get_identity_address(key),
                 },
             ];
-            await setPrivateKeys({
-                mnemonic: private_keys.mnemonic,
+            await setKeyRings({
+                mnemonic: key_rings.mnemonic,
                 current: id, // ? change to current ?
                 keys: new_keys,
             });
             return true;
         },
-        [private_keys, setPrivateKeys],
+        [key_rings, setKeyRings],
     );
     const pushIdentityByMainMnemonic = useCallback(async (): Promise<boolean | undefined> => {
-        if (!private_keys) return undefined;
-        if (!private_keys.mnemonic) return undefined;
+        if (!key_rings) return undefined;
+        if (!key_rings.mnemonic) return undefined;
 
         let max_subaccount = 0;
-        for (const key of private_keys.keys) {
+        for (const key of key_rings.keys) {
             match_combined_identity_key(key.key, {
                 mnemonic: (m) => {
-                    if (!same(m.mnemonic, private_keys.mnemonic)) return;
+                    if (!same(m.mnemonic, key_rings.mnemonic)) return;
                     if (max_subaccount < m.subaccount) max_subaccount = m.subaccount;
                 },
                 private_key: () => {
@@ -188,13 +188,13 @@ export const useIdentityKeysBy = (
         const key: CombinedIdentityKey = {
             mnemonic: {
                 type: 'mnemonic',
-                mnemonic: private_keys.mnemonic,
+                mnemonic: key_rings.mnemonic,
                 subaccount: max_subaccount + 1,
             },
         };
 
         return await pushIdentity(key);
-    }, [private_keys, pushIdentity]);
+    }, [key_rings, pushIdentity]);
 
     // update
     const updateIdentity = useCallback(
@@ -204,8 +204,8 @@ export const useIdentityKeysBy = (
             if (32 < name.length) return false;
             if (256 < icon.length) return false;
 
-            if (!private_keys) return undefined;
-            const identity = private_keys?.keys.find((i) => i.id === id);
+            if (!key_rings) return undefined;
+            const identity = key_rings?.keys.find((i) => i.id === id);
             if (!identity) return undefined; // can not find account
 
             let changed = false;
@@ -220,50 +220,50 @@ export const useIdentityKeysBy = (
 
             if (changed) {
                 identity.updated = Date.now();
-                await setPrivateKeys({
-                    mnemonic: private_keys.mnemonic,
-                    current: private_keys.current,
-                    keys: [...private_keys.keys],
+                await setKeyRings({
+                    mnemonic: key_rings.mnemonic,
+                    current: key_rings.current,
+                    keys: [...key_rings.keys],
                 });
             }
 
             return true;
         },
-        [private_keys, setPrivateKeys],
+        [key_rings, setKeyRings],
     );
 
     // switch
     const switchIdentity = useCallback(
         async (id: IdentityId): Promise<boolean | undefined> => {
-            if (!private_keys) return undefined;
-            const identity = private_keys.keys.find((i) => i.id === id);
+            if (!key_rings) return undefined;
+            const identity = key_rings.keys.find((i) => i.id === id);
             if (!identity) return undefined; // can not find account
-            if (identity.id === private_keys.current) return true;
+            if (identity.id === key_rings.current) return true;
 
-            await setPrivateKeys({
-                mnemonic: private_keys.mnemonic,
+            await setKeyRings({
+                mnemonic: key_rings.mnemonic,
                 current: identity.id,
-                keys: [...private_keys.keys],
+                keys: [...key_rings.keys],
             });
 
             return true;
         },
-        [private_keys, setPrivateKeys],
+        [key_rings, setKeyRings],
     );
 
     // resort
     const resortIdentityKeys = useCallback(
         async (source_index: number, destination_index: number | undefined) => {
-            if (!private_keys) return undefined;
+            if (!key_rings) return undefined;
 
-            const next = resort_list(private_keys.keys, source_index, destination_index);
+            const next = resort_list(key_rings.keys, source_index, destination_index);
             if (typeof next === 'boolean') return next;
 
-            await setPrivateKeys({ ...private_keys, keys: next });
+            await setKeyRings({ ...key_rings, keys: next });
 
             return true;
         },
-        [private_keys, setPrivateKeys],
+        [key_rings, setKeyRings],
     );
 
     return {
@@ -282,7 +282,7 @@ export const useIdentityKeysBy = (
     };
 };
 
-export const inner_show_identity_key = (private_keys: PrivateKeys, identity_key: IdentityKey): ShowIdentityKey => ({
+export const inner_show_identity_key = (key_rings: KeyRings, identity_key: IdentityKey): ShowIdentityKey => ({
     id: identity_key.id,
     created: identity_key.created,
     name: identity_key.name,
@@ -294,10 +294,10 @@ export const inner_show_identity_key = (private_keys: PrivateKeys, identity_key:
     address: identity_key.address,
 
     deletable:
-        private_keys.keys.length > 1 &&
-        private_keys.current !== identity_key.id &&
+        key_rings.keys.length > 1 &&
+        key_rings.current !== identity_key.id &&
         match_combined_identity_key(identity_key.key, {
-            mnemonic: (m) => m.mnemonic !== private_keys.mnemonic || m.subaccount !== 0, // not main mnemonic
+            mnemonic: (m) => m.mnemonic !== key_rings.mnemonic || m.subaccount !== 0, // not main mnemonic
             private_key: () => true,
         }),
 });

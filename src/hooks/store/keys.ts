@@ -9,7 +9,7 @@ const SESSION_KEY_PREFIX = ':fuse';
 
 // ############### LOCAL SECURE ###############
 
-export const LOCAL_SECURE_KEY_PRIVATE_KEYS = `${LOCAL_SECURE_KEY_PREFIX}:private_keys`; // * local secure
+export const LOCAL_SECURE_KEY_KEY_RINGS = `${LOCAL_SECURE_KEY_PREFIX}:key:rings`; // * local secure
 export const LOCAL_SECURE_KEY_CHAIN_NETWORKS = `${LOCAL_SECURE_KEY_PREFIX}:chain:networks`; // * local secure
 export const LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK = (id: IdentityId) =>
     `${LOCAL_SECURE_KEY_PREFIX}:${id}:chain:network`; // * local secure
