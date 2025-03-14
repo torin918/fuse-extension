@@ -27,6 +27,7 @@ function ApproveIcActionPage({
     const [current_connected_apps, , { current_identity_network }] = useCurrentConnectedApps();
 
     const args = useMemo(() => parse(approve_ic.args_json), [approve_ic]);
+    console.log('🚀 ~ args:', args);
 
     const app = useMemo(() => {
         if (!current_connected_apps) return undefined;
