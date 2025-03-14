@@ -39,6 +39,10 @@ export const LOCAL_KEY_CACHED_KEY = (key: string) => `${LOCAL_KEY_PREFIX_CACHED}
 const LOCAL_KEY_PREFIX_TOKEN = `${LOCAL_KEY_PREFIX}:token`;
 export const LOCAL_KEY_TOKEN_INFO_IC = `${LOCAL_KEY_PREFIX_TOKEN}:info:ic`; // * local
 export const LOCAL_KEY_TOKEN_INFO_IC_UPDATED = `${LOCAL_KEY_PREFIX_TOKEN}:info:ic:updated`; // * local
+
+export const LOCAL_KEY_TOKEN_METADATA_IC = `${LOCAL_KEY_PREFIX_TOKEN}:metadata:ic`; // * local
+export const LOCAL_KEY_TOKEN_METADATA_IC_UPDATED = `${LOCAL_KEY_PREFIX_TOKEN}:metadata:ic:updated`; // * local
+
 export const LOCAL_KEY_TOKEN_BALANCE_IC = (principal: string) => `${LOCAL_KEY_PREFIX_TOKEN}:balance:ic:${principal}`; // * local
 export const LOCAL_KEY_TOKEN_INFO_CUSTOM = `${LOCAL_KEY_PREFIX_TOKEN}:info:custom`; // * local
 export const LOCAL_KEY_TOKEN_INFO_CURRENT = `${LOCAL_KEY_PREFIX_TOKEN}:info:current`; // * local

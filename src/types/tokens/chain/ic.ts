@@ -26,3 +26,24 @@ export interface IcTokenPrice {
 
 // <prefix>:token:price:ic => [canister_id => price]
 export type IcTokenPrices = Record<string, IcTokenPrice>;
+
+export interface IcTokenMetadata {
+    ledgerId: string;
+    marketCap: string;
+    fullyDilutedMarketCap: string;
+    name: string;
+    // 'SNS' | 'CHAIN FUSION' | 'ICRC'
+    source: string;
+    symbol: string;
+    supplyCap: string;
+    totalSupply: string;
+    description: string;
+    tokenDetail: {
+        Website: string;
+        Github?: string;
+        Twitter?: string;
+        Discord?: string;
+        Telegram?: string;
+        Medium?: string;
+    };
+}

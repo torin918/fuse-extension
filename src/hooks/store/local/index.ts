@@ -17,6 +17,11 @@ import { useTokenInfoCustomInner2 } from './token/custom';
 import { useTokenBalanceIcByRefreshingInner } from './token/ic/balance';
 import { useTokenInfoIcByInitialInner, useTokenInfoIcByRefreshingInner } from './token/ic/info';
 import {
+    useTokenMetadataIcByInitialInner,
+    useTokenMetadataIcByRefreshingInner,
+    useTokenMetadataIcInner,
+} from './token/ic/metadata';
+import {
     useTokenPriceIcByInitialInner,
     useTokenPriceIcByRefreshingInner,
     useTokenPriceIcInner,
@@ -51,6 +56,13 @@ export const useTokenPriceIcRead = () => useTokenPriceIcInner(LOCAL_STORAGE)[0];
 export const useTokenPriceIcByInitial = (canister_id: string) =>
     useTokenPriceIcByInitialInner(LOCAL_STORAGE, canister_id); // local
 export const useTokenPriceIcByRefreshing = (sleep: number) => useTokenPriceIcByRefreshingInner(LOCAL_STORAGE, sleep); // local
+
+// token/ic/metadata
+export const useTokenMetadataIcRead = () => useTokenMetadataIcInner(LOCAL_STORAGE)[0]; // local
+export const useTokenMetadataIcByInitial = (canister_id: string) =>
+    useTokenMetadataIcByInitialInner(LOCAL_STORAGE, canister_id); // local
+export const useTokenMetadataIcByRefreshing = (sleep: number) =>
+    useTokenMetadataIcByRefreshingInner(LOCAL_STORAGE, sleep); // local
 
 // ================ set directly by storage ================
 
