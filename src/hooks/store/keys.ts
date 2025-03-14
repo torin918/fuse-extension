@@ -55,8 +55,8 @@ export const LOCAL_KEY_RECORD_DATE = (identity_network: IdentityNetwork, date: s
 
 // ############### SESSION ###############
 
-export const SESSION_KEY_PASSWORD = `${SESSION_KEY_PREFIX}:password`; // * session
-export const SESSION_KEY_PASSWORD_ALIVE = `${SESSION_KEY_PREFIX}:password:alive`; // * session
+export const SESSION_KEY_PASSWORD = `${SESSION_KEY_PREFIX}:unlocked`; // * session
+export const SESSION_KEY_PASSWORD_ALIVE = `${SESSION_KEY_PREFIX}:unlocked:alive`; // * session
 export const SESSION_KEY_RESTORE = `${SESSION_KEY_PREFIX}:restore`; // * session
 export const SESSION_KEY_POPUP_ACTIONS = `${SESSION_KEY_PREFIX}:popup:actions`; // * session
 export const SESSION_KEY_PATHNAME = `${SESSION_KEY_PREFIX}:pathname`; // * session

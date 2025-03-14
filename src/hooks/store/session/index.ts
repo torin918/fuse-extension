@@ -1,5 +1,6 @@
 import { Storage } from '@plasmohq/storage';
 
+import { sha256_hash } from '~lib/utils/hash';
 import { is_same_popup_action, type PopupAction, type PopupActions } from '~types/actions';
 import { type Chain } from '~types/chain';
 import type { CurrentIdentityNetwork } from '~types/network';
@@ -26,6 +27,10 @@ const SESSION_STORAGE = new Storage({ area: 'session' }); // session
 // const session_secure_storage = new SecureStorage({ area: 'session' }); // session
 export const __get_session_storage = () => SESSION_STORAGE;
 
+const CACHED_PASSWORD: Record<string, string> = {};
+export const __set_password = (hash: string, password: string) => (CACHED_PASSWORD[hash] = password);
+export const __get_password = (hash: string) => CACHED_PASSWORD[hash] ?? '';
+
 // ================ hooks ================
 
 // ############### SESSION ###############
@@ -44,7 +49,14 @@ export const setPasswordAliveDirectly = async (password_alive = Date.now()) => {
     await SESSION_STORAGE.set(SESSION_KEY_PASSWORD_ALIVE, password_alive);
 };
 export const setPasswordDirectly = async (password: string) => {
-    await SESSION_STORAGE.set(SESSION_KEY_PASSWORD, password);
+    const hashed = await (async () => {
+        if (!password) return '';
+        let hashed = await sha256_hash(password);
+        for (let i = 0; i < 2048; i++) hashed = await sha256_hash(`${password}:${hashed}`);
+        return hashed;
+    })();
+    __set_password(hashed, password);
+    await SESSION_STORAGE.set(SESSION_KEY_PASSWORD, hashed);
 };
 export const refreshPasswordDirectly = async (password: string) => {
     await setPasswordAliveDirectly(); // must before set password

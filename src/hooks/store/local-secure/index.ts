@@ -25,7 +25,7 @@ import {
     SESSION_KEY_PASSWORD,
 } from '../keys';
 import { setPasswordHashedDirectly, usePasswordHashed } from '../local';
-import { __get_session_storage, lockDirectly, refreshPasswordDirectly, usePassword } from '../session';
+import { __get_password, __get_session_storage, lockDirectly, refreshPasswordDirectly, usePassword } from '../session';
 import { useMarkedAddressesInner2 } from './address/marked_address';
 import { useRecentAddressesInner2 } from './address/recent_address';
 import { useCurrentChainNetworkInner } from './current/current_chain_network';
@@ -41,7 +41,7 @@ const SESSION_STORAGE = __get_session_storage();
 
 // ############### LOCAL SECURE ###############
 
-const useSecureStorageBy = (password: string) => useSecureStorageInner(password, LOCAL_SECURE_STORAGE);
+const useSecureStorageBy = (password: string) => useSecureStorageInner(__get_password(password), LOCAL_SECURE_STORAGE);
 
 export const useChangePassword = () => {
     const [password_hashed] = usePasswordHashed();
@@ -142,7 +142,7 @@ const get_password_secure_storage = async () => {
     if (!password) return; // locked
 
     const storage = LOCAL_SECURE_STORAGE();
-    await storage.setPassword(password); // set password before any action
+    await storage.setPassword(__get_password(password)); // set password before any action
 
     return storage;
 };
