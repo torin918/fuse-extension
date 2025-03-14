@@ -1,5 +1,6 @@
 import type { GotoFunction } from '~hooks/memo/goto';
 import { match_combined_token_info, type TokenInfo } from '~types/tokens';
+import type { TokenPrices } from '~types/tokens/price';
 
 import { ShowTokenIc } from './show/token-ic';
 
@@ -11,7 +12,7 @@ export const HomeShowToken = ({
 }: {
     goto: GotoFunction;
     token: TokenInfo;
-    token_prices: Record<string, { price?: string; price_change_24h?: string }>;
+    token_prices: TokenPrices;
     ic_balances: Record<string, string>;
 }) => {
     return match_combined_token_info(token.info, {

@@ -5,23 +5,12 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import {
-    useTokenBalanceIcByRefreshing,
-    useTokenInfoCurrent,
-    useTokenInfoCustom,
-    useTokenPriceIcRead,
-} from '~hooks/store/local';
+import { useTokenBalanceIcByRefreshing, useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store/local';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { useTokenPrices } from '~hooks/store/local/memo/price';
 import { cn } from '~lib/utils/cn';
 import { FunctionHeader } from '~pages/functions/components/header';
-import {
-    get_token_unique_id,
-    is_same_token_info,
-    match_combined_token_info,
-    search_tokens,
-    TokenTag,
-    type TokenInfo,
-} from '~types/tokens';
+import { get_token_unique_id, is_same_token_info, search_tokens, TokenTag, type TokenInfo } from '~types/tokens';
 import { PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 
 import { TransferShowToken } from './components/token_item';
@@ -74,27 +63,7 @@ function FunctionTransferPage() {
         [tokens],
     );
     const [ic_balances] = useTokenBalanceIcByRefreshing(current_identity?.address.ic?.owner, canisters, 15000);
-    const all_ic_prices = useTokenPriceIcRead();
-    const token_prices = useMemo(() => {
-        const token_prices: Record<string, { price?: string; price_change_24h?: string }> = {};
-        for (const token of tokens) {
-            const unique_id = get_token_unique_id(token);
-            const price = match_combined_token_info<{ price?: string; price_change_24h?: string } | undefined>(
-                token.info,
-                {
-                    ic: (ic) => all_ic_prices[ic.canister_id],
-                    ethereum: () => undefined,
-                    ethereum_test_sepolia: () => undefined,
-                    polygon: () => undefined,
-                    polygon_test_amoy: () => undefined,
-                    bsc: () => undefined,
-                    bsc_test: () => undefined,
-                },
-            );
-            if (price !== undefined) token_prices[unique_id] = price;
-        }
-        return token_prices;
-    }, [tokens, all_ic_prices]);
+    const token_prices = useTokenPrices(tokens);
 
     return (
         <FusePage current_state={current_state} options={{ refresh_token_info_ic_sleep: 1000 * 60 * 10 }}>

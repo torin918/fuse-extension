@@ -46,7 +46,7 @@ export const useTokenBalanceIcByRefreshingInner = (
         if (!canisters.length) return;
         if (Object.keys(balance).length !== canisters.length)
             return setBalance(get_balance_from_balances(canisters, balances));
-        if (canisters.find((canister_id, index) => !balance[index] && balances[canister_id]))
+        if (canisters.find((canister_id) => !balance[canister_id] && balances[canister_id]))
             return setBalance(get_balance_from_balances(canisters, balances));
         if (Object.values(balance).some((b) => b !== undefined)) return;
         update_token_balance(principal, canisters, setBalance, balances, setBalances);

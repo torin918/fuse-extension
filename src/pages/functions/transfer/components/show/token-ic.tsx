@@ -5,6 +5,7 @@ import type { GotoFunction } from '~hooks/memo/goto';
 import type { TokenInfo } from '~types/tokens';
 import type { IcTokenInfo } from '~types/tokens/chain/ic';
 import { get_token_logo } from '~types/tokens/preset';
+import type { TokenPrices } from '~types/tokens/price';
 
 export const TransferShowTokenIc = ({
     goto,
@@ -16,7 +17,7 @@ export const TransferShowTokenIc = ({
     goto: GotoFunction;
     token: TokenInfo;
     ic: IcTokenInfo;
-    token_prices: Record<string, { price?: string; price_change_24h?: string }>;
+    token_prices: TokenPrices;
     balances: Record<string, string>;
 }) => {
     const [logo, setLogo] = useState<string>();

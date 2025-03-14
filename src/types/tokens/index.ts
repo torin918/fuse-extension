@@ -121,7 +121,8 @@ export const is_same_token_info = (a: TokenInfo, b: TokenInfo): boolean => {
     if (Object.keys(a)[0] !== Object.keys(b)[0]) return false;
     return get_token_main_address(a) === get_token_main_address(b);
 };
-export const get_token_unique_id = (token: TokenInfo): string => {
+export type TokenUniqueId = string;
+export const get_token_unique_id = (token: TokenInfo): TokenUniqueId => {
     return match_combined_token_info(token.info, {
         ic: (ic) => `ic#${ic.canister_id}`,
         ethereum: (ethereum) => `ethereum#${ethereum.address}`,

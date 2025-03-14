@@ -1,13 +1,13 @@
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store/local';
+import { useTokenInfoCurrentRead } from '~hooks/store/local';
 import { useIdentityKeys } from '~hooks/store/local-secure';
+import { useTokenPrices } from '~hooks/store/local/memo/price';
 import { useSonnerToast } from '~hooks/toast';
-import { get_token_unique_id, match_combined_token_info } from '~types/tokens';
 
 import { FunctionHeader } from '../components/header';
 import { AccountItem } from './components/account-item';
@@ -23,27 +23,7 @@ function FunctionSwitchAccountPage() {
 
     const current_tokens = useTokenInfoCurrentRead();
 
-    const all_ic_prices = useTokenPriceIcRead();
-    const token_prices = useMemo(() => {
-        const token_prices: Record<string, { price?: string; price_change_24h?: string }> = {};
-        for (const token of current_tokens) {
-            const unique_id = get_token_unique_id(token);
-            const price = match_combined_token_info<{ price?: string; price_change_24h?: string } | undefined>(
-                token.info,
-                {
-                    ic: (ic) => all_ic_prices[ic.canister_id],
-                    ethereum: () => undefined,
-                    ethereum_test_sepolia: () => undefined,
-                    polygon: () => undefined,
-                    polygon_test_amoy: () => undefined,
-                    bsc: () => undefined,
-                    bsc_test: () => undefined,
-                },
-            );
-            if (price !== undefined) token_prices[unique_id] = price;
-        }
-        return token_prices;
-    }, [current_tokens, all_ic_prices]);
+    const token_prices = useTokenPrices(current_tokens);
 
     const ref = useRef<HTMLDivElement>(null);
     return (

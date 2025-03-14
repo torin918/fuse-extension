@@ -1,12 +1,13 @@
-import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 
 import Icon from '~components/icon';
 import { useTokenBalanceIcByRefreshing } from '~hooks/store/local';
 import { useIdentityKeys } from '~hooks/store/local-secure';
+import { useTokenPriceUsd } from '~hooks/store/local/memo/usd';
 import { cn } from '~lib/utils/cn';
 import type { ShowIdentityKey } from '~types/identity';
-import { get_token_unique_id, match_combined_token_info, type CurrentTokens } from '~types/tokens';
+import { type CurrentTokens } from '~types/tokens';
+import type { TokenPrices } from '~types/tokens/price';
 
 export const AccountItem = ({
     wallet,
@@ -16,7 +17,7 @@ export const AccountItem = ({
 }: {
     wallet: ShowIdentityKey;
     current_identity: string | undefined;
-    token_prices: Record<string, { price?: string; price_change_24h?: string }>;
+    token_prices: TokenPrices;
     current_tokens: CurrentTokens;
 }) => {
     const { switchIdentity } = useIdentityKeys();
@@ -30,57 +31,7 @@ export const AccountItem = ({
     }, [current_tokens]);
     const [ic_balances] = useTokenBalanceIcByRefreshing(wallet.address.ic?.owner, canisters, 15000);
 
-    const { usd } = useMemo(() => {
-        let usd = BigNumber(0);
-        let usd_now = BigNumber(0);
-        let usd_24h = BigNumber(0);
-
-        for (const token of current_tokens) {
-            match_combined_token_info(token.info, {
-                ic: (ic) => {
-                    const balance = ic_balances[ic.canister_id];
-                    if (!balance) return;
-                    if (balance === '0') return;
-                    const { price, price_change_24h } = token_prices[get_token_unique_id(token)] ?? {};
-                    let b: BigNumber | undefined = undefined;
-                    if (price !== undefined) {
-                        b = BigNumber(balance).times(BigNumber(price)).div(BigNumber(10).pow(ic.decimals));
-                        usd = usd.plus(b);
-                        if (price_change_24h !== undefined) {
-                            usd_now = usd_now.plus(b);
-                            const old_price = BigNumber(price).div(
-                                BigNumber(1).plus(BigNumber(price_change_24h).div(BigNumber(100))),
-                            );
-                            const old_b = BigNumber(balance)
-                                .times(BigNumber(old_price))
-                                .div(BigNumber(10).pow(ic.decimals));
-                            usd_24h = usd_24h.plus(old_b);
-                        }
-                    }
-                },
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                ethereum: () => {},
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                ethereum_test_sepolia: () => {},
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                polygon: () => {},
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                polygon_test_amoy: () => {},
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                bsc: () => {},
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                bsc_test: () => {},
-            });
-        }
-
-        return {
-            usd: usd.toFormat(2),
-            usd_changed: usd_now.minus(usd_24h),
-            usd_changed_24h: usd_24h.gt(BigNumber(0))
-                ? usd_now.times(BigNumber(100)).div(usd_24h).minus(BigNumber(100))
-                : BigNumber(0),
-        };
-    }, [ic_balances, current_tokens, token_prices]);
+    const { usd } = useTokenPriceUsd(current_tokens, token_prices, ic_balances);
 
     return (
         <div

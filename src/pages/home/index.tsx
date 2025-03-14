@@ -6,12 +6,14 @@ import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
-import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store/local';
+import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead } from '~hooks/store/local';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { useTokenPrices } from '~hooks/store/local/memo/price';
+import { useTokenPriceUsd } from '~hooks/store/local/memo/usd';
 import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import type { ShowIdentityKey } from '~types/identity';
-import { get_token_unique_id, match_combined_token_info } from '~types/tokens';
+import { get_token_unique_id } from '~types/tokens';
 
 import { AddressTooltip } from './components/address-tooltip';
 import { ShowSingleAddress } from './components/show-address';
@@ -42,27 +44,7 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
 
     const current_tokens = useTokenInfoCurrentRead();
 
-    const all_ic_prices = useTokenPriceIcRead();
-    const token_prices = useMemo(() => {
-        const token_prices: Record<string, { price?: string; price_change_24h?: string }> = {};
-        for (const token of current_tokens) {
-            const unique_id = get_token_unique_id(token);
-            const price = match_combined_token_info<{ price?: string; price_change_24h?: string } | undefined>(
-                token.info,
-                {
-                    ic: (ic) => all_ic_prices[ic.canister_id],
-                    ethereum: () => undefined,
-                    ethereum_test_sepolia: () => undefined,
-                    polygon: () => undefined,
-                    polygon_test_amoy: () => undefined,
-                    bsc: () => undefined,
-                    bsc_test: () => undefined,
-                },
-            );
-            if (price !== undefined) token_prices[unique_id] = price;
-        }
-        return token_prices;
-    }, [current_tokens, all_ic_prices]);
+    const token_prices = useTokenPrices(current_tokens);
 
     const canisters = useMemo<string[]>(
         () =>
@@ -71,59 +53,10 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                 .filter((s) => !!s) as string[],
         [current_tokens],
     );
+
     const [ic_balances] = useTokenBalanceIcByRefreshing(current_identity.address.ic?.owner, canisters, 15000);
 
-    const { usd, usd_changed, usd_changed_24h } = useMemo(() => {
-        let usd = BigNumber(0);
-        let usd_now = BigNumber(0);
-        let usd_24h = BigNumber(0);
-
-        for (const token of current_tokens) {
-            match_combined_token_info(token.info, {
-                ic: (ic) => {
-                    const balance = ic_balances[ic.canister_id];
-                    if (!balance) return;
-                    if (balance === '0') return;
-                    const { price, price_change_24h } = token_prices[get_token_unique_id(token)] ?? {};
-                    let b: BigNumber | undefined = undefined;
-                    if (price !== undefined) {
-                        b = BigNumber(balance).times(BigNumber(price)).div(BigNumber(10).pow(ic.decimals));
-                        usd = usd.plus(b);
-                        if (price_change_24h !== undefined) {
-                            usd_now = usd_now.plus(b);
-                            const old_price = BigNumber(price).div(
-                                BigNumber(1).plus(BigNumber(price_change_24h).div(BigNumber(100))),
-                            );
-                            const old_b = BigNumber(balance)
-                                .times(BigNumber(old_price))
-                                .div(BigNumber(10).pow(ic.decimals));
-                            usd_24h = usd_24h.plus(old_b);
-                        }
-                    }
-                },
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                ethereum: () => {},
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                ethereum_test_sepolia: () => {},
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                polygon: () => {},
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                polygon_test_amoy: () => {},
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                bsc: () => {},
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                bsc_test: () => {},
-            });
-        }
-
-        return {
-            usd: usd.toFormat(2),
-            usd_changed: usd_now.minus(usd_24h),
-            usd_changed_24h: usd_24h.gt(BigNumber(0))
-                ? usd_now.times(BigNumber(100)).div(usd_24h).minus(BigNumber(100))
-                : BigNumber(0),
-        };
-    }, [ic_balances, current_tokens, token_prices]);
+    const { usd, usd_changed, usd_changed_24h } = useTokenPriceUsd(current_tokens, token_prices, ic_balances);
 
     const ref = useRef<HTMLDivElement>(null);
     return (
