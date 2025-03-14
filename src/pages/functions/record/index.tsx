@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import dayjs from 'dayjs';
 import { useMemo, useRef, useState } from 'react';
 
@@ -65,6 +66,17 @@ function FunctionRecordsPage() {
                                         ))}
                                     </div>
                                 ))}
+
+                                {done && (
+                                    <div className="px-5 pb-[15px]">
+                                        <Button
+                                            className="h-12 w-full rounded-xl bg-[#FFCF13] text-lg font-semibold text-black"
+                                            onPress={loadMore}
+                                        >
+                                            Load More
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

@@ -12,6 +12,7 @@ import {
     DrawerHeader,
     DrawerTitle,
 } from '~components/ui/drawer';
+import { truncate_principal } from '~lib/utils/text';
 import { match_fuse_record, type FuseRecord } from '~types/records';
 import type { ApprovedIcRecord } from '~types/records/approved/approved_ic';
 import type { ConnectedRecord } from '~types/records/connected';
@@ -58,6 +59,7 @@ const RecordDetailConnected = ({ value }: { value: ConnectedRecord }) => {
 };
 
 const RecordDetailApproved = ({ value }: { value: ApprovedIcRecord }) => {
+    console.log('🚀 ~ RecordDetailApproved ~ value:', value);
     return (
         <>
             <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
@@ -96,7 +98,65 @@ const RecordDetailApproved = ({ value }: { value: ApprovedIcRecord }) => {
 
 const RecordDetailTransferred = ({ value }: { value: TokenTransferredIcRecord }) => {
     console.log('🚀 ~ RecordDetailTransferred ~ value:', value);
-    return <></>;
+
+    return (
+        <>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Type</span>
+                <span className="text-sm">{value.type}</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Chain</span>
+                <span className="text-sm">{value.chain}</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Owner</span>
+                <span className="flex items-center text-sm">
+                    {typeof value.to === 'string' ? truncate_principal(value.to) : truncate_principal(value.to.owner)}
+                    <CopyToClipboard text={value.canister_id} onCopy={() => toast.success('Copied')}>
+                        <div>
+                            <Icon
+                                name="icon-copy"
+                                className="ml-2 h-3 w-3 cursor-pointer text-[#EEEEEE] duration-300 hover:text-[#FFCF13]"
+                            />
+                        </div>
+                    </CopyToClipboard>
+                </span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Amount</span>
+                <span className="text-sm">{value.amount ? Number(value.amount) / 10 ** 8 : '--'} ICP</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Canister id</span>
+                <span className="flex items-center text-sm">
+                    {value.canister_id}
+                    <CopyToClipboard text={value.canister_id} onCopy={() => toast.success('Copied')}>
+                        <div>
+                            <Icon
+                                name="icon-copy"
+                                className="ml-2 h-3 w-3 cursor-pointer text-[#EEEEEE] duration-300 hover:text-[#FFCF13]"
+                            />
+                        </div>
+                    </CopyToClipboard>
+                </span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Method</span>
+                <span className="text-sm">{value.method}</span>
+            </div>
+            <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                <span className="text-sm text-[#999999]">Created Time</span>
+                <span className="text-sm">{dayjs(value.created).format('MM/DD/YYYY HH:mm:ss')}</span>
+            </div>
+            {value.state.ok && (
+                <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
+                    <span className="text-sm text-[#999999]">Height</span>
+                    <span className="text-sm">{value.state.ok}</span>
+                </div>
+            )}
+        </>
+    );
 };
 
 const RecordDetailDrawer = ({
@@ -153,4 +213,5 @@ const RecordDetailDrawer = ({
     );
 };
 
+export default RecordDetailDrawer;
 export default RecordDetailDrawer;
