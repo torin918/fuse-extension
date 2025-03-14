@@ -1,5 +1,7 @@
+import { anonymous } from '@choptop/haw';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { Switch } from '@heroui/react';
+import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AiOutlineMinusCircle } from 'react-icons/ai';
 import { BsArrowsMove } from 'react-icons/bs';
@@ -13,6 +15,9 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useMounted } from '~hooks/memo/mounted';
 import { useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store/local';
+import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { get_token_price_ic_by_canister_id } from '~hooks/store/local/token/ic/price';
+import { icrc1_balance_of } from '~lib/canisters/icrc1';
 import { cn } from '~lib/utils/cn';
 import { resort_list } from '~lib/utils/sort';
 import {
@@ -280,10 +285,40 @@ const ShowTokenItem = ({
     onDeleteCustomToken: (token: TokenInfo) => void;
     container?: HTMLElement | null;
 }) => {
+    const { current_identity } = useCurrentIdentity();
     const [logo, setLogo] = useState<string>();
+    const [balance, setBalance] = useState<string>('0.00');
+    const [usd, setUsd] = useState<string>('0.00');
+
+    // token balance and usd
+    const getBalance = useCallback(() => {
+        match_combined_token_info(token.info, {
+            ic: async (ic) => {
+                if (!current_identity || !current_identity.address.ic) return;
+
+                const balance = await icrc1_balance_of(anonymous, ic.canister_id, current_identity.address.ic);
+                if (!balance) return;
+
+                setBalance(BigNumber(balance).div(BigNumber(10).pow(ic.decimals)).toFormat(2));
+                // get price
+                const price_info = await get_token_price_ic_by_canister_id(ic.canister_id);
+                if (!price_info || !price_info?.price) return;
+
+                setUsd(
+                    price_info?.price &&
+                        BigNumber(balance).div(BigNumber(10).pow(ic.decimals)).times(price_info?.price).toFormat(2),
+                );
+            },
+            // TODO: other chain
+        });
+    }, [current_identity, token.info]);
+
     useEffect(() => {
         get_token_logo(token.info).then(setLogo);
-    }, [token]);
+
+        getBalance();
+    }, [getBalance, token]);
+
     return (
         <div className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]">
             <div className="flex items-center">
@@ -295,8 +330,8 @@ const ShowTokenItem = ({
             </div>
             <div className="flex items-center">
                 <div className="mr-2 flex flex-col">
-                    <strong className="text-sm text-[#EEEEEE]">23.46</strong>
-                    <span className="text-xs text-[#999999]">$234.88</span>
+                    <strong className="text-sm text-[#EEEEEE]">{balance}</strong>
+                    <span className="text-xs text-[#999999]">${usd}</span>
                 </div>
                 {tab === 'current' && sort ? (
                     <BsArrowsMove size={16} className="mr-2" />
