@@ -27,7 +27,8 @@ export const ShowTokenIc = ({
 
     const [balance, price, price_change_24h] = useMemo(() => {
         const canister_id = ic.canister_id;
-        return [balances[canister_id], token_prices[canister_id]?.price, token_prices[canister_id]?.price_change_24h];
+        const unique_id = `ic#${canister_id}`;
+        return [balances[canister_id], token_prices[unique_id]?.price, token_prices[unique_id]?.price_change_24h];
     }, [ic, balances, token_prices]);
 
     const usd = useMemo(() => {
