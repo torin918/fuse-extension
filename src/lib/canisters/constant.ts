@@ -1,4 +1,4 @@
-import { IcTokenStandard } from "~types/tokens/ic";
+import { IcTokenStandard } from "~types/tokens/chain/ic";
 
 export const IC_STANDARDS: Record<IcTokenStandard, [string, string][]> = {
     [IcTokenStandard.ICRC1]: [

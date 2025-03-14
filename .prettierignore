@@ -3,5 +3,5 @@
 .idea
 /dist/
 src/pages/routes.tsx
-src/types/tokens/preset.ts
+src/types/tokens/preset/ic.ts
 src/lib/canisters/constant.ts

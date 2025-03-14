@@ -18,7 +18,7 @@ import {
 import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import type { TokenTransferredIcRecord } from '~types/records/token/transferred_ic';
-import type { IcTokenInfo } from '~types/tokens/ic';
+import type { IcTokenInfo } from '~types/tokens/chain/ic';
 
 const TransferDetailDrawer = ({
     trigger,

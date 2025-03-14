@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { get_token_info_ic } from '~hooks/store/local/token/ic/info';
 import { list_sns_canisters } from '~lib/canisters/sns_root';
-import type { IcTokenInfo } from '~types/tokens/ic';
+import type { IcTokenInfo } from '~types/tokens/chain/ic';
 
 type TokenItem = {
     root_canister_id: string;
@@ -109,7 +109,7 @@ const main = async () => {
         let fee_spaces = '';
         for (let i = 0; i < max_fee_length - item.token_info.fee.length; i++) fee_spaces += ' ';
         console.log(
-            `const ${item.token_info_name}${token_info_spaces} : IcTokenInfo = { canister_id: '${item.token_info.canister_id}', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: '${item.token_info.name}',${token_name_spaces} symbol: '${item.token_info.symbol}',${token_info_spaces} decimals: ${decimals_spaces}${item.token_info.decimals}, fee: ${fee_spaces}'${item.token_info.fee}' }; // fee ${BigNumber(
+            `export const ${item.token_info_name}${token_info_spaces} : IcTokenInfo = { canister_id: '${item.token_info.canister_id}', standards: [IcTokenStandard.ICRC1, IcTokenStandard.ICRC2], name: '${item.token_info.name}',${token_name_spaces} symbol: '${item.token_info.symbol}',${token_info_spaces} decimals: ${decimals_spaces}${item.token_info.decimals}, fee: ${fee_spaces}'${item.token_info.fee}' }; // fee ${BigNumber(
                 item.token_info.fee,
             )
                 .div(BigNumber(10).pow(BigNumber(item.token_info.decimals)))

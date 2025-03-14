@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import type { GotoFunction } from '~hooks/memo/goto';
 import { match_combined_token_info, type TokenInfo } from '~types/tokens';
-import type { IcTokenInfo } from '~types/tokens/ic';
+import type { IcTokenInfo } from '~types/tokens/chain/ic';
 import { get_token_logo } from '~types/tokens/preset';
 
 export const TransferShowToken = ({

@@ -1,4 +1,4 @@
-import { inner_get_identity_address } from '~hooks/store/local-secure/memo/identity';
+import { inner_get_identity_address } from '~lib/address';
 import { same } from '~lib/utils/same';
 
 import type { Chain } from './chain';
@@ -24,6 +24,12 @@ export interface IdentityAddress {
         owner: string;
         account_id: string;
     };
+    ethereum?: { address: string };
+    ethereum_test_sepolia?: { address: string };
+    polygon?: { address: string };
+    polygon_test_amoy?: { address: string };
+    bsc?: { address: string };
+    bsc_test?: { address: string };
 }
 
 export interface KeyRings {

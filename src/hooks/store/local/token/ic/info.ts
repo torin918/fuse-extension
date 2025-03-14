@@ -8,7 +8,7 @@ import { icrc1_decimals, icrc1_fee, icrc1_name, icrc1_symbol } from '~lib/canist
 import { get_canister_standards } from '~lib/canisters/standards';
 import { get_canister_status } from '~lib/canisters/status';
 import { same } from '~lib/utils/same';
-import { IcTokenStandard, type IcTokenInfo } from '~types/tokens/ic';
+import { IcTokenStandard, type IcTokenInfo } from '~types/tokens/chain/ic';
 
 import { LOCAL_KEY_TOKEN_INFO_IC } from '../../../keys';
 import { useTokenInfoUpdatedIcInner } from './info_updated';

@@ -5,7 +5,7 @@ import type { Storage } from '@plasmohq/storage';
 import { useCachedStoreData0, type DataMetadata0 } from '~hooks/meta/metadata-0';
 import { resort_list, type ResortFunction } from '~lib/utils/sort';
 import { get_token_symbol, is_same_token_info, TokenTag, type CustomTokens, type TokenInfo } from '~types/tokens';
-import type { IcTokenInfo } from '~types/tokens/ic';
+import type { IcTokenInfo } from '~types/tokens/chain/ic';
 import { is_known_token } from '~types/tokens/preset';
 
 import { LOCAL_KEY_TOKEN_INFO_CUSTOM } from '../../keys';

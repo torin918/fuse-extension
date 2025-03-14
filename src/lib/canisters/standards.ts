@@ -1,6 +1,6 @@
 // import type { WrappedCandidType, WrappedCandidTypeService } from '@jellypack/runtime/lib/wasm/candid';
 
-import { IcTokenStandard } from '~types/tokens/ic';
+import { IcTokenStandard } from '~types/tokens/chain/ic';
 
 import { IC_STANDARDS } from './constant';
 
