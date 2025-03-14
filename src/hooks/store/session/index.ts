@@ -1,5 +1,6 @@
 import { Storage } from '@plasmohq/storage';
 
+import { sha256_hash } from '~lib/utils/hash';
 import { is_same_popup_action, type PopupAction, type PopupActions } from '~types/actions';
 import { type Chain } from '~types/chain';
 import type { CurrentIdentityNetwork } from '~types/network';
@@ -11,26 +12,44 @@ import {
     SESSION_KEY_CURRENT_SESSION_CONNECTED_APP,
     SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_ONCE,
     SESSION_KEY_CURRENT_SESSION_CONNECTED_APP_SESSION,
-    SESSION_KEY_PASSWORD,
-    SESSION_KEY_PASSWORD_ALIVE,
     SESSION_KEY_POPUP_ACTIONS,
+    SESSION_KEY_UNLOCKED,
+    SESSION_KEY_UNLOCKED_ALIVE,
 } from '../keys';
-import { usePasswordInner } from './password';
-import { usePasswordAliveInner } from './password_alive';
 import { usePathnameInner } from './pathname';
 import { usePopupActionsInner2 } from './popup_actions';
 import { useRestoreInner } from './restore';
+import { useUnlockedInner } from './unlocked';
+import { useUnlockedAliveInner } from './unlocked_alive';
 
 // * session -> current session
 const SESSION_STORAGE = new Storage({ area: 'session' }); // session
 // const session_secure_storage = new SecureStorage({ area: 'session' }); // session
 export const __get_session_storage = () => SESSION_STORAGE;
 
+const CACHED_PASSWORD: Record<string, string> = {};
+export const __set_password = (hash: string, password: string) => (CACHED_PASSWORD[hash] = password);
+export const __get_password = (hash: string) => CACHED_PASSWORD[hash] ?? '';
+export const __get_actual_password = async (
+    password: string,
+): Promise<{ unlocked: string; actual_password: string }> => {
+    const [unlocked, actual_password] = await (async () => {
+        if (!password) return ['', ''];
+        let hashed = await sha256_hash(password); // hash 1
+        for (let i = 0; i < 2048; i++) hashed = await sha256_hash(`${password}:${hashed}`); // hash 2048
+        let actual_password = await sha256_hash(`${password}:${hashed}`); // hash 1
+        for (let i = 0; i < 2048; i++) actual_password = await sha256_hash(`${password}:${actual_password}`); // hash 2048
+        return [hashed, actual_password];
+    })();
+    __set_password(unlocked, actual_password); // map
+    return { unlocked, actual_password };
+};
+
 // ================ hooks ================
 
 // ############### SESSION ###############
-export const usePassword = () => usePasswordInner(SESSION_STORAGE); // session
-export const usePasswordAlive = () => usePasswordAliveInner(SESSION_STORAGE); // session
+export const useUnlocked = () => useUnlockedInner(SESSION_STORAGE); // session
+export const useUnlockedAlive = () => useUnlockedAliveInner(SESSION_STORAGE); // session
 export const useRestore = () => useRestoreInner(SESSION_STORAGE); // session
 export const usePopupActions = () => usePopupActionsInner2(SESSION_STORAGE); // session
 export const usePathname = () => usePathnameInner(SESSION_STORAGE); // session
@@ -40,25 +59,25 @@ export const usePathname = () => usePathnameInner(SESSION_STORAGE); // session
 // ############### SESSION ###############
 
 // password
-export const setPasswordAliveDirectly = async (password_alive = Date.now()) => {
-    await SESSION_STORAGE.set(SESSION_KEY_PASSWORD_ALIVE, password_alive);
+export const setUnlockedAliveDirectly = async (password_alive = Date.now()) => {
+    await SESSION_STORAGE.set(SESSION_KEY_UNLOCKED_ALIVE, password_alive);
 };
-export const setPasswordDirectly = async (password: string) => {
-    await SESSION_STORAGE.set(SESSION_KEY_PASSWORD, password);
+export const setUnlockedDirectly = async (wrapped_key: string) => {
+    await SESSION_STORAGE.set(SESSION_KEY_UNLOCKED, wrapped_key);
 };
-export const refreshPasswordDirectly = async (password: string) => {
-    await setPasswordAliveDirectly(); // must before set password
-    await setPasswordDirectly(password);
+export const refreshUnlockedDirectly = async (wrapped_key: string) => {
+    await setUnlockedAliveDirectly(); // must before set password
+    await setUnlockedDirectly(wrapped_key);
 };
 export const lockDirectly = async () => {
-    await setPasswordDirectly(''); // remove password
-    await setPasswordAliveDirectly(0);
+    await setUnlockedDirectly(''); // remove password
+    await setUnlockedAliveDirectly(0);
 };
 
 // current status
 export const is_current_locked = async (): Promise<boolean> => {
-    const password = await SESSION_STORAGE.get<string>(SESSION_KEY_PASSWORD);
-    return !password;
+    const unlocked = await SESSION_STORAGE.get<string>(SESSION_KEY_UNLOCKED);
+    return !unlocked;
 };
 
 // once user connect app, is_connected always cloud be true

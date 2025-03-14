@@ -26,7 +26,7 @@ export interface IdentityAddress {
     };
 }
 
-export interface PrivateKeys {
+export interface KeyRings {
     mnemonic: string | undefined; // could not produce new wallet if not exist
     keys: IdentityKey[];
     current: IdentityId; // current identity // uuid

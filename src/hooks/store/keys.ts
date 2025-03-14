@@ -9,7 +9,7 @@ const SESSION_KEY_PREFIX = ':fuse';
 
 // ############### LOCAL SECURE ###############
 
-export const LOCAL_SECURE_KEY_PRIVATE_KEYS = `${LOCAL_SECURE_KEY_PREFIX}:private_keys`; // * local secure
+export const LOCAL_SECURE_KEY_KEY_RINGS = `${LOCAL_SECURE_KEY_PREFIX}:key:rings`; // * local secure
 export const LOCAL_SECURE_KEY_CHAIN_NETWORKS = `${LOCAL_SECURE_KEY_PREFIX}:chain:networks`; // * local secure
 export const LOCAL_SECURE_KEY_CURRENT_CHAIN_NETWORK = (id: IdentityId) =>
     `${LOCAL_SECURE_KEY_PREFIX}:${id}:chain:network`; // * local secure
@@ -55,8 +55,8 @@ export const LOCAL_KEY_RECORD_DATE = (identity_network: IdentityNetwork, date: s
 
 // ############### SESSION ###############
 
-export const SESSION_KEY_PASSWORD = `${SESSION_KEY_PREFIX}:password`; // * session
-export const SESSION_KEY_PASSWORD_ALIVE = `${SESSION_KEY_PREFIX}:password:alive`; // * session
+export const SESSION_KEY_UNLOCKED = `${SESSION_KEY_PREFIX}:unlocked`; // * session
+export const SESSION_KEY_UNLOCKED_ALIVE = `${SESSION_KEY_PREFIX}:unlocked:alive`; // * session
 export const SESSION_KEY_RESTORE = `${SESSION_KEY_PREFIX}:restore`; // * session
 export const SESSION_KEY_POPUP_ACTIONS = `${SESSION_KEY_PREFIX}:popup:actions`; // * session
 export const SESSION_KEY_PATHNAME = `${SESSION_KEY_PREFIX}:pathname`; // * session
