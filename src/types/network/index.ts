@@ -1,10 +1,10 @@
-import type { ChainBscNetwork } from './bsc';
-import type { ChainBscTestNetwork } from './bsc-test';
-import type { ChainEthereumNetwork } from './ethereum';
-import type { ChainEthereumTestSepoliaNetwork } from './ethereum-test-sepolia';
+import { CHAIN_BSC_MAINNET, type ChainBscNetwork } from './bsc';
+import { CHAIN_BSC_TEST_MAINNET, type ChainBscTestNetwork } from './bsc-test';
+import { CHAIN_ETHEREUM_MAINNET, type ChainEthereumNetwork } from './ethereum';
+import { CHAIN_ETHEREUM_TEST_SEPOLIA_MAINNET, type ChainEthereumTestSepoliaNetwork } from './ethereum-test-sepolia';
 import { CHAIN_IC_MAINNET, type ChainIcNetwork } from './ic';
-import type { ChainPolygonNetwork } from './polygon';
-import type { ChainPolygonTestAmoyNetwork } from './polygon-test-amoy';
+import { CHAIN_POLYGON_MAINNET, type ChainPolygonNetwork } from './polygon';
+import { CHAIN_POLYGON_TEST_AMOY_MAINNET, type ChainPolygonTestAmoyNetwork } from './polygon-test-amoy';
 
 export type ChainNetwork =
     | ChainIcNetwork
@@ -17,16 +17,27 @@ export type ChainNetwork =
 
 export type ChainNetworks = ChainNetwork[]; // user added networks
 
-export type CurrentChainNetwork =
-    | { ic: ChainIcNetwork }
-    | { ethereum: ChainEthereumNetwork }
-    | { ethereum_test_sepolia: ChainEthereumTestSepoliaNetwork }
-    | { polygon: ChainPolygonNetwork }
-    | { polygon_test_amoy: ChainPolygonTestAmoyNetwork }
-    | { bsc: ChainBscNetwork }
-    | { bsc_test: ChainBscTestNetwork };
+export interface CurrentChainNetwork {
+    ic: ChainIcNetwork;
+    ethereum: ChainEthereumNetwork;
+    ethereum_test_sepolia: ChainEthereumTestSepoliaNetwork;
+    polygon: ChainPolygonNetwork;
+    polygon_test_amoy: ChainPolygonTestAmoyNetwork;
+    bsc: ChainBscNetwork;
+    bsc_test: ChainBscTestNetwork;
+}
 
-export const DEFAULT_CURRENT_CHAIN_NETWORK: CurrentChainNetwork = { ic: CHAIN_IC_MAINNET };
+export type ChainNetworkKey = keyof CurrentChainNetwork;
+
+export const DEFAULT_CURRENT_CHAIN_NETWORK: CurrentChainNetwork = {
+    ic: CHAIN_IC_MAINNET,
+    ethereum: CHAIN_ETHEREUM_MAINNET,
+    ethereum_test_sepolia: CHAIN_ETHEREUM_TEST_SEPOLIA_MAINNET,
+    polygon: CHAIN_POLYGON_MAINNET,
+    polygon_test_amoy: CHAIN_POLYGON_TEST_AMOY_MAINNET,
+    bsc: CHAIN_BSC_MAINNET,
+    bsc_test: CHAIN_BSC_TEST_MAINNET,
+};
 
 // =================== chain identity network ===================
 

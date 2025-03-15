@@ -214,4 +214,3 @@ const RecordDetailDrawer = ({
 };
 
 export default RecordDetailDrawer;
-export default RecordDetailDrawer;

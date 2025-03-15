@@ -1,13 +1,13 @@
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store/local';
+import { useTokenInfoCurrentRead } from '~hooks/store/local';
 import { useIdentityKeys } from '~hooks/store/local-secure';
+import { useTokenPrices } from '~hooks/store/local/memo/price';
 import { useSonnerToast } from '~hooks/toast';
-import { match_combined_token_info } from '~types/tokens';
 
 import { FunctionHeader } from '../components/header';
 import { AccountItem } from './components/account-item';
@@ -23,25 +23,7 @@ function FunctionSwitchAccountPage() {
 
     const current_tokens = useTokenInfoCurrentRead();
 
-    const canisters = useMemo(() => {
-        const canisters: string[] = [];
-        for (const token of current_tokens) {
-            match_combined_token_info(token.info, {
-                ic: (ic) => canisters.push(ic.canister_id),
-            });
-        }
-        return canisters;
-    }, [current_tokens]);
-
-    const all_ic_prices = useTokenPriceIcRead();
-    const ic_prices = useMemo<[string | undefined, string | undefined][]>(
-        () =>
-            canisters.map((canister_id) => {
-                const price = all_ic_prices[canister_id];
-                return [price?.price, price?.price_change_24h];
-            }),
-        [canisters, all_ic_prices],
-    );
+    const token_prices = useTokenPrices(current_tokens);
 
     const ref = useRef<HTMLDivElement>(null);
     return (
@@ -58,9 +40,8 @@ function FunctionSwitchAccountPage() {
                                         key={wallet.id}
                                         wallet={wallet}
                                         current_identity={current_identity}
-                                        canisters={canisters}
+                                        token_prices={token_prices}
                                         current_tokens={current_tokens}
-                                        ic_prices={ic_prices}
                                     />
                                 ))}
                             </div>

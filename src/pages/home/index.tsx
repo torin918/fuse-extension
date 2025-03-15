@@ -6,12 +6,14 @@ import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { useCurrentState } from '~hooks/memo/current_state';
-import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead, useTokenPriceIcRead } from '~hooks/store/local';
+import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead } from '~hooks/store/local';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { useTokenPrices } from '~hooks/store/local/memo/price';
+import { useTokenPriceUsd } from '~hooks/store/local/memo/usd';
 import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import type { ShowIdentityKey } from '~types/identity';
-import { get_token_unique_id, match_combined_token_info } from '~types/tokens';
+import { get_token_unique_id } from '~types/tokens';
 
 import { AddressTooltip } from './components/address-tooltip';
 import { ShowSingleAddress } from './components/show-address';
@@ -42,68 +44,19 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
 
     const current_tokens = useTokenInfoCurrentRead();
 
-    const canisters = useMemo(() => {
-        const canisters: string[] = [];
-        for (const token of current_tokens) {
-            match_combined_token_info(token.info, {
-                ic: (ic) => canisters.push(ic.canister_id),
-            });
-        }
-        return canisters;
-    }, [current_tokens]);
-    const all_ic_prices = useTokenPriceIcRead();
-    const ic_prices = useMemo<[string | undefined, string | undefined][]>(
+    const token_prices = useTokenPrices(current_tokens);
+
+    const canisters = useMemo<string[]>(
         () =>
-            canisters.map((canister_id) => {
-                const price = all_ic_prices[canister_id];
-                return [price?.price, price?.price_change_24h];
-            }),
-        [canisters, all_ic_prices],
+            current_tokens
+                .map((t) => ('ic' in t.info ? t.info.ic.canister_id : undefined))
+                .filter((s) => !!s) as string[],
+        [current_tokens],
     );
 
     const [ic_balances] = useTokenBalanceIcByRefreshing(current_identity.address.ic?.owner, canisters, 15000);
 
-    const { usd, usd_changed, usd_changed_24h } = useMemo(() => {
-        let usd = BigNumber(0);
-        let usd_now = BigNumber(0);
-        let usd_24h = BigNumber(0);
-
-        for (const token of current_tokens) {
-            match_combined_token_info(token.info, {
-                ic: (ic) => {
-                    const index = canisters.findIndex((c) => c == ic.canister_id);
-                    if (index < 0) return;
-                    const balance = ic_balances[index];
-                    if (!balance) return;
-                    if (balance === '0') return;
-                    const [price, price_changed_24h] = ic_prices[index];
-                    let b: BigNumber | undefined = undefined;
-                    if (price !== undefined) {
-                        b = BigNumber(balance).times(BigNumber(price)).div(BigNumber(10).pow(ic.decimals));
-                        usd = usd.plus(b);
-                        if (price_changed_24h !== undefined) {
-                            usd_now = usd_now.plus(b);
-                            const old_price = BigNumber(price).div(
-                                BigNumber(1).plus(BigNumber(price_changed_24h).div(BigNumber(100))),
-                            );
-                            const old_b = BigNumber(balance)
-                                .times(BigNumber(old_price))
-                                .div(BigNumber(10).pow(ic.decimals));
-                            usd_24h = usd_24h.plus(old_b);
-                        }
-                    }
-                },
-            });
-        }
-
-        return {
-            usd: usd.toFormat(2),
-            usd_changed: usd_now.minus(usd_24h),
-            usd_changed_24h: usd_24h.gt(BigNumber(0))
-                ? usd_now.times(BigNumber(100)).div(usd_24h).minus(BigNumber(100))
-                : BigNumber(0),
-        };
-    }, [canisters, ic_balances, current_tokens, ic_prices]);
+    const { usd, usd_changed, usd_changed_24h } = useTokenPriceUsd(current_tokens, token_prices, ic_balances);
 
     const ref = useRef<HTMLDivElement>(null);
     return (
@@ -232,9 +185,8 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                                 typeof path === 'number' ? navigate(path) : navigate(path, options)
                             }
                             token={token}
-                            canisters={canisters}
+                            token_prices={token_prices}
                             ic_balances={ic_balances}
-                            ic_prices={ic_prices}
                         />
                     ))}
                 </div>

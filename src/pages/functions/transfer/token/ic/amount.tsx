@@ -48,7 +48,8 @@ function FunctionTransferTokenIcAmountPage({
 
     const identity = useCurrentConnectedIcIdentity(current_identity?.id);
 
-    const [[balance], { refreshBalance }] = useTokenBalanceIcByRefreshing(identity?.principal, [canister_id], 5000);
+    const [ic_balances, { refreshBalance }] = useTokenBalanceIcByRefreshing(identity?.principal, [canister_id], 5000);
+    const balance = useMemo(() => ic_balances[canister_id], [ic_balances, canister_id]);
     // console.error(`🚀 ~ FunctionSendTokenToPage ~ balance:`, current_identity, token, identity, balance);
 
     const showBalance = useMemo<string | undefined>(() => {

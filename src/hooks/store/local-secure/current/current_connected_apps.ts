@@ -5,7 +5,7 @@ import type { SecureStorage } from '@plasmohq/storage/secure';
 
 import { revoke_current_session_connected_app } from '~hooks/store/session';
 import { same } from '~lib/utils/same';
-import { match_chain, match_chain_async, type Chain } from '~types/chain';
+import { match_chain, type Chain } from '~types/chain';
 import {
     DEFAULT_CURRENT_CONNECTED_APPS,
     update_connected_app,
@@ -13,7 +13,7 @@ import {
     type ConnectedApps,
     type CurrentConnectedApps,
 } from '~types/connect';
-import type { CurrentIdentityNetwork } from '~types/network';
+import type { ChainNetworkKey, CurrentIdentityNetwork, IdentityNetwork } from '~types/network';
 
 import { LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS } from '../../keys';
 
@@ -43,18 +43,38 @@ export const useCurrentConnectedAppsInner = (
         if (!storage || !current_identity_network) return;
         if (!current_connected_apps) return; // ! MUST CHECK THEN UPDATE
 
-        const current_ic_connected_apps_callback: StorageWatchCallback = (d) => {
-            const current_ic_connected_apps = d.newValue ?? DEFAULT_VALUE;
-            if (!same(current_connected_apps.ic, current_ic_connected_apps)) {
-                setCurrentConnectedApps({ ...current_connected_apps, ic: current_ic_connected_apps });
-            }
+        const handle_chain_network = (key: ChainNetworkKey): (() => void) => {
+            const callback: StorageWatchCallback = (d) => {
+                const connected_apps = d.newValue ?? DEFAULT_VALUE;
+                if (!same(current_connected_apps[key], connected_apps)) {
+                    setCurrentConnectedApps({ ...current_connected_apps, [key]: connected_apps });
+                }
+            };
+            const _key = current_identity_network[key]
+                ? LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity_network[key])
+                : undefined;
+            if (_key) storage.watch({ [_key]: callback });
+            return () => {
+                if (_key) storage.unwatch({ [_key]: callback });
+            };
         };
-        const key_ic = current_identity_network.ic
-            ? LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity_network.ic)
-            : undefined;
-        if (key_ic) storage.watch({ [key_ic]: current_ic_connected_apps_callback });
+
+        const ic = handle_chain_network('ic');
+        const ethereum = handle_chain_network('ethereum');
+        const ethereum_test_sepolia = handle_chain_network('ethereum_test_sepolia');
+        const polygon = handle_chain_network('polygon');
+        const polygon_test_amoy = handle_chain_network('polygon_test_amoy');
+        const bsc = handle_chain_network('bsc');
+        const bsc_test = handle_chain_network('bsc_test');
+
         return () => {
-            if (key_ic) storage.unwatch({ [key_ic]: current_ic_connected_apps_callback });
+            ic();
+            ethereum();
+            ethereum_test_sepolia();
+            polygon();
+            polygon_test_amoy();
+            bsc();
+            bsc_test();
         };
     }, [storage, current_identity_network, current_connected_apps]);
 
@@ -64,18 +84,13 @@ export const useCurrentConnectedAppsInner = (
             return setCurrentConnectedApps((cached_current_connected_apps = DEFAULT_VALUE));
         if (!current_connected_apps) return; // ! MUST CHECK THEN UPDATE
 
-        const key_ic = current_identity_network.ic
-            ? LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity_network.ic)
-            : undefined;
-        (async () => {
-            let data_ic = key_ic ? await storage.get<ConnectedApps>(key_ic) : [];
-            if (data_ic === undefined) data_ic = [];
-            const new_current_connected_apps = { ...cached_current_connected_apps, ic: data_ic };
+        get_current_connected_apps(storage, current_identity_network).then((next_current_connected_apps) => {
+            const new_current_connected_apps = { ...current_connected_apps, ...next_current_connected_apps };
             if (!same(new_current_connected_apps, current_connected_apps)) {
                 cached_current_connected_apps = new_current_connected_apps;
                 setCurrentConnectedApps(cached_current_connected_apps); // ! MUST CHECK THEN UPDATE
             }
-        })();
+        });
     }, [storage, current_identity_network, current_connected_apps]);
 
     // update on this hook
@@ -170,6 +185,49 @@ export const useCurrentConnectedAppsInner = (
     ];
 };
 
+const __get_apps = (chain: Chain, current_connected_apps: CurrentConnectedApps) => {
+    const apps = [
+        ...match_chain(chain, {
+            ic: () => current_connected_apps.ic,
+            ethereum: () => current_connected_apps.ethereum,
+            ethereum_test_sepolia: () => current_connected_apps.ethereum_test_sepolia,
+            polygon: () => current_connected_apps.polygon,
+            polygon_test_amoy: () => current_connected_apps.polygon_test_amoy,
+            bsc: () => current_connected_apps.bsc,
+            bsc_test: () => current_connected_apps.bsc_test,
+        }),
+    ];
+    return apps;
+};
+const __get_new_current_connected_apps = async (
+    chain: Chain,
+    storage: SecureStorage,
+    current_identity_network: CurrentIdentityNetwork,
+    current_connected_apps: CurrentConnectedApps,
+    apps: ConnectedApps,
+): Promise<CurrentConnectedApps> => {
+    const handle_identity_network = (
+        identity_network: IdentityNetwork | undefined,
+        key: ChainNetworkKey,
+    ): [string | undefined, CurrentConnectedApps] => {
+        if (!identity_network) return [undefined, current_connected_apps];
+        return [LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(identity_network), { ...current_connected_apps, [key]: apps }];
+    };
+    const [key, new_current_connected_apps] = match_chain(chain, {
+        ic: () => handle_identity_network(current_identity_network.ic, 'ic'),
+        ethereum: () => handle_identity_network(current_identity_network.ethereum, 'ethereum'),
+        ethereum_test_sepolia: () =>
+            handle_identity_network(current_identity_network.ethereum_test_sepolia, 'ethereum_test_sepolia'),
+        polygon: () => handle_identity_network(current_identity_network.polygon, 'polygon'),
+        polygon_test_amoy: () =>
+            handle_identity_network(current_identity_network.polygon_test_amoy, 'polygon_test_amoy'),
+        bsc: () => handle_identity_network(current_identity_network.bsc, 'bsc'),
+        bsc_test: () => handle_identity_network(current_identity_network.bsc_test, 'bsc_test'),
+    });
+    if (key !== undefined) await storage.set(key, apps);
+    return new_current_connected_apps;
+};
+
 const push_or_update_connected_app = async (
     chain: Chain,
     app: ConnectedApp,
@@ -177,27 +235,18 @@ const push_or_update_connected_app = async (
     current_identity_network: CurrentIdentityNetwork,
     current_connected_apps: CurrentConnectedApps,
 ): Promise<CurrentConnectedApps> => {
-    // find apps
-    const apps = [
-        ...match_chain(chain, {
-            ic: () => current_connected_apps.ic,
-        }),
-    ];
+    const apps = __get_apps(chain, current_connected_apps); // find apps
     const a = apps.find((a) => a.origin === app.origin);
     if (a !== undefined) update_connected_app(a, app);
     else apps.push(app);
-
-    return await match_chain_async(chain, {
-        ic: async () => {
-            if (!current_identity_network.ic) return current_connected_apps;
-            const key_ic = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity_network.ic);
-            await storage.set(key_ic, apps);
-            const new_current_connected_apps: CurrentConnectedApps = { ...current_connected_apps, ic: apps };
-            return new_current_connected_apps;
-        },
-    });
+    return await __get_new_current_connected_apps(
+        chain,
+        storage,
+        current_identity_network,
+        current_connected_apps,
+        apps,
+    );
 };
-
 const remove_connected_app = async (
     chain: Chain,
     app: ConnectedApp,
@@ -205,12 +254,7 @@ const remove_connected_app = async (
     current_identity_network: CurrentIdentityNetwork,
     current_connected_apps: CurrentConnectedApps,
 ): Promise<CurrentConnectedApps | undefined> => {
-    // find apps
-    let apps = [
-        ...match_chain(chain, {
-            ic: () => current_connected_apps.ic,
-        }),
-    ];
+    let apps = __get_apps(chain, current_connected_apps); // find apps
     const a = apps.find((a) => a.origin === app.origin);
     if (!a) return undefined;
 
@@ -219,29 +263,21 @@ const remove_connected_app = async (
 
     apps = apps.filter((a) => a.origin !== app.origin);
 
-    return await match_chain_async(chain, {
-        ic: async () => {
-            if (!current_identity_network.ic) return current_connected_apps;
-            const key_ic = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity_network.ic);
-            await storage.set(key_ic, apps);
-            const new_current_connected_apps: CurrentConnectedApps = { ...current_connected_apps, ic: apps };
-            return new_current_connected_apps;
-        },
-    });
+    return await __get_new_current_connected_apps(
+        chain,
+        storage,
+        current_identity_network,
+        current_connected_apps,
+        apps,
+    );
 };
-
 const remove_all_connected_app = async (
     chain: Chain,
     storage: SecureStorage,
     current_identity_network: CurrentIdentityNetwork,
     current_connected_apps: CurrentConnectedApps,
 ): Promise<CurrentConnectedApps | undefined> => {
-    // find apps
-    let apps = [
-        ...match_chain(chain, {
-            ic: () => current_connected_apps.ic,
-        }),
-    ];
+    let apps = __get_apps(chain, current_connected_apps); // find apps
     if (apps.length === 0) return undefined;
 
     // also remove temp access maybe exist this time
@@ -251,13 +287,48 @@ const remove_all_connected_app = async (
 
     apps = [];
 
-    return await match_chain_async(chain, {
-        ic: async () => {
-            if (!current_identity_network.ic) return current_connected_apps;
-            const key_ic = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity_network.ic);
-            await storage.set(key_ic, apps);
-            const new_current_connected_apps: CurrentConnectedApps = { ...current_connected_apps, ic: apps };
-            return new_current_connected_apps;
-        },
+    return await __get_new_current_connected_apps(
+        chain,
+        storage,
+        current_identity_network,
+        current_connected_apps,
+        apps,
+    );
+};
+
+export const get_current_connected_apps = async (
+    storage: SecureStorage,
+    current_identity_network: CurrentIdentityNetwork,
+): Promise<CurrentConnectedApps> => {
+    const get_connected_apps = async (key: ChainNetworkKey) => {
+        const _key = current_identity_network[key]
+            ? LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity_network[key])
+            : undefined;
+        let data = _key ? await storage.get<ConnectedApps>(_key) : [];
+        if (data === undefined) data = [];
+        return data;
+    };
+
+    const current_connected_apps: CurrentConnectedApps = await Promise.all([
+        get_connected_apps('ic'),
+        get_connected_apps('ethereum'),
+        get_connected_apps('ethereum_test_sepolia'),
+        get_connected_apps('polygon'),
+        get_connected_apps('polygon_test_amoy'),
+        get_connected_apps('bsc'),
+        get_connected_apps('bsc_test'),
+    ]).then(([ic, ethereum, ethereum_test_sepolia, polygon, polygon_test_amoy, bsc, bsc_test]) => {
+        const new_current_connected_apps = {
+            ic,
+            ethereum,
+            ethereum_test_sepolia,
+            polygon,
+            polygon_test_amoy,
+            bsc,
+            bsc_test,
+        };
+        return new_current_connected_apps;
     });
+
+    return current_connected_apps;
 };

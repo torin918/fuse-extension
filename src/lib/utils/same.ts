@@ -22,10 +22,13 @@ export const same = <T>(a: T, b: T): boolean => {
         }
         if (Array.isArray(b)) return false;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const a_keys = Object.keys(a as any);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const b_keys = Object.keys(b as any);
         if (a_keys.length !== b_keys.length) return false;
         for (const key of a_keys) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (!same((a as any)[key], (b as any)[key])) return false;
         }
         return true;

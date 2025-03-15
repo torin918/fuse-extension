@@ -4,7 +4,7 @@ import { SecureStorage } from '@plasmohq/storage/secure';
 
 import { check_password, hash_password, verify_password } from '~lib/password';
 import type { ApprovedState } from '~types/actions/approve';
-import { match_chain, type Chain } from '~types/chain';
+import { type Chain } from '~types/chain';
 import { type ConnectedApps, type CurrentConnectedApps } from '~types/connect';
 import type { CurrentInfo } from '~types/current';
 import { type IdentityAddress, type IdentityKey, type KeyRings } from '~types/identity';
@@ -35,9 +35,9 @@ import {
 import { useMarkedAddressesInner2 } from './address/marked_address';
 import { useRecentAddressesInner2 } from './address/recent_address';
 import { useCurrentChainNetworkInner } from './current/current_chain_network';
-import { useCurrentConnectedAppsInner } from './current/current_connected_apps';
+import { get_current_connected_apps, useCurrentConnectedAppsInner } from './current/current_connected_apps';
 import { useKeyRingsInner } from './key_rings';
-import { useCurrentIdentityBy } from './memo/current';
+import { get_current_identity_network, useCurrentIdentityBy } from './memo/current';
 import { useIdentityKeysBy, useIdentityKeysCountBy } from './memo/identity';
 import { useSecureStorageInner } from './storage';
 
@@ -150,7 +150,7 @@ const get_unlocked_secure_storage = async () => {
     if (!unlocked) return; // locked
 
     const storage = LOCAL_SECURE_STORAGE();
-    await storage.setPassword(__get_password(unlocked)); // set password before any action
+    await storage.setPassword(await __get_password(unlocked)); // set password before any action
 
     return storage;
 };
@@ -190,19 +190,15 @@ export const get_current_info = async (): Promise<CurrentInfo | undefined> => {
 
     agent_refresh_unique_identity(current, current_chain_network); // * refresh identity
 
-    const current_identity_network: CurrentIdentityNetwork = {
-        ic: current_address.ic
-            ? { chain: 'ic', owner: current_address.ic.owner, network: current_chain_network.ic }
-            : undefined,
-    };
+    const current_identity_network: CurrentIdentityNetwork = get_current_identity_network(
+        current_address,
+        current_chain_network,
+    );
 
-    const current_connected_apps: CurrentConnectedApps = {
-        ic: current_identity_network.ic
-            ? ((await storage.get<ConnectedApps>(
-                  LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(current_identity_network.ic),
-              )) ?? [])
-            : [],
-    };
+    const current_connected_apps: CurrentConnectedApps = await get_current_connected_apps(
+        storage,
+        current_identity_network,
+    );
 
     return {
         current_identity: key_rings.current,
@@ -221,7 +217,12 @@ export const set_current_connected_apps = async (
     const storage = await get_unlocked_secure_storage();
     if (!storage) return undefined; // get secure storage after password
 
-    const identity_network = match_chain<IdentityNetwork | undefined>(chain, { ic: () => current_identity_network.ic });
+    const identity_network = await identity_network_callback<IdentityNetwork | undefined>(
+        chain,
+        current_identity_network,
+        undefined,
+        async (s) => s,
+    );
     if (!identity_network) return;
 
     const key = LOCAL_SECURE_KEY_CURRENT_CONNECTED_APPS(identity_network);

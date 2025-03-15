@@ -121,7 +121,8 @@ export const is_same_token_info = (a: TokenInfo, b: TokenInfo): boolean => {
     if (Object.keys(a)[0] !== Object.keys(b)[0]) return false;
     return get_token_main_address(a) === get_token_main_address(b);
 };
-export const get_token_unique_id = (token: TokenInfo): string => {
+export type TokenUniqueId = string;
+export const get_token_unique_id = (token: TokenInfo): TokenUniqueId => {
     return match_combined_token_info(token.info, {
         ic: (ic) => `ic#${ic.canister_id}`,
         ethereum: (ethereum) => `ethereum#${ethereum.address}`,
@@ -153,6 +154,13 @@ export const get_token_symbol = (token: TokenInfo): string => {
         bsc: (bsc) => bsc.symbol,
         bsc_test: (bsc_test) => bsc_test.symbol,
     });
+};
+export const search_tokens = (tokens: TokenInfo[], search: string) => {
+    const s = search.trim().toLowerCase();
+    if (!s) return tokens;
+    return tokens.filter(
+        (t) => 0 <= get_token_name(t).toLowerCase().indexOf(s) || 0 <= get_token_symbol(t).toLowerCase().indexOf(s),
+    );
 };
 
 export interface CustomToken {

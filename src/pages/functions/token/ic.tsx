@@ -23,7 +23,6 @@ import { truncate_text } from '~lib/utils/text';
 import { FunctionHeader } from '~pages/functions/components/header';
 import { match_fuse_record, type FuseRecord } from '~types/records';
 import type { TokenTransferredIcRecord } from '~types/records/token/transferred_ic';
-import { match_combined_token_info } from '~types/tokens';
 import type { IcTokenInfo } from '~types/tokens/chain/ic';
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 
@@ -136,9 +135,7 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
     const [logo, setLogo] = useState<string>();
 
     useEffect(() => {
-        const token = allTokens.find((t) =>
-            match_combined_token_info(t.info, { ic: (ic) => ic.canister_id === canister_id }),
-        );
+        const token = allTokens.find((t) => 'ic' in t.info && t.info.ic.canister_id === canister_id);
 
         if (!token) throw new Error('Unknown token info');
         get_token_logo(token.info).then(setLogo);
@@ -149,7 +146,8 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
     // balance
     const identity = useCurrentConnectedIcIdentity(current_identity?.id);
     // { refreshBalance }
-    const [[balance]] = useTokenBalanceIcByRefreshing(identity?.principal, [canister_id], 5000);
+    const [ic_balances] = useTokenBalanceIcByRefreshing(identity?.principal, [canister_id], 5000);
+    const balance = useMemo(() => ic_balances[canister_id], [ic_balances, canister_id]);
 
     const showBalance = useMemo<string | undefined>(() => {
         if (token === undefined || balance === undefined) return '0';
@@ -164,7 +162,7 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
         return BigNumber(balance).times(BigNumber(price)).div(BigNumber(10).pow(token?.decimals)).toFormat(2);
     }, [balance, token_price, token]);
 
-    const [price, price_changed_24h] = useMemo(() => {
+    const [price, price_change_24h] = useMemo(() => {
         if (token_price === undefined) return [undefined, undefined];
         return [token_price.price, token_price.price_change_24h];
     }, [token_price]);
@@ -203,14 +201,14 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
                                             <span className="text-xs text-[#999999]">
                                                 ${BigNumber(price).toFormat(2)}
                                             </span>
-                                            {price_changed_24h !== undefined && price_changed_24h.startsWith('-') && (
+                                            {price_change_24h !== undefined && price_change_24h.startsWith('-') && (
                                                 <span className="pl-2 text-xs text-[#FF2C40]">
-                                                    {BigNumber(price_changed_24h).toFormat(2)}%
+                                                    {BigNumber(price_change_24h).toFormat(2)}%
                                                 </span>
                                             )}
-                                            {price_changed_24h !== undefined && !price_changed_24h.startsWith('-') && (
+                                            {price_change_24h !== undefined && !price_change_24h.startsWith('-') && (
                                                 <span className="pl-2 text-xs text-[#00C431]">
-                                                    +{BigNumber(price_changed_24h).toFormat(2)}%
+                                                    +{BigNumber(price_change_24h).toFormat(2)}%
                                                 </span>
                                             )}
                                         </>

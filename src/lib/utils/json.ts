@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Principal } from '@dfinity/principal';
 import BigNumber from 'bignumber.js';
 
