@@ -1,5 +1,6 @@
 export enum EthereumTokenStandard {
     ERC20 = 'erc20', // https://eips.ethereum.org/EIPS/eip-20
+    NATIVE = 'native',
 }
 
 export interface EthereumTokenInfo {

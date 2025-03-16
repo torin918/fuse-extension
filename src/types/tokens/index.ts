@@ -22,14 +22,14 @@ export enum TokenTag {
     ChainPolygon = 'chain-polygon',
     ChainPolygonCustom = 'chain-polygon-custom',
     // polygon test amoy
-    ChainPolygonTestSepolia = 'chain-polygon-test-amoy',
-    ChainPolygonTestSepoliaCustom = 'chain-polygon-test-amoy-custom',
+    ChainPolygonTestAmoy = 'chain-polygon-test-amoy',
+    ChainPolygonTestAmoyCustom = 'chain-polygon-test-amoy-custom',
     // bsc
     ChainBsc = 'chain-bsc',
     ChainBscCustom = 'chain-bsc-custom',
     // bsc test
-    ChainBscTestSepolia = 'chain-bsc-test',
-    ChainBscTestSepoliaCustom = 'chain-bsc-test-custom',
+    ChainBscTest = 'chain-bsc-test',
+    ChainBscTestCustom = 'chain-bsc-test-custom',
 }
 
 export type CombinedTokenInfo =
