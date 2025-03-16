@@ -1,6 +1,10 @@
 import { get_cached_data } from '~hooks/store/local';
 
 import { is_same_token_info, match_combined_token_info, TokenTag, type CombinedTokenInfo, type TokenInfo } from '..';
+import { PRESET_ALL_TOKEN_INFO_BSC } from './bsc';
+import { PRESET_ALL_TOKEN_INFO_BSC_TEST } from './bsc-test';
+import { PRESET_ALL_TOKEN_INFO_ETHEREUM } from './ethereum';
+import { PRESET_ALL_TOKEN_INFO_ETHEREUM_TEST_SEPOLIA } from './ethereum-test-sepolia';
 import {
     PRESET_ALL_TOKEN_INFO_IC,
     PRESET_LOGO_IC,
@@ -14,6 +18,8 @@ import {
     TOKEN_INFO_IC_SNS_KONG,
     TOKEN_INFO_IC_SNS_OGY,
 } from './ic';
+import { PRESET_ALL_TOKEN_INFO_POLYGON } from './polygon';
+import { PRESET_ALL_TOKEN_INFO_POLYGON_TEST_AMOY } from './polygon-test-amoy';
 
 export const get_token_logo_key = (
     token:
@@ -56,6 +62,7 @@ export const get_token_logo = async (info: CombinedTokenInfo): Promise<string | 
 };
 
 export const DEFAULT_TOKEN_INFO: TokenInfo[] = [
+    // ======================= IC =======================
     { info: { ic: TOKEN_INFO_IC_ICP }, tags: [TokenTag.ChainIc] },
     // CK
     { info: { ic: TOKEN_INFO_IC_CK_BTC }, tags: [TokenTag.ChainIc, TokenTag.ChainIcCk] },
@@ -67,9 +74,24 @@ export const DEFAULT_TOKEN_INFO: TokenInfo[] = [
     { info: { ic: TOKEN_INFO_IC_SNS_ICL }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     { info: { ic: TOKEN_INFO_IC_SNS_OGY }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     { info: { ic: TOKEN_INFO_IC_SNS_KONG }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
+    // ======================= EVM =======================
+    ...PRESET_ALL_TOKEN_INFO_ETHEREUM,
+    ...PRESET_ALL_TOKEN_INFO_ETHEREUM_TEST_SEPOLIA,
+    ...PRESET_ALL_TOKEN_INFO_POLYGON,
+    ...PRESET_ALL_TOKEN_INFO_POLYGON_TEST_AMOY,
+    ...PRESET_ALL_TOKEN_INFO_BSC,
+    ...PRESET_ALL_TOKEN_INFO_BSC_TEST,
 ];
 
-export const PRESET_ALL_TOKEN_INFO = [...PRESET_ALL_TOKEN_INFO_IC];
+export const PRESET_ALL_TOKEN_INFO = [
+    ...PRESET_ALL_TOKEN_INFO_IC,
+    ...PRESET_ALL_TOKEN_INFO_ETHEREUM,
+    ...PRESET_ALL_TOKEN_INFO_ETHEREUM_TEST_SEPOLIA,
+    ...PRESET_ALL_TOKEN_INFO_POLYGON,
+    ...PRESET_ALL_TOKEN_INFO_POLYGON_TEST_AMOY,
+    ...PRESET_ALL_TOKEN_INFO_BSC,
+    ...PRESET_ALL_TOKEN_INFO_BSC_TEST,
+];
 
 export const is_known_token = (token: TokenInfo): boolean =>
     !!PRESET_ALL_TOKEN_INFO.find((t) => is_same_token_info(t, token));
