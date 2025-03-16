@@ -1,10 +1,12 @@
+import type { Address } from 'viem';
+
 export enum EthereumTestSepoliaTokenStandard {
     ERC20 = 'erc20', // https://eips.ethereum.org/EIPS/eip-20
     NATIVE = 'native',
 }
 
 export interface EthereumTestSepoliaTokenInfo {
-    address: string;
+    address: Address;
     standards: EthereumTestSepoliaTokenStandard[];
     name: string;
     symbol: string;
@@ -12,16 +14,16 @@ export interface EthereumTestSepoliaTokenInfo {
 }
 
 // <prefix>:token:info:ethereum-test-sepolia => [address => info]
-export type EthereumTestSepoliaTokens = Record<string, EthereumTestSepoliaTokenInfo>;
+export type EthereumTestSepoliaTokens = Record<Address, EthereumTestSepoliaTokenInfo>;
 
 // <prefix>:balance:ethereum-test-sepolia:address => [canister_id => balance]
-export type EthereumTestSepoliaTokenBalances = Record<string, string>;
+export type EthereumTestSepoliaTokenBalances = Record<Address, string>;
 
 export interface EthereumTestSepoliaTokenPrice {
-    address: string;
+    address: Address;
     price?: string;
     price_change_24h?: string;
 }
 
 // <prefix>:token:price:ethereum-test-sepolia => [address => price]
-export type EthereumTestSepoliaTokenPrices = Record<string, EthereumTestSepoliaTokenPrice>;
+export type EthereumTestSepoliaTokenPrices = Record<Address, EthereumTestSepoliaTokenPrice>;

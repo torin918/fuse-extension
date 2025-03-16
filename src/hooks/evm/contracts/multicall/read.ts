@@ -14,12 +14,12 @@ import { useReadContract } from '~hooks/evm/contracts';
 import type { EvmChain } from '~types/chain';
 
 const MULTICALL_ADDRESS: Record<EvmChain, Address> = {
-    ethereum: '0x5BA1e12690DD7a8f2639770254Ed6655e3556b7a',
-    polygon: '0x5BA1e12690DD7a8f2639770254Ed6655e3556b7a',
-    bsc: '0x5BA1e12690DD7a8f2639770254Ed6655e3556b7a',
-    'ethereum-test-sepolia': '0x5BA1e12690DD7a8f2639770254Ed6655e3556b7a',
-    'polygon-test-amoy': '0x5BA1e12690DD7a8f2639770254Ed6655e3556b7a',
-    'bsc-test': '0x5BA1e12690DD7a8f2639770254Ed6655e3556b7a',
+    ethereum: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    polygon: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    bsc: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    'ethereum-test-sepolia': '0xcA11bde05977b3631167028862bE2a173976CA11',
+    'polygon-test-amoy': '0xcA11bde05977b3631167028862bE2a173976CA11',
+    'bsc-test': '0xcA11bde05977b3631167028862bE2a173976CA11',
 };
 
 /**
@@ -175,7 +175,7 @@ export function useERC20Balances(chain: EvmChain, owner?: Address, tokenAddresse
 
     // Execute multicall
     const { data: results, isError } = useMulticallReadContractAggregate3(chain, multicall_address, [calls], {
-        enabled: enabled,
+        enabled,
     });
 
     const isSuccess = !isError && results?.every((result) => result.success);
@@ -184,7 +184,7 @@ export function useERC20Balances(chain: EvmChain, owner?: Address, tokenAddresse
     const getBalances = useCallback(() => {
         if (!tokenAddresses || !isSuccess || !results) return {};
 
-        const balances: Record<string, bigint> = {};
+        const balances: Record<Address, bigint> = {};
 
         results.forEach((result, index) => {
             if (result.success && tokenAddresses[index]) {

@@ -1,10 +1,12 @@
+import type { Address } from 'viem';
+
 export enum PolygonTokenStandard {
     ERC20 = 'erc20', // https://eips.ethereum.org/EIPS/eip-20
     NATIVE = 'native',
 }
 
 export interface PolygonTokenInfo {
-    address: string;
+    address: Address;
     standards: PolygonTokenStandard[];
     name: string;
     symbol: string;
@@ -12,16 +14,16 @@ export interface PolygonTokenInfo {
 }
 
 // <prefix>:token:info:ethereum => [address => info]
-export type PolygonTokens = Record<string, PolygonTokenInfo>;
+export type PolygonTokens = Record<Address, PolygonTokenInfo>;
 
 // <prefix>:balance:ethereum:address => [canister_id => balance]
-export type PolygonTokenBalances = Record<string, string>;
+export type PolygonTokenBalances = Record<Address, string>;
 
 export interface PolygonTokenPrice {
-    address: string;
+    address: Address;
     price?: string;
     price_change_24h?: string;
 }
 
 // <prefix>:token:price:ethereum => [address => price]
-export type PolygonTokenPrices = Record<string, PolygonTokenPrice>;
+export type PolygonTokenPrices = Record<Address, PolygonTokenPrice>;
