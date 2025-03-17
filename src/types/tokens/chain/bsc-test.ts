@@ -1,8 +1,8 @@
 import type { Address } from 'viem';
 
 export enum BscTestTokenStandard {
-    BEP20 = 'bep20', // https://eips.ethereum.org/EIPS/eip-20
     NATIVE = 'native',
+    BEP20 = 'bep20', // https://eips.ethereum.org/EIPS/eip-20
 }
 
 export interface BscTestTokenInfo {
