@@ -1,5 +1,6 @@
-export type Chain = 'ic' | 'ethereum' | 'ethereum-test-sepolia' | 'polygon' | 'polygon-test-amoy' | 'bsc' | 'bsc-test';
-export type EvmChain = Exclude<Chain, 'ic'>;
+export type EvmChain = 'ethereum' | 'ethereum-test-sepolia' | 'polygon' | 'polygon-test-amoy' | 'bsc' | 'bsc-test';
+export type Chain = 'ic' | EvmChain;
+
 export const match_chain = <T>(
     self: Chain,
     {

@@ -5,9 +5,9 @@
 src/pages/routes.tsx
 src/types/tokens/preset/ic.ts
 src/types/tokens/preset/ethereum.ts
-src/types/tokens/preset/bsc.ts
-src/types/tokens/preset/polygon.ts
 src/types/tokens/preset/ethereum-test-sepolia.ts
+src/types/tokens/preset/polygon.ts
 src/types/tokens/preset/polygon-test-amoy.ts
+src/types/tokens/preset/bsc.ts
 src/types/tokens/preset/bsc-test.ts
 src/lib/canisters/constant.ts

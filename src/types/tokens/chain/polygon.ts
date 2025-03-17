@@ -1,8 +1,8 @@
 import type { Address } from 'viem';
 
 export enum PolygonTokenStandard {
-    ERC20 = 'erc20', // https://eips.ethereum.org/EIPS/eip-20
     NATIVE = 'native',
+    ERC20 = 'erc20', // https://eips.ethereum.org/EIPS/eip-20
 }
 
 export interface PolygonTokenInfo {
