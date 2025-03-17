@@ -6,9 +6,11 @@ import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { usePasswordHashed } from '~hooks/store/local';
 import { useChangePassword } from '~hooks/store/local-secure';
 import { lockDirectly } from '~hooks/store/session';
 import { useSonnerToast } from '~hooks/toast';
+import { verify_password } from '~lib/password';
 
 import { FunctionHeader } from '../../../components/header';
 
@@ -17,13 +19,21 @@ function FunctionSettingsSecurityChangePasswordPage() {
     const current_state = useCurrentState();
 
     const changePassword = useChangePassword();
+    const [password_hashed] = usePasswordHashed();
 
     const { setHide, goto } = useGoto();
     const [old_password, setOldPassword] = useState('');
     const [new_password, setNewPassword] = useState('');
     const [new_confirm_password, setNewConfirmPassword] = useState('');
 
-    const confirm = useCallback(() => {
+    const confirm = useCallback(async () => {
+        // old pwd is not true
+        const isCheck = await verify_password(password_hashed, old_password);
+        if (!isCheck) {
+            toast.error('Old password is not correct');
+            return;
+        }
+
         if (old_password === '') {
             toast.error('Old password is empty');
             return;
@@ -59,21 +69,21 @@ function FunctionSettingsSecurityChangePasswordPage() {
                     />
                 }
             >
-                <div className="flex h-full w-full flex-col justify-between px-5">
+                <div className="flex flex-col justify-between px-5 w-full h-full">
                     <div className="flex-1">
                         <div className="mt-5 w-full">
-                            <label className="my-3 block text-sm">Old Password</label>
+                            <label className="block my-3 text-sm">Old Password</label>
                             <InputPassword placeholder="Enter old password" onChange={(val) => setOldPassword(val)} />
                         </div>
                         <div className="mt-5 w-full">
-                            <label className="my-3 block text-sm">New Password</label>
+                            <label className="block my-3 text-sm">New Password</label>
                             <InputPassword
                                 placeholder="At least 8 characters"
                                 onChange={(val) => setNewPassword(val)}
                             />
                         </div>
                         <div className="mt-5 w-full">
-                            <label className="my-3 block text-sm">Confirm New Password</label>
+                            <label className="block my-3 text-sm">Confirm New Password</label>
                             <InputPassword
                                 placeholder="Confirm Password"
                                 onChange={(val) => setNewConfirmPassword(val)}

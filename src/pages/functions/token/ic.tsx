@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { CiWallet } from 'react-icons/ci';
 import { useLocation, type NavigateFunction } from 'react-router-dom';
 
 import Icon from '~components/icon';
@@ -25,6 +26,7 @@ import type { TokenTransferredIcRecord } from '~types/records/token/transferred_
 import type { IcTokenInfo } from '~types/tokens/chain/ic';
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 
+import TokenMetadata from './components/token-metadata';
 import TransferDetailDrawer from './components/transfer-detail-drawer';
 
 const TransferItem = ({
@@ -148,13 +150,13 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
     const balance = useMemo(() => ic_balances[canister_id], [ic_balances, canister_id]);
 
     const showBalance = useMemo<string | undefined>(() => {
-        if (token === undefined || balance === undefined) return undefined;
+        if (token === undefined || balance === undefined) return '0';
         return new BigNumber(balance).dividedBy(new BigNumber(10).pow(new BigNumber(token.decimals))).toFixed();
     }, [token, balance]);
 
     const tokenUsd = useMemo(() => {
-        if (token_price === undefined || token === undefined || balance === undefined) return undefined;
-        if (token_price?.price === undefined) return undefined;
+        if (token_price === undefined || token === undefined || balance === undefined) return '0.00';
+        if (token_price?.price === undefined) return '0.00';
 
         const { price } = token_price;
         return BigNumber(balance).times(BigNumber(price)).div(BigNumber(10).pow(token?.decimals)).toFormat(2);
@@ -164,13 +166,6 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
         if (token_price === undefined) return [undefined, undefined];
         return [token_price.price, token_price.price_change_24h];
     }, [token_price]);
-
-    // test
-    const text =
-        'The Internet Computer is a public blockchain network enabled by new science from first principles. It is millions of times more powerful and can replace clouds and traditional IT. The network – created by ICP, or Internet Computer Protocol – is orchestrated by permissionless decentralized governance and is hosted on sovereign hardware devices run by independent parties. Its purpose is to extend the public internet with native cloud computing functionality.';
-    const [isExpanded, setIsExpanded] = useState(false);
-    const truncatedText = text.slice(0, 200);
-    const shouldTruncate = text.length > 200;
 
     const ref = useRef<HTMLDivElement>(null);
 
@@ -188,10 +183,7 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
                 <div className="flex h-full flex-col justify-between">
                     <div className="w-full flex-1 overflow-y-auto">
                         <div className="flex w-full items-center px-5">
-                            <img
-                                src={logo ?? 'https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png'}
-                                className="mr-2 h-10 w-10 rounded-full"
-                            />
+                            <img src={logo} className="mr-2 h-10 w-10 rounded-full" />
                             <div className="w-auto">
                                 <div className="block text-sm text-[#999999]">
                                     <strong className="pr-3 text-base text-[#EEEEEE]">{token?.name}</strong>
@@ -227,7 +219,7 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
                         <div className="my-4 px-5">
                             <div className="flex items-center">
                                 <strong className="text-4xl text-[#FFCF13]">{showBalance}</strong>
-                                <Icon name="icon-wallet" className="ml-3 h-4 w-4 text-[#999999]" />
+                                <CiWallet className="ml-3 h-4 w-4 text-[#999999]" />
                             </div>
                             <span className="block w-full text-sm text-[#999999]">≈${tokenUsd}</span>
                         </div>
@@ -273,55 +265,8 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
                                 </div>
                             ))}
                         </div>
-                        <div className="flex w-full flex-col px-5">
-                            <h3 className="py-2 text-sm text-[#999999]">About</h3>
-                            <div className="text-sm">
-                                {isExpanded ? text : truncatedText}
-                                {shouldTruncate && (
-                                    <>
-                                        {!isExpanded && '...'}
-                                        <span
-                                            className="ml-2 cursor-pointer text-[#FFCF13]"
-                                            onClick={() => setIsExpanded(!isExpanded)}
-                                        >
-                                            {isExpanded ? 'Less' : 'More'}
-                                        </span>
-                                    </>
-                                )}
-                            </div>
-                            <div className="mt-5 w-full rounded-xl bg-[#181818]">
-                                <div className="flex w-full items-center justify-between px-3 py-2 text-sm">
-                                    <span className="text-[#999999]">Market cap</span>
-                                    <span>$4,967,486,846</span>
-                                </div>
-                                <div className="flex w-full items-center justify-between px-3 py-2 text-sm">
-                                    <span className="text-[#999999]">FDV</span>
-                                    <span>$5,479,917,847</span>
-                                </div>
-                                <div className="flex w-full items-center justify-between px-3 py-2 text-sm">
-                                    <span className="text-[#999999]">Circulating Supply</span>
-                                    <span>479,349,112</span>
-                                </div>
-                                <div className="flex w-full items-center justify-between px-3 py-2 text-sm">
-                                    <span className="text-[#999999]">Total supply</span>
-                                    <span>528,797,325</span>
-                                </div>
-                                <div className="flex w-full items-center p-3">
-                                    <Icon
-                                        name="icon-web"
-                                        className="h-4 w-4 cursor-pointer duration-300 hover:text-[#FFCF13]"
-                                    />
-                                    <Icon
-                                        name="icon-x"
-                                        className="mx-3 h-3 w-3 cursor-pointer duration-300 hover:text-[#FFCF13]"
-                                    />
-                                    <Icon
-                                        name="icon-discord"
-                                        className="h-4 w-4 cursor-pointer duration-300 hover:text-[#FFCF13]"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+
+                        <TokenMetadata canister_id={canister_id} />
 
                         <div ref={transactionsRef} className="mt-5 w-full pb-5">
                             <h3 className="block px-5 pb-4 text-sm text-[#999999]">Transactions</h3>

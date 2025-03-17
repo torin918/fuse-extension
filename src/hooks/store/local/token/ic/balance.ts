@@ -6,6 +6,7 @@ import type { Storage } from '@plasmohq/storage';
 
 import { useCachedStoreData1, type DataMetadata1 } from '~hooks/meta/metadata-1';
 import { icrc1_balance_of } from '~lib/canisters/icrc1';
+import type { IdentityAddress } from '~types/identity';
 
 import { LOCAL_KEY_TOKEN_BALANCE_IC } from '../../../keys';
 
@@ -94,4 +95,12 @@ const get_balance_from_balances = (canisters: string[], balances: DataType) => {
     const balance: Record<string, string> = {};
     canisters.map((canister_id) => (balance[canister_id] = balances[canister_id]));
     return balance;
+};
+
+export const get_balance_by_identity_canister_id = async (
+    canister_id: string,
+    identity: IdentityAddress,
+): Promise<string> => {
+    if (!identity.ic) return '0';
+    return await icrc1_balance_of(anonymous, canister_id, identity.ic);
 };
