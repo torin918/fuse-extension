@@ -77,10 +77,13 @@ const TokenMetadata = ({ canister_id }: { canister_id: string }) => {
                     <span className="text-[#999999]">Circulating Supply</span>
                     {metadata?.totalSupply && (
                         <span>
-                            {BigNumber(metadata?.totalSupply).toFormat(0, {
-                                groupSeparator: ',',
-                                groupSize: 3,
-                            })}
+                            {BigNumber(metadata?.totalSupply)
+                                .div(BigNumber(10).pow(metadata?.tokenDecimal))
+                                .toFormat(2, {
+                                    groupSeparator: ',',
+                                    groupSize: 3,
+                                    decimalSeparator: '.',
+                                })}
                         </span>
                     )}
                     {!metadata?.totalSupply && <span>--</span>}
@@ -89,10 +92,13 @@ const TokenMetadata = ({ canister_id }: { canister_id: string }) => {
                     <span className="text-[#999999]">Total supply</span>
                     {metadata?.totalSupply && (
                         <span>
-                            {BigNumber(metadata?.totalSupply).toFormat(0, {
-                                groupSeparator: ',',
-                                groupSize: 3,
-                            })}
+                            {BigNumber(metadata?.totalSupply)
+                                .div(BigNumber(10).pow(metadata?.tokenDecimal))
+                                .toFormat(2, {
+                                    groupSeparator: ',',
+                                    groupSize: 3,
+                                    decimalSeparator: '.',
+                                })}
                         </span>
                     )}
                     {!metadata?.totalSupply && <span>--</span>}

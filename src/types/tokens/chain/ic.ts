@@ -35,6 +35,7 @@ export interface IcTokenMetadata {
     // 'SNS' | 'CHAIN FUSION' | 'ICRC'
     source: string;
     symbol: string;
+    tokenDecimal: number;
     supplyCap: string;
     totalSupply: string;
     description: string;

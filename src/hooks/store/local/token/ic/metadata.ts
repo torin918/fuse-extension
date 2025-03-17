@@ -114,6 +114,7 @@ export const get_token_base_info_ic = async (canister_id: string): Promise<IcTok
         name: item.name,
         source: item.source,
         symbol: item.symbol,
+        tokenDecimal: item.tokenDecimal,
         supplyCap: item.supplyCap,
         totalSupply: item.totalSupply,
         description: item.description,
