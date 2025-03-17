@@ -2,7 +2,7 @@ import Moralis from 'moralis';
 import { type Address } from 'viem';
 
 // API base URL - replace with your Cloudflare Worker URL
-const API_BASE_URL = process.env.PLASMO_PUBLIC_MORAL_URL;
+const API_BASE_URL = process.env.PLASMO_PUBLIC_MORALIS_URL;
 
 export interface GetTransactionsHistoryArgs {
     address: Address;
