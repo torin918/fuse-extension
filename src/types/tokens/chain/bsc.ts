@@ -1,9 +1,12 @@
+import type { Address } from 'viem';
+
 export enum BscTokenStandard {
     BEP20 = 'bep20', // https://eips.ethereum.org/EIPS/eip-20
+    NATIVE = 'native',
 }
 
 export interface BscTokenInfo {
-    address: string;
+    address: Address;
     standards: BscTokenStandard[];
     name: string;
     symbol: string;
@@ -11,16 +14,16 @@ export interface BscTokenInfo {
 }
 
 // <prefix>:token:info:bsc => [address => info]
-export type BscTokens = Record<string, BscTokenInfo>;
+export type BscTokens = Record<Address, BscTokenInfo>;
 
 // <prefix>:balance:bsc:address => [canister_id => balance]
-export type BscTokenBalances = Record<string, string>;
+export type BscTokenBalances = Record<Address, string>;
 
 export interface BscTokenPrice {
-    address: string;
+    address: Address;
     price?: string;
     price_change_24h?: string;
 }
 
 // <prefix>:token:price:bsc => [address => price]
-export type BscTokenPrices = Record<string, BscTokenPrice>;
+export type BscTokenPrices = Record<Address, BscTokenPrice>;

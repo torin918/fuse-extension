@@ -1,9 +1,12 @@
+import type { Address } from 'viem';
+
 export enum EthereumTokenStandard {
     ERC20 = 'erc20', // https://eips.ethereum.org/EIPS/eip-20
+    NATIVE = 'native',
 }
 
 export interface EthereumTokenInfo {
-    address: string;
+    address: Address;
     standards: EthereumTokenStandard[];
     name: string;
     symbol: string;
@@ -11,16 +14,16 @@ export interface EthereumTokenInfo {
 }
 
 // <prefix>:token:info:ethereum => [address => info]
-export type EthereumTokens = Record<string, EthereumTokenInfo>;
+export type EthereumTokens = Record<Address, EthereumTokenInfo>;
 
 // <prefix>:balance:ethereum:address => [canister_id => balance]
-export type EthereumTokenBalances = Record<string, string>;
+export type EthereumTokenBalances = Record<Address, string>;
 
 export interface EthereumTokenPrice {
-    address: string;
+    address: Address;
     price?: string;
     price_change_24h?: string;
 }
 
 // <prefix>:token:price:ethereum => [address => price]
-export type EthereumTokenPrices = Record<string, EthereumTokenPrice>;
+export type EthereumTokenPrices = Record<Address, EthereumTokenPrice>;

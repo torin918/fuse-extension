@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import type { BscTokenInfo } from './chain/bsc';
 import type { BscTestTokenInfo } from './chain/bsc-test';
 import type { EthereumTokenInfo } from './chain/ethereum';
@@ -22,14 +24,14 @@ export enum TokenTag {
     ChainPolygon = 'chain-polygon',
     ChainPolygonCustom = 'chain-polygon-custom',
     // polygon test amoy
-    ChainPolygonTestSepolia = 'chain-polygon-test-amoy',
-    ChainPolygonTestSepoliaCustom = 'chain-polygon-test-amoy-custom',
+    ChainPolygonTestAmoy = 'chain-polygon-test-amoy',
+    ChainPolygonTestAmoyCustom = 'chain-polygon-test-amoy-custom',
     // bsc
     ChainBsc = 'chain-bsc',
     ChainBscCustom = 'chain-bsc-custom',
     // bsc test
-    ChainBscTestSepolia = 'chain-bsc-test',
-    ChainBscTestSepoliaCustom = 'chain-bsc-test-custom',
+    ChainBscTest = 'chain-bsc-test',
+    ChainBscTestCustom = 'chain-bsc-test-custom',
 }
 
 export type CombinedTokenInfo =
@@ -163,6 +165,39 @@ export const search_tokens = (tokens: TokenInfo[], search: string) => {
     );
 };
 
+type TokenInfoWithIc = TokenInfo & { info: { ic: IcTokenInfo } };
+type TokenInfoWithEthereum = TokenInfo & { info: { ethereum: EthereumTokenInfo } };
+type TokenInfoWithEthereumTestSepolia = TokenInfo & { info: { ethereum_test_sepolia: EthereumTestSepoliaTokenInfo } };
+type TokenInfoWithPolygon = TokenInfo & { info: { polygon: PolygonTokenInfo } };
+type TokenInfoWithPolygonTestAmoy = TokenInfo & { info: { polygon_test_amoy: PolygonTestAmoyTokenInfo } };
+type TokenInfoWithBsc = TokenInfo & { info: { bsc: BscTokenInfo } };
+type TokenInfoWithBscTest = TokenInfo & { info: { bsc_test: BscTestTokenInfo } };
+export const group_tokens_by_chain = (
+    tokens: TokenInfo[],
+): {
+    ic: TokenInfoWithIc[];
+    ethereum: TokenInfoWithEthereum[];
+    ethereum_test_sepolia: TokenInfoWithEthereumTestSepolia[];
+    polygon: TokenInfoWithPolygon[];
+    polygon_test_amoy: TokenInfoWithPolygonTestAmoy[];
+    bsc: TokenInfoWithBsc[];
+    bsc_test: TokenInfoWithBscTest[];
+} => {
+    const grouped = _.groupBy(tokens, (token) => {
+        // Get the chain key for the token
+        const chainKey = Object.keys(token.info)[0];
+        return chainKey;
+    });
+    return {
+        ic: (grouped.ic || []) as TokenInfoWithIc[],
+        ethereum: (grouped.ethereum || []) as TokenInfoWithEthereum[],
+        ethereum_test_sepolia: (grouped.ethereum_test_sepolia || []) as TokenInfoWithEthereumTestSepolia[],
+        polygon: (grouped.polygon || []) as TokenInfoWithPolygon[],
+        polygon_test_amoy: (grouped.polygon_test_amoy || []) as TokenInfoWithPolygonTestAmoy[],
+        bsc: (grouped.bsc || []) as TokenInfoWithBsc[],
+        bsc_test: (grouped.bsc_test || []) as TokenInfoWithBscTest[],
+    };
+};
 export interface CustomToken {
     created: number;
     updated: number;

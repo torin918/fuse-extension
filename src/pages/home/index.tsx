@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
+import { useERC20Balances } from '~hooks/evm/contracts/multicall/read';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead } from '~hooks/store/local';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
@@ -13,7 +14,8 @@ import { useTokenPriceUsd } from '~hooks/store/local/memo/usd';
 import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import type { ShowIdentityKey } from '~types/identity';
-import { get_token_unique_id } from '~types/tokens';
+import { get_token_unique_id, group_tokens_by_chain } from '~types/tokens';
+import { EthereumTokenStandard } from '~types/tokens/chain/ethereum';
 
 import { AddressTooltip } from './components/address-tooltip';
 import { ShowSingleAddress } from './components/show-address';
@@ -46,16 +48,20 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
 
     const token_prices = useTokenPrices(current_tokens);
 
+    const tokens_by_chain = group_tokens_by_chain(current_tokens);
     const canisters = useMemo<string[]>(
-        () =>
-            current_tokens
-                .map((t) => ('ic' in t.info ? t.info.ic.canister_id : undefined))
-                .filter((s) => !!s) as string[],
-        [current_tokens],
+        () => tokens_by_chain.ic.map((t) => t.info.ic.canister_id).filter((s) => !!s) as string[],
+        [tokens_by_chain.ic],
     );
-
     const [ic_balances] = useTokenBalanceIcByRefreshing(current_identity.address.ic?.owner, canisters, 15000);
-
+    const { balances: evm_balances } = useERC20Balances(
+        'ethereum',
+        current_identity.address.ethereum?.address,
+        tokens_by_chain.ethereum
+            .filter((t) => !t.info.ethereum.standards.includes(EthereumTokenStandard.NATIVE))
+            .map((t) => t.info.ethereum.address),
+    );
+    console.debug('🚀 ~ InnerHomePage ~ evm_balances:', evm_balances);
     const { usd, usd_changed, usd_changed_24h } = useTokenPriceUsd(current_tokens, token_prices, ic_balances);
 
     const ref = useRef<HTMLDivElement>(null);
