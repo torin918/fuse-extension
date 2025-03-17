@@ -1,9 +1,12 @@
+import type { Address } from 'viem';
+
 export enum PolygonTestAmoyTokenStandard {
     ERC20 = 'erc20', // https://eips.ethereum.org/EIPS/eip-20
+    NATIVE = 'native',
 }
 
 export interface PolygonTestAmoyTokenInfo {
-    address: string;
+    address: Address;
     standards: PolygonTestAmoyTokenStandard[];
     name: string;
     symbol: string;
@@ -11,16 +14,16 @@ export interface PolygonTestAmoyTokenInfo {
 }
 
 // <prefix>:token:info:polygon-test-amoy => [address => info]
-export type PolygonTestAmoyTokens = Record<string, PolygonTestAmoyTokenInfo>;
+export type PolygonTestAmoyTokens = Record<Address, PolygonTestAmoyTokenInfo>;
 
 // <prefix>:balance:polygon-test-amoy:address => [canister_id => balance]
-export type PolygonTestAmoyTokenBalances = Record<string, string>;
+export type PolygonTestAmoyTokenBalances = Record<Address, string>;
 
 export interface PolygonTestAmoyTokenPrice {
-    address: string;
+    address: Address;
     price?: string;
     price_change_24h?: string;
 }
 
 // <prefix>:token:price:polygon-test-amoy => [address => price]
-export type PolygonTestAmoyTokenPrices = Record<string, PolygonTestAmoyTokenPrice>;
+export type PolygonTestAmoyTokenPrices = Record<Address, PolygonTestAmoyTokenPrice>;

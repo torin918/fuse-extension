@@ -1,3 +1,5 @@
+import type { Address as EvmAddress } from 'viem';
+
 import { CHAIN_BSC_MAINNET, type ChainBscNetwork } from './bsc';
 import { CHAIN_BSC_TEST_MAINNET, type ChainBscTestNetwork } from './bsc-test';
 import { CHAIN_ETHEREUM_MAINNET, type ChainEthereumNetwork } from './ethereum';
@@ -49,37 +51,37 @@ export interface ChainIcIdentityNetwork {
 
 export interface ChainEthereumIdentityNetwork {
     chain: 'ethereum';
-    address: string;
+    address: EvmAddress;
     network: ChainEthereumNetwork;
 }
 
 export interface ChainEthereumTestSepoliaIdentityNetwork {
     chain: 'ethereum-test-sepolia';
-    address: string;
+    address: EvmAddress;
     network: ChainEthereumTestSepoliaNetwork;
 }
 
 export interface ChainPolygonIdentityNetwork {
     chain: 'polygon';
-    address: string;
+    address: EvmAddress;
     network: ChainPolygonNetwork;
 }
 
 export interface ChainPolygonTestAmoyIdentityNetwork {
     chain: 'polygon-test-amoy';
-    address: string;
+    address: EvmAddress;
     network: ChainPolygonTestAmoyNetwork;
 }
 
 export interface ChainBscIdentityNetwork {
     chain: 'bsc';
-    address: string;
+    address: EvmAddress;
     network: ChainBscNetwork;
 }
 
 export interface ChainBscTestIdentityNetwork {
     chain: 'bsc-test';
-    address: string;
+    address: EvmAddress;
     network: ChainBscTestNetwork;
 }
 

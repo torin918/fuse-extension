@@ -1,3 +1,5 @@
+import type { Address as EvmAddress } from 'viem';
+
 import { inner_get_identity_address } from '~lib/address';
 import { same } from '~lib/utils/same';
 
@@ -24,12 +26,12 @@ export interface IdentityAddress {
         owner: string;
         account_id: string;
     };
-    ethereum?: { address: string };
-    ethereum_test_sepolia?: { address: string };
-    polygon?: { address: string };
-    polygon_test_amoy?: { address: string };
-    bsc?: { address: string };
-    bsc_test?: { address: string };
+    ethereum?: { address: EvmAddress };
+    ethereum_test_sepolia?: { address: EvmAddress };
+    polygon?: { address: EvmAddress };
+    polygon_test_amoy?: { address: EvmAddress };
+    bsc?: { address: EvmAddress };
+    bsc_test?: { address: EvmAddress };
 }
 
 export interface KeyRings {

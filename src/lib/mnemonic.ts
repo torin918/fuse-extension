@@ -4,9 +4,11 @@ import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { Secp256k1KeyIdentity } from '@dfinity/identity-secp256k1';
 import * as bip39 from 'bip39';
 import { HDKey } from 'ethereum-cryptography/hdkey.js';
+import { keccak256 } from 'ethereum-cryptography/keccak';
 import _ from 'lodash';
 // import hdkey from 'hdkey';
 import * as secp256k1 from 'secp256k1';
+import { bytesToHex, getAddress as getEvmAddress } from 'viem';
 
 import type { IdentityAddress } from '~types/identity';
 import type { MnemonicParsed } from '~types/keys/mnemonic';
@@ -25,7 +27,18 @@ export const get_address_by_mnemonic_and_metadata = (
     mnemonic: string,
     subaccount = 0,
     parsed?: MnemonicParsed,
-): [IdentityAddress, { ic?: SignIdentity }] => {
+): [
+    IdentityAddress,
+    {
+        ic?: SignIdentity;
+        ethereum?: { privateKey: `0x${string}` };
+        ethereum_test_sepolia?: { privateKey: `0x${string}` };
+        polygon?: { privateKey: `0x${string}` };
+        polygon_test_amoy?: { privateKey: `0x${string}` };
+        bsc?: { privateKey: `0x${string}` };
+        bsc_test?: { privateKey: `0x${string}` };
+    },
+] => {
     const seed = bip39.mnemonicToSeedSync(mnemonic);
     // const root = hdkey.fromMasterSeed(seed); // ? always failed by assert is not a function
     const root = HDKey.fromMasterSeed(seed);
@@ -47,8 +60,45 @@ export const get_address_by_mnemonic_and_metadata = (
         const account_id = principal2account(owner);
         return [{ owner, account_id }, identity];
     })();
+    // ethereum default
+    const [default_ethereum, default_ethereum_keys] = (() => {
+        // Use Ethereum standard derivation path m/44'/60'/0'/0/index
+        const { privateKey } = root.derive(`m/44'/60'/0'/0/${subaccount}`);
+        const privateBytes = new Uint8Array(privateKey ?? []);
+        // Generate public key from private key
+        const publicKey = secp256k1.publicKeyCreate(privateBytes, false);
 
-    return [{ ic }, { ic: ic_identity }];
+        // Generate Ethereum address from public key
+        // Remove the first byte (0x04) from the public key, then calculate keccak256 hash
+        const publicKeyWithoutPrefix = Buffer.from(publicKey.slice(1));
+        const addressBuffer = keccak256(publicKeyWithoutPrefix).slice(-20);
+
+        // Convert to checksum address format (EIP-55)
+        const checksumAddress = getEvmAddress(`0x${Buffer.from(addressBuffer).toString('hex')}`);
+
+        return [{ address: checksumAddress }, { privateKey: bytesToHex(privateBytes) }];
+    })();
+
+    return [
+        {
+            ic,
+            ethereum: default_ethereum,
+            ethereum_test_sepolia: default_ethereum,
+            polygon: default_ethereum,
+            polygon_test_amoy: default_ethereum,
+            bsc: default_ethereum,
+            bsc_test: default_ethereum,
+        },
+        {
+            ic: ic_identity,
+            ethereum: default_ethereum_keys,
+            ethereum_test_sepolia: default_ethereum_keys,
+            polygon: default_ethereum_keys,
+            polygon_test_amoy: default_ethereum_keys,
+            bsc: default_ethereum_keys,
+            bsc_test: default_ethereum_keys,
+        },
+    ];
 };
 
 export const get_address_by_mnemonic = (

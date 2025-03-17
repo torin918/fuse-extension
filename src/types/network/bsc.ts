@@ -11,5 +11,5 @@ export const CHAIN_BSC_MAINNET: ChainBscNetwork = {
     chain_id: 56,
     name: 'Bsc Mainnet',
     created: 0, // inner, means mainnet
-    rpc: 'mainnet', // 'https://bsc-rpc.publicnode.com'
+    rpc: 'https://bsc-rpc.publicnode.com',
 };

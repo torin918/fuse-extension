@@ -1,15 +1,20 @@
 import { useCallback, useMemo } from 'react';
+import { createWalletClient as createEvmWalletClient, http } from 'viem';
+import { privateKeyToAccount as evmPrivateKeyToAccount } from 'viem/accounts';
 
 import { SecureStorage } from '@plasmohq/storage/secure';
 
+import { get_viem_chain_by_chain, useEvmChainNetworkByChain } from '~hooks/evm/viem';
+import { get_address_by_mnemonic_and_metadata } from '~lib/mnemonic';
 import { check_password, hash_password, verify_password } from '~lib/password';
 import type { ApprovedState } from '~types/actions/approve';
-import { type Chain } from '~types/chain';
+import { match_chain, type Chain, type EvmChain } from '~types/chain';
 import { type ConnectedApps, type CurrentConnectedApps } from '~types/connect';
 import type { CurrentInfo } from '~types/current';
-import { type IdentityAddress, type IdentityKey, type KeyRings } from '~types/identity';
+import { match_combined_identity_key, type IdentityAddress, type IdentityKey, type KeyRings } from '~types/identity';
 import {
     DEFAULT_CURRENT_CHAIN_NETWORK,
+    match_identity_network,
     type CurrentChainNetwork,
     type CurrentIdentityNetwork,
     type IdentityNetwork,
@@ -85,11 +90,19 @@ export const useChangePassword = () => {
     return changePassword;
 };
 
-export const useCurrentConnectedApps = () => {
+export const useCurrentChainNetwork = () => {
     const [unlocked] = useUnlocked();
     const storage = useSecureStorageBy(unlocked);
     const [key_rings] = useKeyRingsInner(storage);
     const [current_chain_network] = useCurrentChainNetworkInner(storage, key_rings?.current);
+    return current_chain_network;
+};
+
+export const useCurrentConnectedApps = () => {
+    const [unlocked] = useUnlocked();
+    const storage = useSecureStorageBy(unlocked);
+    const [key_rings] = useKeyRingsInner(storage);
+    const current_chain_network = useCurrentChainNetwork();
     const current_identity_network: CurrentIdentityNetwork | undefined = useMemo(() => {
         if (!key_rings) return undefined;
         const current = key_rings.keys.find((i) => i.id === key_rings.current);
@@ -108,6 +121,83 @@ export const useCurrentIdentity = () => {
     const [key_rings] = useKeyRingsInner(storage);
     const [current_chain_network] = useCurrentChainNetworkInner(storage, key_rings?.current);
     return useCurrentIdentityBy(key_rings, current_chain_network);
+};
+
+export const useEvmWalletClientCreator = (chain: EvmChain) => {
+    const [unlocked] = useUnlocked();
+    const storage = useSecureStorageBy(unlocked);
+    const [key_rings] = useKeyRingsInner(storage);
+    const network = useEvmChainNetworkByChain(chain);
+    const { current_identity_network } = useCurrentIdentity();
+    const create_wallet_client = useCallback(() => {
+        if (!key_rings) return undefined;
+        const current = key_rings.keys.find((i) => i.id === key_rings.current);
+        if (!current) return undefined;
+        if (!current_identity_network) return undefined;
+        return match_combined_identity_key(current.key, {
+            mnemonic: (mnemonic) => {
+                const [, { ethereum, ethereum_test_sepolia, polygon, polygon_test_amoy, bsc, bsc_test }] =
+                    get_address_by_mnemonic_and_metadata(mnemonic.mnemonic);
+                const identity_network = match_chain<IdentityNetwork | undefined>(chain, {
+                    ic: () => {
+                        throw new Error('IC chain is not supported');
+                    },
+                    ethereum: () => current_identity_network.ethereum,
+                    ethereum_test_sepolia: () => current_identity_network.ethereum_test_sepolia,
+                    polygon: () => current_identity_network.polygon,
+                    polygon_test_amoy: () => current_identity_network.polygon_test_amoy,
+                    bsc: () => current_identity_network.bsc,
+                    bsc_test: () => current_identity_network.bsc_test,
+                });
+                if (!identity_network) return undefined;
+                const account = match_identity_network(identity_network, {
+                    ic: () => {
+                        throw new Error('IC chain is not supported');
+                    },
+                    ethereum: () => {
+                        const private_key = ethereum?.privateKey;
+                        if (!private_key) return undefined;
+                        return evmPrivateKeyToAccount(private_key);
+                    },
+                    ethereum_test_sepolia: () => {
+                        const private_key = ethereum_test_sepolia?.privateKey;
+                        if (!private_key) return undefined;
+                        return evmPrivateKeyToAccount(private_key);
+                    },
+                    polygon: () => {
+                        const private_key = polygon?.privateKey;
+                        if (!private_key) return undefined;
+                        return evmPrivateKeyToAccount(private_key);
+                    },
+                    polygon_test_amoy: () => {
+                        const private_key = polygon_test_amoy?.privateKey;
+                        if (!private_key) return undefined;
+                        return evmPrivateKeyToAccount(private_key);
+                    },
+                    bsc: () => {
+                        const private_key = bsc?.privateKey;
+                        if (!private_key) return undefined;
+                        return evmPrivateKeyToAccount(private_key);
+                    },
+                    bsc_test: () => {
+                        const private_key = bsc_test?.privateKey;
+                        if (!private_key) return undefined;
+                        return evmPrivateKeyToAccount(private_key);
+                    },
+                });
+                if (!account) return undefined;
+                return createEvmWalletClient({
+                    account,
+                    chain: get_viem_chain_by_chain(chain),
+                    transport: http(network.rpc),
+                });
+            },
+            private_key: () => {
+                throw new Error(`Unimplemented identity type: private_key`);
+            },
+        });
+    }, [chain, current_identity_network, key_rings, network.rpc]);
+    return create_wallet_client;
 };
 
 export const useIdentityKeysCount = () => {
