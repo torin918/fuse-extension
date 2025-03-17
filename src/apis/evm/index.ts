@@ -9,7 +9,9 @@ export interface GetTransactionsHistoryArgs {
     limit: number;
     cursor: string; //cursor for query next page
 }
-
+export interface GetErc20TransactionsHistoryArgs extends GetTransactionsHistoryArgs {
+    contractAddresses?: Address[];
+}
 /**
  * Get native token transaction history for a wallet address
  * @param chainId - The ID of the blockchain network
@@ -66,7 +68,8 @@ export const getWalletNativeTransactionsHistory = async (chainId: number, args: 
  * @param args - Query parameters including address, limit and cursor
  * @returns Formatted ERC20 transfer data with pagination info
  */
-export const getWalletErc20TransactionsHistory = async (chainId: number, args: GetTransactionsHistoryArgs) => {
+export const getWalletErc20TransactionsHistory = async (chainId: number, args: GetErc20TransactionsHistoryArgs) => {
+    const { address, limit, cursor, contractAddresses } = args;
     try {
         const response = await fetch(`${API_BASE_URL}/api/token-transfers`, {
             method: 'POST',
@@ -75,9 +78,10 @@ export const getWalletErc20TransactionsHistory = async (chainId: number, args: G
             },
             body: JSON.stringify({
                 chainId,
-                address: args.address,
-                limit: args.limit,
-                cursor: args.cursor,
+                address,
+                limit,
+                cursor,
+                ...(contractAddresses && { contractAddresses }),
             }),
         });
 

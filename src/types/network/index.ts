@@ -1,5 +1,7 @@
 import type { Address as EvmAddress } from 'viem';
 
+import { match_chain, type Chain } from '~types/chain';
+
 import { CHAIN_BSC_MAINNET, type ChainBscNetwork } from './bsc';
 import { CHAIN_BSC_TEST_MAINNET, type ChainBscTestNetwork } from './bsc-test';
 import { CHAIN_ETHEREUM_MAINNET, type ChainEthereumNetwork } from './ethereum';
@@ -177,3 +179,21 @@ export interface CurrentIdentityNetwork {
     bsc?: ChainBscIdentityNetwork;
     bsc_test?: ChainBscTestIdentityNetwork;
 }
+//
+export const get_default_rpc = (chain: Chain) => {
+    const rpc = match_chain(chain, {
+        ic: () => process.env.PLASMO_PUBLIC_DEFAULT_IC_RPC,
+        ethereum: () => process.env.PLASMO_PUBLIC_DEFAULT_ETHEREUM_RPC,
+        ethereum_test_sepolia: () => process.env.PLASMO_PUBLIC_DEFAULT_ETHEREUM_TEST_SEPOLIA_RPC,
+        polygon: () => process.env.PLASMO_PUBLIC_DEFAULT_POLYGON_RPC,
+        polygon_test_amoy: () => process.env.PLASMO_PUBLIC_DEFAULT_POLYGON_TEST_AMOY_RPC,
+        bsc: () => process.env.PLASMO_PUBLIC_DEFAULT_BSC_RPC,
+        bsc_test: () => process.env.PLASMO_PUBLIC_DEFAULT_BSC_TEST_RPC,
+    });
+
+    if (!rpc) {
+        throw new Error(`No default RPC found for chain ${chain}`);
+    }
+
+    return rpc;
+};

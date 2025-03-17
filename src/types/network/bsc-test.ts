@@ -11,5 +11,5 @@ export const CHAIN_BSC_TEST_MAINNET: ChainBscTestNetwork = {
     chain_id: 97,
     name: 'BSC Test Mainnet',
     created: 0, // inner, means mainnet
-    rpc: 'https://bsc-testnet-rpc.publicnode.com',
+    rpc: 'mainnet', // 'https://bsc-testnet-rpc.publicnode.com'
 };

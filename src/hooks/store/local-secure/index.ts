@@ -14,6 +14,7 @@ import type { CurrentInfo } from '~types/current';
 import { match_combined_identity_key, type IdentityAddress, type IdentityKey, type KeyRings } from '~types/identity';
 import {
     DEFAULT_CURRENT_CHAIN_NETWORK,
+    get_default_rpc,
     match_identity_network,
     type CurrentChainNetwork,
     type CurrentIdentityNetwork,
@@ -129,6 +130,7 @@ export const useEvmWalletClientCreator = (chain: EvmChain) => {
     const [key_rings] = useKeyRingsInner(storage);
     const network = useEvmChainNetworkByChain(chain);
     const { current_identity_network } = useCurrentIdentity();
+    const rpc = network.rpc === 'mainnet' ? get_default_rpc(chain) : network.rpc;
     const create_wallet_client = useCallback(() => {
         if (!key_rings) return undefined;
         const current = key_rings.keys.find((i) => i.id === key_rings.current);
@@ -189,14 +191,14 @@ export const useEvmWalletClientCreator = (chain: EvmChain) => {
                 return createEvmWalletClient({
                     account,
                     chain: get_viem_chain_by_chain(chain),
-                    transport: http(network.rpc),
+                    transport: http(rpc),
                 });
             },
             private_key: () => {
                 throw new Error(`Unimplemented identity type: private_key`);
             },
         });
-    }, [chain, current_identity_network, key_rings, network.rpc]);
+    }, [chain, current_identity_network, key_rings, rpc]);
     return create_wallet_client;
 };
 

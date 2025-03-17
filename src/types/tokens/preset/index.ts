@@ -1,10 +1,35 @@
 import { get_cached_data } from '~hooks/store/local';
 
 import { is_same_token_info, match_combined_token_info, TokenTag, type CombinedTokenInfo, type TokenInfo } from '..';
-import { PRESET_ALL_TOKEN_INFO_BSC } from './bsc';
-import { PRESET_ALL_TOKEN_INFO_BSC_TEST } from './bsc-test';
-import { PRESET_ALL_TOKEN_INFO_ETHEREUM } from './ethereum';
-import { PRESET_ALL_TOKEN_INFO_ETHEREUM_TEST_SEPOLIA } from './ethereum-test-sepolia';
+import {
+    PRESET_ALL_TOKEN_INFO_BSC,
+    TOKEN_INFO_BSC_BNB,
+    TOKEN_INFO_BSC_BUSD,
+    TOKEN_INFO_BSC_USDT,
+    TOKEN_INFO_BSC_WBNB,
+} from './bsc';
+import {
+    PRESET_ALL_TOKEN_INFO_BSC_TEST,
+    TOKEN_INFO_BSC_TEST_BNB,
+    TOKEN_INFO_BSC_TEST_BUSD,
+    TOKEN_INFO_BSC_TEST_USDC,
+    TOKEN_INFO_BSC_TEST_USDT,
+    TOKEN_INFO_BSC_TEST_WBNB,
+} from './bsc-test';
+import {
+    PRESET_ALL_TOKEN_INFO_ETHEREUM,
+    TOKEN_INFO_ETHEREUM_ETH,
+    TOKEN_INFO_ETHEREUM_USDC,
+    TOKEN_INFO_ETHEREUM_USDT,
+    TOKEN_INFO_ETHEREUM_WETH,
+} from './ethereum';
+import {
+    PRESET_ALL_TOKEN_INFO_ETHEREUM_TEST_SEPOLIA,
+    TOKEN_INFO_ETHEREUM_TEST_SEPOLIA_ETH,
+    TOKEN_INFO_ETHEREUM_TEST_SEPOLIA_USDC,
+    TOKEN_INFO_ETHEREUM_TEST_SEPOLIA_USDT,
+    TOKEN_INFO_ETHEREUM_TEST_SEPOLIA_WETH,
+} from './ethereum-test-sepolia';
 import {
     PRESET_ALL_TOKEN_INFO_IC,
     PRESET_LOGO_IC,
@@ -18,8 +43,20 @@ import {
     TOKEN_INFO_IC_SNS_KONG,
     TOKEN_INFO_IC_SNS_OGY,
 } from './ic';
-import { PRESET_ALL_TOKEN_INFO_POLYGON } from './polygon';
-import { PRESET_ALL_TOKEN_INFO_POLYGON_TEST_AMOY } from './polygon-test-amoy';
+import {
+    PRESET_ALL_TOKEN_INFO_POLYGON,
+    TOKEN_INFO_POLYGON_MATIC,
+    TOKEN_INFO_POLYGON_USDC,
+    TOKEN_INFO_POLYGON_USDT,
+    TOKEN_INFO_POLYGON_WMATIC,
+} from './polygon';
+import {
+    PRESET_ALL_TOKEN_INFO_POLYGON_TEST_AMOY,
+    TOKEN_INFO_POLYGON_TEST_AMOY_MATIC,
+    TOKEN_INFO_POLYGON_TEST_AMOY_USDC,
+    TOKEN_INFO_POLYGON_TEST_AMOY_USDT,
+    TOKEN_INFO_POLYGON_TEST_AMOY_WMATIC,
+} from './polygon-test-amoy';
 
 export const get_token_logo_key = (
     token:
@@ -75,12 +112,49 @@ export const DEFAULT_TOKEN_INFO: TokenInfo[] = [
     { info: { ic: TOKEN_INFO_IC_SNS_OGY }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     { info: { ic: TOKEN_INFO_IC_SNS_KONG }, tags: [TokenTag.ChainIc, TokenTag.ChainIcSns] },
     // ======================= EVM =======================
-    ...PRESET_ALL_TOKEN_INFO_ETHEREUM,
-    ...PRESET_ALL_TOKEN_INFO_ETHEREUM_TEST_SEPOLIA,
-    ...PRESET_ALL_TOKEN_INFO_POLYGON,
-    ...PRESET_ALL_TOKEN_INFO_POLYGON_TEST_AMOY,
-    ...PRESET_ALL_TOKEN_INFO_BSC,
-    ...PRESET_ALL_TOKEN_INFO_BSC_TEST,
+    // ETHEREUM
+    { info: { ethereum: TOKEN_INFO_ETHEREUM_ETH }, tags: [TokenTag.ChainEthereum] },
+    { info: { ethereum: TOKEN_INFO_ETHEREUM_WETH }, tags: [TokenTag.ChainEthereum] },
+    { info: { ethereum: TOKEN_INFO_ETHEREUM_USDC }, tags: [TokenTag.ChainEthereum] },
+    { info: { ethereum: TOKEN_INFO_ETHEREUM_USDT }, tags: [TokenTag.ChainEthereum] },
+    // ETHEREUM TEST SEPOLIA
+    {
+        info: { ethereum_test_sepolia: TOKEN_INFO_ETHEREUM_TEST_SEPOLIA_ETH },
+        tags: [TokenTag.ChainEthereumTestSepolia],
+    },
+    {
+        info: { ethereum_test_sepolia: TOKEN_INFO_ETHEREUM_TEST_SEPOLIA_WETH },
+        tags: [TokenTag.ChainEthereumTestSepolia],
+    },
+    {
+        info: { ethereum_test_sepolia: TOKEN_INFO_ETHEREUM_TEST_SEPOLIA_USDC },
+        tags: [TokenTag.ChainEthereumTestSepolia],
+    },
+    {
+        info: { ethereum_test_sepolia: TOKEN_INFO_ETHEREUM_TEST_SEPOLIA_USDT },
+        tags: [TokenTag.ChainEthereumTestSepolia],
+    },
+    // POLYGON
+    { info: { polygon: TOKEN_INFO_POLYGON_MATIC }, tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_WMATIC }, tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_USDC }, tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_USDT }, tags: [TokenTag.ChainPolygon] },
+    // POLYGON TEST AMOY
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_MATIC }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_WMATIC }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_USDC }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_USDT }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    // BSC
+    { info: { bsc: TOKEN_INFO_BSC_BNB }, tags: [TokenTag.ChainBsc] },
+    { info: { bsc: TOKEN_INFO_BSC_WBNB }, tags: [TokenTag.ChainBsc] },
+    { info: { bsc: TOKEN_INFO_BSC_BUSD }, tags: [TokenTag.ChainBsc] },
+    { info: { bsc: TOKEN_INFO_BSC_USDT }, tags: [TokenTag.ChainBsc] },
+    // BSC TEST
+    { info: { bsc_test: TOKEN_INFO_BSC_TEST_BNB }, tags: [TokenTag.ChainBscTest] },
+    { info: { bsc_test: TOKEN_INFO_BSC_TEST_WBNB }, tags: [TokenTag.ChainBscTest] },
+    { info: { bsc_test: TOKEN_INFO_BSC_TEST_BUSD }, tags: [TokenTag.ChainBscTest] },
+    { info: { bsc_test: TOKEN_INFO_BSC_TEST_USDT }, tags: [TokenTag.ChainBscTest] },
+    { info: { bsc_test: TOKEN_INFO_BSC_TEST_USDC }, tags: [TokenTag.ChainBscTest] },
 ];
 
 export const PRESET_ALL_TOKEN_INFO = [
