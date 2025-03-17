@@ -16,14 +16,14 @@ export const TOKEN_INFO_POLYGON_TEST_AMOY_TEST2: PolygonTestAmoyTokenInfo  = { a
 // =========================== all token info ===========================
 
 export const PRESET_ALL_TOKEN_INFO_POLYGON_TEST_AMOY: TokenInfo[] = [
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_MATIC },  tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_MATIC  }, tags: [TokenTag.ChainPolygonTestAmoy] },
     { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_WMATIC }, tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_USDC },   tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_USDT },   tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_DAI },    tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_WETH },   tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_WBTC },   tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_AAVE },   tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_TEST1 },  tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_TEST2 },  tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_USDC   }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_USDT   }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_DAI    }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_WETH   }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_WBTC   }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_AAVE   }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_TEST1  }, tags: [TokenTag.ChainPolygonTestAmoy] },
+    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_TEST2  }, tags: [TokenTag.ChainPolygonTestAmoy] },
 ];

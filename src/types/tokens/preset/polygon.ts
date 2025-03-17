@@ -1,4 +1,4 @@
-// prettier-ignore // cSpell:words GHST
+// prettier-ignore // cSpell:words GHST Aavegotchi
 import { TokenTag, type TokenInfo } from '..';
 import { PolygonTokenStandard, type PolygonTokenInfo } from './../chain/polygon';
 
@@ -16,14 +16,14 @@ export const TOKEN_INFO_POLYGON_GHST: PolygonTokenInfo   = { address: '0x385Eeac
 // =========================== all token info ===========================
 
 export const PRESET_ALL_TOKEN_INFO_POLYGON: TokenInfo[] = [
-    { info: { polygon: TOKEN_INFO_POLYGON_MATIC },  tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_MATIC  }, tags: [TokenTag.ChainPolygon] },
     { info: { polygon: TOKEN_INFO_POLYGON_WMATIC }, tags: [TokenTag.ChainPolygon] },
-    { info: { polygon: TOKEN_INFO_POLYGON_USDC },   tags: [TokenTag.ChainPolygon] },
-    { info: { polygon: TOKEN_INFO_POLYGON_USDT },   tags: [TokenTag.ChainPolygon] },
-    { info: { polygon: TOKEN_INFO_POLYGON_DAI },    tags: [TokenTag.ChainPolygon] },
-    { info: { polygon: TOKEN_INFO_POLYGON_WETH },   tags: [TokenTag.ChainPolygon] },
-    { info: { polygon: TOKEN_INFO_POLYGON_WBTC },   tags: [TokenTag.ChainPolygon] },
-    { info: { polygon: TOKEN_INFO_POLYGON_AAVE },   tags: [TokenTag.ChainPolygon] },
-    { info: { polygon: TOKEN_INFO_POLYGON_QUICK },  tags: [TokenTag.ChainPolygon] },
-    { info: { polygon: TOKEN_INFO_POLYGON_GHST },   tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_USDC   }, tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_USDT   }, tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_DAI    }, tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_WETH   }, tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_WBTC   }, tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_AAVE   }, tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_QUICK  }, tags: [TokenTag.ChainPolygon] },
+    { info: { polygon: TOKEN_INFO_POLYGON_GHST   }, tags: [TokenTag.ChainPolygon] },
 ];
