@@ -1,4 +1,3 @@
-import { anonymous } from '@choptop/haw';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { Switch } from '@heroui/react';
 import BigNumber from 'bignumber.js';
@@ -16,8 +15,8 @@ import { useGoto } from '~hooks/memo/goto';
 import { useMounted } from '~hooks/memo/mounted';
 import { useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store/local';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { get_balance_by_identity_canister_id } from '~hooks/store/local/token/ic/balance';
 import { get_token_price_ic_by_canister_id } from '~hooks/store/local/token/ic/price';
-import { icrc1_balance_of } from '~lib/canisters/icrc1';
 import { cn } from '~lib/utils/cn';
 import { resort_list } from '~lib/utils/sort';
 import {
@@ -300,7 +299,7 @@ const ShowTokenItem = ({
             ic: async (ic) => {
                 if (!current_identity || !current_identity.address.ic) return;
 
-                const balance = await icrc1_balance_of(anonymous, ic.canister_id, current_identity.address.ic);
+                const balance = await get_balance_by_identity_canister_id(ic.canister_id, current_identity.address);
                 if (!balance) return;
 
                 setBalance(BigNumber(balance).div(BigNumber(10).pow(ic.decimals)).toFormat(2));
@@ -324,7 +323,6 @@ const ShowTokenItem = ({
     }, [current_identity, token.info]);
 
     useEffect(() => {
-        console.log('token', token);
         get_token_logo(token.info).then(setLogo);
 
         getBalance();
