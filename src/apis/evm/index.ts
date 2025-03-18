@@ -2,14 +2,16 @@ import Moralis from 'moralis';
 import { type Address } from 'viem';
 
 // API base URL - replace with your Cloudflare Worker URL
-const API_BASE_URL = process.env.PLASMO_PUBLIC_MORAL_URL;
+const API_BASE_URL = process.env.PLASMO_PUBLIC_MORALIS_URL;
 
 export interface GetTransactionsHistoryArgs {
     address: Address;
     limit: number;
     cursor: string; //cursor for query next page
 }
-
+export interface GetErc20TransactionsHistoryArgs extends GetTransactionsHistoryArgs {
+    contractAddresses?: Address[];
+}
 /**
  * Get native token transaction history for a wallet address
  * @param chainId - The ID of the blockchain network
@@ -66,7 +68,8 @@ export const getWalletNativeTransactionsHistory = async (chainId: number, args: 
  * @param args - Query parameters including address, limit and cursor
  * @returns Formatted ERC20 transfer data with pagination info
  */
-export const getWalletErc20TransactionsHistory = async (chainId: number, args: GetTransactionsHistoryArgs) => {
+export const getWalletErc20TransactionsHistory = async (chainId: number, args: GetErc20TransactionsHistoryArgs) => {
+    const { address, limit, cursor, contractAddresses } = args;
     try {
         const response = await fetch(`${API_BASE_URL}/api/token-transfers`, {
             method: 'POST',
@@ -75,9 +78,10 @@ export const getWalletErc20TransactionsHistory = async (chainId: number, args: G
             },
             body: JSON.stringify({
                 chainId,
-                address: args.address,
-                limit: args.limit,
-                cursor: args.cursor,
+                address,
+                limit,
+                cursor,
+                ...(contractAddresses && { contractAddresses }),
             }),
         });
 
@@ -183,6 +187,37 @@ export const getMultipleErc20TokenPrices = async (chainId: number, tokens: Token
         return result.raw;
     } catch (error) {
         console.error('Error fetching multiple token prices:', error);
+        throw error;
+    }
+};
+
+/**
+ * Get token Detail
+ * @param chainId - Chain ID (1: Ethereum, 11155111: Sepolia)
+ * @param address - Token contract address
+ * @returns Token Detail
+ */
+export const getTokenDetail = async (chainId: number, address: Address) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/token-info`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chainId,
+                address,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+        const result: Awaited<ReturnType<typeof Moralis.EvmApi.token.getTokenMetadata>> = await response.json();
+        return result.raw;
+    } catch (error) {
+        console.error('Error fetching token info:', error);
         throw error;
     }
 };

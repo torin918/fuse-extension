@@ -11,5 +11,5 @@ export const CHAIN_ETHEREUM_MAINNET: ChainEthereumNetwork = {
     chain_id: 1,
     name: 'Ethereum Mainnet',
     created: 0, // inner, means mainnet
-    rpc: 'https://eth.merkle.io', // viem's default mainnet RPC
+    rpc: 'mainnet', // 'https://eth.merkle.io'
 };

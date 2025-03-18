@@ -11,5 +11,5 @@ export const CHAIN_POLYGON_MAINNET: ChainPolygonNetwork = {
     chain_id: 137,
     name: 'Polygon Mainnet',
     created: 0, // inner, means mainnet
-    rpc: 'https://polygon-bor-rpc.publicnode.com',
+    rpc: 'mainnet', // 'https://polygon-bor-rpc.publicnode.com'
 };

@@ -5,6 +5,7 @@ import { bsc, bscTestnet, mainnet, polygon, polygonAmoy, sepolia } from 'viem/ch
 import { useCurrentChainNetwork, useCurrentIdentity } from '~hooks/store/local-secure';
 import { match_chain, type EvmChain } from '~types/chain';
 import {
+    get_default_rpc,
     get_identity_network_key,
     type ChainIcIdentityNetwork,
     type ChainNetwork,
@@ -70,7 +71,7 @@ const clients = new Map<string, PublicClient>();
 
 export const usePublicClientByChain = (chain: EvmChain): PublicClient => {
     const chain_network = useEvmChainNetworkByChain(chain);
-    const rpc = chain_network.rpc;
+    const rpc = chain_network.rpc === 'mainnet' ? get_default_rpc(chain) : chain_network.rpc;
     const client = useMemo(() => {
         // Create a cache key combining chainId and rpc
         const cacheKey = `${chain}-${rpc}`;
