@@ -190,3 +190,34 @@ export const getMultipleErc20TokenPrices = async (chainId: number, tokens: Token
         throw error;
     }
 };
+
+/**
+ * Get token Detail
+ * @param chainId - Chain ID (1: Ethereum, 11155111: Sepolia)
+ * @param address - Token contract address
+ * @returns Token Detail
+ */
+export const getTokenDetail = async (chainId: number, address: Address) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/token-info`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chainId,
+                address,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+        const result: Awaited<ReturnType<typeof Moralis.EvmApi.token.getTokenMetadata>> = await response.json();
+        return result.raw;
+    } catch (error) {
+        console.error('Error fetching token info:', error);
+        throw error;
+    }
+};
