@@ -60,6 +60,10 @@ export const LOCAL_KEY_RECORD_DATE = (identity_network: IdentityNetwork, date: s
     `${LOCAL_KEY_PREFIX_RECORD}:${get_identity_network_key(identity_network)}:date:${date}`; // * local
 // !react query
 export const LOCAL_KEY_REACT_QUERY_CACHE = `${LOCAL_KEY_PREFIX}:react:query:cache`; // * local
+
+// current select network
+export const LOCAL_KEY_CURRENT_SELECT_NETWORK = `${LOCAL_KEY_PREFIX}:current:select:network`; // * local
+
 // ############### SESSION ###############
 
 export const SESSION_KEY_UNLOCKED = `${SESSION_KEY_PREFIX}:unlocked`; // * session
