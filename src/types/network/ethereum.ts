@@ -9,7 +9,7 @@ export interface ChainEthereumNetwork {
 export const CHAIN_ETHEREUM_MAINNET: ChainEthereumNetwork = {
     chain: 'ethereum',
     chain_id: 1,
-    name: 'Ethereum Mainnet',
+    name: 'Ethereum',
     created: 0, // inner, means mainnet
     rpc: 'mainnet', // 'https://eth.merkle.io'
 };

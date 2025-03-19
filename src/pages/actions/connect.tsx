@@ -118,7 +118,7 @@ function ConnectActionPage({
 
     const ref = useRef<HTMLDivElement>(null);
     return (
-        <div ref={ref} className="flex h-screen w-full flex-col justify-between">
+        <div ref={ref} className="flex h-full w-full flex-col justify-between">
             <div className="mt-4 flex items-center px-5">
                 {current_identity && (
                     <>

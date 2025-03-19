@@ -22,6 +22,9 @@ export const LOCAL_SECURE_KEY_APPROVED = (identity_network: IdentityNetwork, ori
 export const LOCAL_SECURE_KEY_RECENT_ADDRESSES = `${LOCAL_SECURE_KEY_PREFIX}:recent:addresses`; // * local secure
 export const LOCAL_SECURE_KEY_MARKED_ADDRESSES = `${LOCAL_SECURE_KEY_PREFIX}:marked:addresses`; // * local secure
 
+// current show network
+export const LOCAL_SECURE_KEY_CURRENT_SHOW_NETWORK = `${LOCAL_SECURE_KEY_PREFIX}:current:show:network`; // * local secure
+
 // ############### SYNC ###############
 
 // user settings
@@ -60,6 +63,7 @@ export const LOCAL_KEY_RECORD_DATE = (identity_network: IdentityNetwork, date: s
     `${LOCAL_KEY_PREFIX_RECORD}:${get_identity_network_key(identity_network)}:date:${date}`; // * local
 // !react query
 export const LOCAL_KEY_REACT_QUERY_CACHE = `${LOCAL_KEY_PREFIX}:react:query:cache`; // * local
+
 // ############### SESSION ###############
 
 export const SESSION_KEY_UNLOCKED = `${SESSION_KEY_PREFIX}:unlocked`; // * session

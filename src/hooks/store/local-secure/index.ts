@@ -45,6 +45,7 @@ import { get_current_connected_apps, useCurrentConnectedAppsInner } from './curr
 import { useKeyRingsInner } from './key_rings';
 import { get_current_identity_network, useCurrentIdentityBy } from './memo/current';
 import { useIdentityKeysBy, useIdentityKeysCountBy } from './memo/identity';
+import { useShowNetworksInner, useShowNetworksInner2 } from './show_networks';
 import { useSecureStorageInner } from './storage';
 
 // ! Important data and do NEVER export
@@ -226,6 +227,18 @@ export const useMarkedAddresses = () => {
     const storage = useSecureStorageBy(unlocked);
     return useMarkedAddressesInner2(storage);
 };
+
+export const useCurrentShowNetworks = () => {
+    const [unlocked] = useUnlocked();
+    const storage = useSecureStorageBy(unlocked);
+    return useShowNetworksInner(storage);
+};
+
+export const useShowNetworks = () => {
+    const [unlocked] = useUnlocked();
+    const storage = useSecureStorageBy(unlocked);
+    return useShowNetworksInner2(storage);
+};
 // ================ set directly by storage ================
 
 // ############### LOCAL SECURE ###############
@@ -237,21 +250,23 @@ export const setKeyRingsDirectly = async (actual_password: string, key_rings: Ke
     await storage.set(LOCAL_SECURE_KEY_KEY_RINGS, key_rings);
 };
 
-const get_unlocked_secure_storage = async () => {
+const get_unlocked_secure_storage = async (get_password?: (hash: string) => Promise<string>) => {
     const unlocked = await SESSION_STORAGE.get<string>(SESSION_KEY_UNLOCKED);
     if (!unlocked) return; // locked
 
     const storage = LOCAL_SECURE_STORAGE();
-    await storage.setPassword(await __get_password(unlocked)); // set password before any action
+    await storage.setPassword(await (get_password ?? __get_password)(unlocked)); // set password before any action
 
     return storage;
 };
 
 // identity address
-const _inner_get_current_address = async (): Promise<
+const _inner_get_current_address = async (
+    get_password?: (hash: string) => Promise<string>,
+): Promise<
     { current_address: IdentityAddress; storage: SecureStorage; key_rings: KeyRings; current: IdentityKey } | undefined
 > => {
-    const storage = await get_unlocked_secure_storage();
+    const storage = await get_unlocked_secure_storage(get_password);
     if (!storage) return undefined; // get secure storage after password
 
     const key_rings = await storage.get<KeyRings>(LOCAL_SECURE_KEY_KEY_RINGS);
@@ -265,13 +280,17 @@ const _inner_get_current_address = async (): Promise<
 
     return { current_address, storage, key_rings, current };
 };
-export const get_current_identity_address = async (): Promise<IdentityAddress | undefined> => {
-    return (await _inner_get_current_address())?.current_address;
+export const get_current_identity_address = async (
+    get_password?: (hash: string) => Promise<string>,
+): Promise<IdentityAddress | undefined> => {
+    return (await _inner_get_current_address(get_password))?.current_address;
 };
 
 // current info
-export const get_current_info = async (): Promise<CurrentInfo | undefined> => {
-    const _r = await _inner_get_current_address();
+export const get_current_info = async (
+    get_password?: (hash: string) => Promise<string>,
+): Promise<CurrentInfo | undefined> => {
+    const _r = await _inner_get_current_address(get_password);
     if (!_r) return undefined;
 
     const { current_address, storage, key_rings, current } = _r;
@@ -301,12 +320,14 @@ export const get_current_info = async (): Promise<CurrentInfo | undefined> => {
 };
 
 // update connected apps
+// from relay
 export const set_current_connected_apps = async (
     chain: Chain,
     current_identity_network: CurrentIdentityNetwork,
     apps: ConnectedApps,
+    get_password?: (hash: string) => Promise<string>,
 ): Promise<void> => {
-    const storage = await get_unlocked_secure_storage();
+    const storage = await get_unlocked_secure_storage(get_password);
     if (!storage) return undefined; // get secure storage after password
 
     const identity_network = await identity_network_callback<IdentityNetwork | undefined>(
@@ -322,19 +343,22 @@ export const set_current_connected_apps = async (
 };
 
 // marked granted/denied local
+// from relay
 export const find_local_secure_approved = async (
     chain: Chain,
     current_identity_network: CurrentIdentityNetwork,
     origin: string,
     request_hash: string,
+    get_password?: (hash: string) => Promise<string>,
 ): Promise<ApprovedState | undefined> => {
-    const storage = await get_unlocked_secure_storage();
+    const storage = await get_unlocked_secure_storage(get_password);
     if (!storage) return undefined; // get secure storage after password
     return identity_network_callback(chain, current_identity_network, undefined, async (identity_network) => {
         const key = LOCAL_SECURE_KEY_APPROVED(identity_network, origin, request_hash);
         return await storage.get<ApprovedState>(key);
     });
 };
+// no call
 export const delete_local_secure_approved = async (
     chain: Chain,
     current_identity_network: CurrentIdentityNetwork,
@@ -348,6 +372,7 @@ export const delete_local_secure_approved = async (
         await storage.remove(key);
     });
 };
+// from action page
 export const set_local_secure_approved = async (
     chain: Chain,
     current_identity_network: CurrentIdentityNetwork,

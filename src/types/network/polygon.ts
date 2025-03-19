@@ -9,7 +9,7 @@ export interface ChainPolygonNetwork {
 export const CHAIN_POLYGON_MAINNET: ChainPolygonNetwork = {
     chain: 'polygon',
     chain_id: 137,
-    name: 'Polygon Mainnet',
+    name: 'Polygon',
     created: 0, // inner, means mainnet
     rpc: 'mainnet', // 'https://polygon-bor-rpc.publicnode.com'
 };

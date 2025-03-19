@@ -1,5 +1,6 @@
-export type EvmChain = 'ethereum' | 'ethereum-test-sepolia' | 'polygon' | 'polygon-test-amoy' | 'bsc' | 'bsc-test';
-export type Chain = 'ic' | EvmChain;
+export type EvmChain = 'ethereum' | 'polygon' | 'bsc';
+export type EvmChainTest = 'ethereum-test-sepolia' | 'polygon-test-amoy' | 'bsc-test';
+export type Chain = 'ic' | EvmChain | EvmChainTest;
 
 export const match_chain = <T>(
     self: Chain,
