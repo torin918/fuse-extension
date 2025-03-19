@@ -14,7 +14,7 @@ import { useTokenPriceUsd } from '~hooks/store/local/memo/usd';
 import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import type { ShowIdentityKey } from '~types/identity';
-import { get_token_unique_id, group_tokens_by_chain } from '~types/tokens';
+import { get_token_unique_id, group_tokens_by_chain, TokenTag } from '~types/tokens';
 import { EthereumTokenStandard } from '~types/tokens/chain/ethereum';
 
 import { AddressTooltip } from './components/address-tooltip';
@@ -46,11 +46,18 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
     const navigate = useNavigate();
 
     const current_tokens = useTokenInfoCurrentRead();
-    console.log('🚀 ~ InnerHomePage ~ current_tokens:', current_tokens);
 
-    // TODO: change chains Show tokens
     const [{ chains: show_networks }] = useShowNetworks();
-    console.debug('🚀 ~ InnerHomePage ~ current_show_networks:', show_networks);
+
+    const show_tokens = useMemo(() => {
+        return current_tokens.filter((s) => {
+            const exist = show_networks.filter((t) => s.tags.includes(`chain-${t}` as TokenTag));
+
+            if (exist.length === 0) return false;
+
+            return true;
+        });
+    }, [current_tokens, show_networks]);
 
     const token_prices = useTokenPrices(current_tokens);
 
@@ -202,7 +209,7 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                 </div>
 
                 <div className="mt-5 flex w-full flex-col gap-y-[10px] px-5">
-                    {current_tokens.map((token) => (
+                    {show_tokens.map((token) => (
                         <HomeShowToken
                             key={get_token_unique_id(token)}
                             goto={(path, options) =>
