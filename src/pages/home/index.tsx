@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { useMemo, useRef, useState } from 'react';
-import { BsChevronDown } from 'react-icons/bs';
+import { useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import ic_svg from '~assets/svg/chains/ic.min.svg';
@@ -9,13 +8,12 @@ import { FusePage } from '~components/layouts/page';
 import { useERC20Balances } from '~hooks/evm/contracts/multicall/read';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useTokenBalanceIcByRefreshing, useTokenInfoCurrentRead } from '~hooks/store/local';
-import { useCurrentIdentity } from '~hooks/store/local-secure';
+import { useCurrentIdentity, useShowNetworks } from '~hooks/store/local-secure';
 import { useTokenPrices } from '~hooks/store/local/memo/price';
 import { useTokenPriceUsd } from '~hooks/store/local/memo/usd';
 import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import type { ShowIdentityKey } from '~types/identity';
-import { DEFAULT_CURRENT_CHAIN_NETWORK, type ChainNetwork } from '~types/network';
 import { get_token_unique_id, group_tokens_by_chain } from '~types/tokens';
 import { EthereumTokenStandard } from '~types/tokens/chain/ethereum';
 
@@ -48,33 +46,11 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
     const navigate = useNavigate();
 
     const current_tokens = useTokenInfoCurrentRead();
+    console.log('🚀 ~ InnerHomePage ~ current_tokens:', current_tokens);
 
-    const [filter, setFilter] = useState<string | undefined>();
-
-    const network = useMemo(() => {
-        if (!filter) return undefined;
-
-        const data = Object.entries(DEFAULT_CURRENT_CHAIN_NETWORK).find(([key, value]) => {
-            return key === filter ? value : undefined;
-        });
-
-        if (!data) return undefined;
-        return data[1] as ChainNetwork;
-    }, [filter]);
-
-    // TODO: change chain Show tokens
-    const show_tokens = useMemo(() => {
-        return current_tokens;
-        // if (!filter) return current_tokens;
-
-        // const grouped = _.groupBy(current_tokens, (token) => {
-        //     // Get the chain key for the token
-        //     const chainKey = Object.keys(token.info)[0];
-        //     return chainKey;
-        // });
-
-        // return grouped[filter] as TokenInfo[];
-    }, [current_tokens]);
+    // TODO: change chains Show tokens
+    const [{ chains: show_networks }] = useShowNetworks();
+    console.debug('🚀 ~ InnerHomePage ~ current_show_networks:', show_networks);
 
     const token_prices = useTokenPrices(current_tokens);
 
@@ -148,7 +124,7 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                 </div>
 
                 {/** right icons */}
-                <div className="flex gap-3 items-center">
+                <div className="flex items-center gap-2.5">
                     {[
                         { callback: () => navigate('/home/token/view'), icon: 'icon-search' },
                         { callback: () => navigate('/home/records'), icon: 'icon-history' },
@@ -161,6 +137,17 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                             />
                         </div>
                     ))}
+                    <SelectChain
+                        trigger={
+                            <div>
+                                <Icon
+                                    name="icon-network"
+                                    className="h-[18px] w-[18px] cursor-pointer text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]"
+                                />
+                            </div>
+                        }
+                        container={ref.current ?? undefined}
+                    />
                 </div>
             </div>
 
@@ -215,25 +202,7 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                 </div>
 
                 <div className="mt-5 flex w-full flex-col gap-y-[10px] px-5">
-                    <div className="flex w-full items-center justify-between text-sm text-[#eee]">
-                        <div>Tokens</div>
-
-                        <SelectChain
-                            trigger={
-                                <div className="flex gap-1 justify-center items-center cursor-pointer">
-                                    {network?.label || 'All Chain'}
-                                    <BsChevronDown className="w-3 h-3" />
-                                </div>
-                            }
-                            selectedChain={filter}
-                            onSelectChain={(chain) => {
-                                // set_local_current_select_network(chain);
-                                setFilter(chain);
-                            }}
-                            container={ref.current ?? undefined}
-                        />
-                    </div>
-                    {show_tokens.map((token) => (
+                    {current_tokens.map((token) => (
                         <HomeShowToken
                             key={get_token_unique_id(token)}
                             goto={(path, options) =>
