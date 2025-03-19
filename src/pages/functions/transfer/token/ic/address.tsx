@@ -23,7 +23,7 @@ function FunctionTransferTokenIcAddressPage({ logo, onNext }: { logo?: string; o
     const [to, setTo] = useState<string>('');
 
     return (
-        <div className="flex h-screen w-full flex-col justify-between">
+        <div className="flex h-full w-full flex-col justify-between">
             <div className="flex w-full flex-1 flex-col">
                 <div className="w-full px-5">
                     <div className="mb-8 mt-5 flex w-full justify-center">
