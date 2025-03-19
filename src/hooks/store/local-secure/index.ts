@@ -45,6 +45,7 @@ import { get_current_connected_apps, useCurrentConnectedAppsInner } from './curr
 import { useKeyRingsInner } from './key_rings';
 import { get_current_identity_network, useCurrentIdentityBy } from './memo/current';
 import { useIdentityKeysBy, useIdentityKeysCountBy } from './memo/identity';
+import { useShowNetworksInner, useShowNetworksInner2 } from './show_networks';
 import { useSecureStorageInner } from './storage';
 
 // ! Important data and do NEVER export
@@ -225,6 +226,18 @@ export const useMarkedAddresses = () => {
     const [unlocked] = useUnlocked();
     const storage = useSecureStorageBy(unlocked);
     return useMarkedAddressesInner2(storage);
+};
+
+export const useCurrentShowNetworks = () => {
+    const [unlocked] = useUnlocked();
+    const storage = useSecureStorageBy(unlocked);
+    return useShowNetworksInner(storage);
+};
+
+export const useShowNetworks = () => {
+    const [unlocked] = useUnlocked();
+    const storage = useSecureStorageBy(unlocked);
+    return useShowNetworksInner2(storage);
 };
 // ================ set directly by storage ================
 

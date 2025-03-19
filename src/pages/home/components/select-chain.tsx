@@ -1,88 +1,82 @@
-import { useEffect, useMemo, useState } from 'react';
-import { RiAppsLine } from 'react-icons/ri';
+import { Switch } from '@heroui/react';
+import CHAIN_BSC_SVG from 'data-base64:~assets/svg/chains/bsc.min.svg';
+import CHAIN_ETH_SVG from 'data-base64:~assets/svg/chains/eth.min.svg';
+import CHAIN_IC_SVG from 'data-base64:~assets/svg/chains/ic.min.svg';
+import CHAIN_POL_SVG from 'data-base64:~assets/svg/chains/pol.min.svg';
+import { useMemo, useState } from 'react';
 
-import Icon from '~components/icon';
 import {
     Drawer,
     DrawerContent,
     DrawerDescription,
+    DrawerFooter,
     DrawerHeader,
     DrawerTitle,
     DrawerTrigger,
 } from '~components/ui/drawer';
-// import { get_local_current_select_network } from '~hooks/store/local';
-import { useCurrentChainNetwork } from '~hooks/store/local-secure';
+import { useCurrentChainNetwork, useShowNetworks } from '~hooks/store/local-secure';
 import { cn } from '~lib/utils/cn';
 import { type Chain } from '~types/chain';
 
 interface ChainItem {
-    id: string;
+    id: Chain;
     name: string;
-    logo: React.ReactNode | string;
+    logo: string | undefined;
 }
 
 interface SelectChainProps {
     trigger?: React.ReactNode;
     container?: HTMLElement | null;
-    selectedChain?: string;
-    onSelectChain?: (chain: string | undefined) => void;
+    // onSelectChain?: (chain: string | undefined) => void;
 }
 
-const SelectChain = ({ trigger, container, selectedChain = 'all-chain', onSelectChain }: SelectChainProps) => {
+const SelectChain = ({ trigger, container }: SelectChainProps) => {
     const [open, setOpen] = useState(false);
 
     const current_chain_network = useCurrentChainNetwork();
-    const [selectedNetwork, setSelectedNetwork] = useState<string | undefined>();
 
-    useEffect(() => {
-        if (!open) return;
+    const [
+        { chains: current_show_networks, showTestNetworks },
+        { pushOrUpdateShowNetworks, setShowTestNetworks },
+        test_networks,
+    ] = useShowNetworks();
 
-        setSelectedNetwork(selectedChain);
-    }, [selectedChain, open]);
-
-    // useEffect(() => {
-    //     if (!open) return;
-
-    //     getCurrentChain();
-    // }, [open, selectedChain]);
-
-    // const getCurrentChain = () => {
-    //     get_local_current_select_network().then((r) => setSelectedChain(r || 'all-chain'));
-    // };
+    const getLogo = (chain: Chain) => {
+        if (chain === 'ic') return CHAIN_IC_SVG;
+        if (chain.indexOf('ethereum')) return CHAIN_ETH_SVG;
+        if (chain.indexOf('pol')) return CHAIN_POL_SVG;
+        if (chain.indexOf('bsc')) return CHAIN_BSC_SVG;
+    };
 
     const chains = useMemo(() => {
         const chains: ChainItem[] = [];
-        chains.push({
-            id: 'all-chain',
-            name: 'All Chain',
-            logo: (<RiAppsLine className="w-full h-full text-black" />) as unknown as React.ReactNode, // 这里需要替换为实际的图标路径
-        });
 
-        Object.entries(current_chain_network).map(([key, value]) => {
+        Object.entries(current_chain_network).map(([, value]) => {
             chains.push({
-                id: key as Chain,
-                name: value.label,
-                logo: value.logo,
+                id: value.chain,
+                name: value.name,
+                logo: getLogo(value.chain),
             });
         });
 
-        return chains;
-    }, [current_chain_network]);
+        const show_chains = chains.filter((c) => !test_networks.includes(c.id));
 
-    const handleSelectChain = (chainItem: ChainItem) => {
-        const chain = chainItem.id === 'all-chain' ? undefined : chainItem.id;
+        return showTestNetworks ? chains : show_chains;
+    }, [current_chain_network, showTestNetworks, test_networks]);
 
-        onSelectChain?.(chain);
-        setOpen(false);
-    };
+    // const handleSelectChain = (chainItem: ChainItem) => {
+    //     const chain = chainItem.id;
+
+    //     onSelectChain?.(chain);
+    // };
 
     return (
         <Drawer open={open} onOpenChange={setOpen} container={container}>
             <DrawerTrigger className="">{trigger}</DrawerTrigger>
-            <DrawerContent className="!max-h-[90%]">
+            <DrawerContent className="!h-full">
                 <DrawerHeader className="border-t border-[#333333] bg-[#0a0600] text-left">
                     <DrawerTitle>
-                        <div className="flex justify-between items-center py-3 w-full text-white">
+                        <div className="flex justify-between items-center w-full text-white">
                             <span className="text-sm">Select Chain</span>
                             <span
                                 className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85"
@@ -94,17 +88,13 @@ const SelectChain = ({ trigger, container, selectedChain = 'all-chain', onSelect
                     </DrawerTitle>
                     <DrawerDescription />
                 </DrawerHeader>
-                <div className="w-full flex-1 overflow-y-auto bg-[#0a0600] px-5 pb-5">
+                <div className="w-full flex-1 overflow-y-auto bg-[#0a0600] px-5 pb-3">
                     {chains.map((item) => (
                         <div
                             key={item.id}
                             className={cn(
                                 'my-2 flex w-full cursor-pointer items-center justify-between rounded-xl border border-[#333333] bg-[#0a0600] p-4 transition duration-300 hover:border-[#FFCF13]',
-                                {
-                                    'border-[#FFCF13]': item.id === selectedNetwork,
-                                },
                             )}
-                            onClick={() => handleSelectChain(item)}
                         >
                             <div className="flex items-center">
                                 <div className="flex relative justify-center items-center mr-3 w-10 h-10 rounded-full">
@@ -117,10 +107,32 @@ const SelectChain = ({ trigger, container, selectedChain = 'all-chain', onSelect
                                 </div>
                                 <span className="text-base text-white">{item.name}</span>
                             </div>
-                            {item.id === selectedNetwork && <Icon name="icon-ok" className="h-5 w-5 text-[#FFCF13]" />}
+                            <Switch
+                                isSelected={current_show_networks.includes(item.id)}
+                                onValueChange={(s) => pushOrUpdateShowNetworks(item.id, s)}
+                                color="success"
+                                size="sm"
+                            />
                         </div>
                     ))}
                 </div>
+                <DrawerFooter className="bg-[#0a0600] py-2">
+                    <div
+                        className={cn(
+                            'flex w-full cursor-pointer items-center justify-between rounded-xl border border-[#333333] bg-[#0a0600] px-4 py-3 transition duration-300 hover:border-[#FFCF13]',
+                        )}
+                    >
+                        <div className="flex items-center">
+                            <span className="text-base text-white">Testnet Mode</span>
+                        </div>
+                        <Switch
+                            isSelected={showTestNetworks}
+                            onValueChange={(s) => setShowTestNetworks(s)}
+                            color="success"
+                            size="sm"
+                        />
+                    </div>
+                </DrawerFooter>
             </DrawerContent>
         </Drawer>
     );

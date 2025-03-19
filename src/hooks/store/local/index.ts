@@ -6,7 +6,6 @@ import type { FuseRecord, FuseRecordList } from '~types/records';
 import { format_record_date } from '../common';
 import {
     LOCAL_KEY_CACHED_KEY,
-    LOCAL_KEY_CURRENT_SELECT_NETWORK,
     LOCAL_KEY_PASSWORD_HASHED,
     LOCAL_KEY_RECORD_COUNT,
     LOCAL_KEY_RECORD_DATE,
@@ -139,17 +138,4 @@ export const push_local_record = async (identity_network: IdentityNetwork, now: 
     await LOCAL_STORAGE.set(key, next);
     await increment_local_record_count(identity_network);
     await assure_local_record_started(identity_network, now);
-};
-
-// set current network
-export const set_local_current_select_network = async (chain: string | undefined): Promise<void> => {
-    const key = LOCAL_KEY_CURRENT_SELECT_NETWORK;
-    await LOCAL_STORAGE.set(key, chain || '');
-};
-
-// get current network
-export const get_local_current_select_network = async (): Promise<string | undefined> => {
-    const key = LOCAL_KEY_CURRENT_SELECT_NETWORK;
-    const value = await LOCAL_STORAGE.get<string>(key);
-    return value;
 };

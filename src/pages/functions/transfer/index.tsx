@@ -8,7 +8,7 @@ import { useGoto } from '~hooks/memo/goto';
 import { useTokenBalanceIcByRefreshing, useTokenInfoCurrent, useTokenInfoCustom } from '~hooks/store/local';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
 import { useTokenPrices } from '~hooks/store/local/memo/price';
-import { cn } from '~lib/utils/cn';
+// import { cn } from '~lib/utils/cn';
 import { FunctionHeader } from '~pages/functions/components/header';
 import { get_token_unique_id, is_same_token_info, search_tokens, TokenTag, type TokenInfo } from '~types/tokens';
 import { PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
@@ -16,14 +16,14 @@ import { PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 import { TransferShowToken } from './components/token_item';
 
 type Tab = 'current' | 'all' | 'ck' | 'sns' | 'custom';
-const TabNames: Record<Tab, string> = {
-    current: '⭐️',
-    all: 'All',
-    ck: 'CK',
-    sns: 'SNS',
-    custom: 'Custom',
-};
-const TABS: Tab[] = ['current', 'all', 'ck', 'sns', 'custom'];
+// const TabNames: Record<Tab, string> = {
+//     current: '⭐️',
+//     all: 'All',
+//     ck: 'CK',
+//     sns: 'SNS',
+//     custom: 'Custom',
+// };
+// const TABS: Tab[] = ['current', 'all', 'ck', 'sns', 'custom'];
 
 function FunctionTransferPage() {
     const current_state = useCurrentState();
@@ -31,7 +31,6 @@ function FunctionTransferPage() {
 
     const { setHide, goto: _goto, navigate } = useGoto();
 
-    const [tab, setTab] = useState<Tab>('current');
     const [custom] = useTokenInfoCustom();
     const [current] = useTokenInfoCurrent();
 
@@ -51,12 +50,12 @@ function FunctionTransferPage() {
             sns: snsTokens,
             custom: customTokens,
         };
-        return search_tokens(tokens[tab], search).map((t) => ({
+        return search_tokens(tokens.current, search).map((t) => ({
             ...t,
             id: get_token_unique_id(t),
             current: !!currentTokens.find((c) => is_same_token_info(c, t)),
         }));
-    }, [search, tab, currentTokens, allTokens, ckTokens, snsTokens, customTokens]);
+    }, [search, currentTokens, allTokens, ckTokens, snsTokens, customTokens]);
 
     const canisters = useMemo<string[]>(
         () => tokens.map((t) => ('ic' in t.info ? t.info.ic.canister_id : undefined)).filter((s) => !!s) as string[],
@@ -71,35 +70,19 @@ function FunctionTransferPage() {
                 <div className="relative flex h-full w-full flex-col items-center justify-start pt-[52px]">
                     <FunctionHeader title={'Select'} onBack={() => _goto('/')} onClose={() => _goto('/')} />
 
-                    <div className="w-full px-5">
+                    <div className="px-5 w-full">
                         <div className="flex h-12 w-full items-center rounded-xl border border-[#333333] px-3 transition duration-300 hover:border-[#FFCF13]">
                             <Icon name="icon-search" className="h-[16px] w-[16px] text-[#999999]" />
                             <input
                                 type="text"
-                                className="h-full w-full border-transparent bg-transparent pl-3 text-base outline-none placeholder:text-sm"
+                                className="pl-3 w-full h-full text-base bg-transparent border-transparent outline-none placeholder:text-sm"
                                 placeholder="Search token or canister"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
                     </div>
-                    <div className="flex w-full items-center px-5 py-3 text-sm">
-                        {TABS.map((t) => (
-                            <span
-                                key={t}
-                                className={cn(
-                                    'cursor-pointer rounded-full px-3 py-1',
-                                    tab === t ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
-                                )}
-                                onClick={() => {
-                                    setTab(t);
-                                }}
-                            >
-                                {TabNames[t]}
-                            </span>
-                        ))}
-                    </div>
-                    <div className="flex w-full flex-1 flex-col gap-y-[10px] overflow-y-auto px-5 pb-5">
+                    <div className="flex w-full flex-1 flex-col gap-y-[10px] overflow-y-auto px-5 py-3">
                         {tokens.map((token) => (
                             <TransferShowToken
                                 key={get_token_unique_id(token)}
