@@ -1,5 +1,6 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 
+import { __inner_get_password } from '~background/session/unlocked';
 import { get_current_identity_address, get_current_info } from '~hooks/store/local-secure';
 import type { MessageResult } from '~lib/messages';
 import type { IdentityAddress } from '~types/identity';
@@ -18,10 +19,10 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
     // const message_id = body.message_id;
     // const current_window = req.body.window;
 
-    const current_info = await get_current_info();
+    const current_info = await get_current_info(__inner_get_password);
     if (!current_info) return res.send({ err: `disconnected` });
 
-    const address = await get_current_identity_address();
+    const address = await get_current_identity_address(__inner_get_password);
 
     return res.send({ ok: address });
 };

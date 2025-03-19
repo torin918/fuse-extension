@@ -5,6 +5,7 @@ import { parse_func_candid } from '@jellypack/wasm-react'; // ! dynamic import m
 
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 
+import { __inner_get_password } from '~background/session/unlocked';
 import { get_unique_ic_agent } from '~hooks/store/agent';
 import { identity_network_callback } from '~hooks/store/common';
 import { push_local_record } from '~hooks/store/local';
@@ -78,7 +79,7 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
             const msg: ProxyMessage = parse_proxy_message(request.request);
             console.debug('===>>> 🎁 receive message', [body], '->', [msg]);
 
-            const current_info = await get_current_info();
+            const current_info = await get_current_info(__inner_get_password);
             if (!current_info) return handle_error(msg.id, `disconnected`);
 
             const agent = get_unique_ic_agent();
@@ -301,6 +302,7 @@ const find_approved = async (
         current_info.current_identity_network,
         approve_action.origin,
         approve_action.request_hash,
+        __inner_get_password,
     );
 
     return await match_approved_state_async(state ?? 'ask_on_use', {

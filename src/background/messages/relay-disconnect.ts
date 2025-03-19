@@ -1,5 +1,6 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 
+import { __inner_get_password } from '~background/session/unlocked';
 import { get_current_info } from '~hooks/store/local-secure';
 import { revoke_current_session_connected_app } from '~hooks/store/session';
 import type { MessageResult } from '~lib/messages';
@@ -21,7 +22,7 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
     // const message_id = body.message_id;
     // const current_window = req.body.window;
 
-    const current_info = await get_current_info();
+    const current_info = await get_current_info(__inner_get_password);
     if (!current_info) return res.send({ ok: true });
     await revoke_current_session_connected_app(body.chain, current_info.current_identity_network, body.origin);
 

@@ -1,5 +1,6 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 
+import { __inner_get_password } from '~background/session/unlocked';
 import { is_current_initial } from '~hooks/store/local';
 import { get_current_info, set_current_connected_apps } from '~hooks/store/local-secure';
 import {
@@ -48,7 +49,7 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
     let popup = false; // only popup once
     try {
         // check first
-        current_info = await get_current_info();
+        current_info = await get_current_info(__inner_get_password);
         if (current_info !== undefined) {
             const connected = await find_connected(current_info, body);
             if (connected !== undefined) {
@@ -87,7 +88,7 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
                     const n = Date.now();
                     if (n - s > body.timeout) return got_response({ err: `timeout` }, interval_id);
 
-                    const current_info = await get_current_info();
+                    const current_info = await get_current_info(__inner_get_password);
                     if (current_info !== undefined) {
                         const connected = await find_connected(current_info, body);
                         if (connected !== undefined) {
@@ -145,7 +146,7 @@ const find_connected = async (current_info: CurrentInfo, body: RequestBody): Pro
         app.title = body.title;
         app.favicon = body.favicon;
         app.updated = Date.now();
-        await set_current_connected_apps(body.chain, current_info.current_identity_network, apps);
+        await set_current_connected_apps(body.chain, current_info.current_identity_network, apps, __inner_get_password);
     }
 
     return await match_connected_app_state_async(app.state, {
