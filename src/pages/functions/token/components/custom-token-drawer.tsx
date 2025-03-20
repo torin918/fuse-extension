@@ -86,7 +86,7 @@ const CustomTokenDrawer = ({
             >
                 <DrawerHeader className="w-full shrink-0 border-t border-[#333333] bg-[#0a0600] px-5 pb-0 pt-1 text-left">
                     <DrawerTitle>
-                        <div className="flex justify-between items-center py-3 w-full">
+                        <div className="flex w-full items-center justify-between py-3">
                             <span className="text-sm text-white">Add Custom Token</span>
                             <DrawerClose>
                                 <span className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85">
@@ -99,7 +99,7 @@ const CustomTokenDrawer = ({
                 </DrawerHeader>
 
                 <div className="flex h-full w-full shrink flex-col justify-between bg-[#0a0600] px-5 pb-5">
-                    <div className="flex-col flex-1 w-full">
+                    <div className="w-full flex-1 flex-col">
                         <div className="mt-3 w-full">
                             <div className="w-full">
                                 <label className="block py-3 text-sm">Network</label>
@@ -113,14 +113,14 @@ const CustomTokenDrawer = ({
                                                 <SelectItem
                                                     key={net.chain}
                                                     value={net.chain}
-                                                    className="h-[44px] w-full !bg-[#0a0600] px-3 text-sm text-[#eee] outline-none hover:!bg-[#2B2B2B] hover:!text-[#eee]"
+                                                    className="h-[44px] w-full !bg-[#0a0600] px-3 text-sm text-[#eee] outline-none hover:!bg-[#2B2B2B] hover:!text-[#eee] active:!text-[#eee]"
                                                 >
-                                                    <div className="flex gap-x-2 items-center w-full h-full justify-">
-                                                        <div className="w-7 h-7 rounded-full">
+                                                    <div className="justify- flex h-full w-full items-center gap-x-2 text-[#eee]">
+                                                        <div className="h-7 w-7 rounded-full">
                                                             <img
                                                                 src={getLogo(net.chain)}
                                                                 alt=""
-                                                                className="w-full h-full rounded-full"
+                                                                className="h-full w-full rounded-full"
                                                             />
                                                         </div>
                                                         {net.name}
@@ -135,7 +135,7 @@ const CustomTokenDrawer = ({
                         </div>
 
                         {/* ic  */}
-                        {chain === 'ic' && (
+                        {chain && chain === 'ic' && (
                             <div className="mt-3 w-full">
                                 <div className="w-full">
                                     <label className="block py-3 text-sm">Canister ID</label>
@@ -166,7 +166,7 @@ const CustomTokenDrawer = ({
                             </div>
                         )}
 
-                        {chain !== 'ic' && (
+                        {chain && chain !== 'ic' && (
                             <div className="mt-3 w-full">
                                 <div className="w-full">
                                     <label className="block py-3 text-sm">Contract address</label>
@@ -266,7 +266,7 @@ const LoadCanisterInfo = ({
                             <Skeleton className="h-4 w-[60px] rounded-lg" />
                         </span>
                         <div className="flex items-center">
-                            <Skeleton className="flex mr-2 w-5 h-5 rounded-full" />
+                            <Skeleton className="mr-2 flex h-5 w-5 rounded-full" />
                             <span>
                                 <Skeleton className="h-4 w-[50px] rounded-lg" />
                             </span>
@@ -295,11 +295,11 @@ const LoadCanisterInfo = ({
                         <div className="flex items-center">
                             {logo ? (
                                 <div className="mr-2">
-                                    <img src={logo} className="w-5 h-5 rounded-full" />
+                                    <img src={logo} className="h-5 w-5 rounded-full" />
                                 </div>
                             ) : (
                                 <div className="mr-2">
-                                    <Icon name="icon-defaultImg" className="w-5 h-5"></Icon>
+                                    <Icon name="icon-defaultImg" className="h-5 w-5"></Icon>
                                 </div>
                             )}
                             <span>{token.name}</span>
@@ -322,7 +322,7 @@ const LoadCanisterInfo = ({
                         </span>
                     </div>
                     {0 < token.standards.length && (
-                        <div className="flex justify-between items-center py-3 w-full">
+                        <div className="flex w-full items-center justify-between py-3">
                             <span className="text-[#999999]">Standards</span>
                             <div className="flex items-center">
                                 {token.standards.map((s) => (
