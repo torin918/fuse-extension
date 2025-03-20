@@ -1,6 +1,10 @@
 import { anonymous, isCanisterIdText } from '@choptop/haw';
 import { Button, Skeleton } from '@heroui/react';
 import BigNumber from 'bignumber.js';
+import CHAIN_BSC_SVG from 'data-base64:~assets/svg/chains/bsc.svg';
+import CHAIN_ETH_SVG from 'data-base64:~assets/svg/chains/eth.svg';
+import CHAIN_IC_SVG from 'data-base64:~assets/svg/chains/ic.min.svg';
+import CHAIN_POL_SVG from 'data-base64:~assets/svg/chains/pol.svg';
 import { useEffect, useMemo, useState } from 'react';
 
 import Icon from '~components/icon';
@@ -13,10 +17,13 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from '~components/ui/drawer';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~components/ui/select';
 import { get_cached_data } from '~hooks/store/local';
+import { useAllChainNetworks } from '~hooks/store/local-secure';
 import { get_token_info_ic } from '~hooks/store/local/token/ic/info';
 import { icrc1_logo } from '~lib/canisters/icrc1';
 import { cn } from '~lib/utils/cn';
+import type { Chain } from '~types/chain';
 import type { IcTokenInfo } from '~types/tokens/chain/ic';
 import { get_token_logo_key } from '~types/tokens/preset';
 
@@ -28,23 +35,47 @@ const CustomTokenDrawer = ({
 }: {
     trigger: React.ReactNode;
     container?: HTMLElement | null;
-    isTokenExist: (token: { ic: string }) => boolean;
+    isTokenExist: (token: { chain: Chain; address: string }) => boolean;
     pushIcToken: (token: IcTokenInfo) => Promise<void>;
 }) => {
+    const [chain_networks] = useAllChainNetworks();
+
     const [open, setOpen] = useState(false);
 
     const [address, setAddress] = useState<string>('');
+    const [evmAddress, setEvmAddress] = useState<string>('');
+    const [chain, setChain] = useState<Chain>();
 
     const isCanisterId = useMemo(() => isCanisterIdText(address), [address]);
+    // TODO: 校验是否是evm 合约地址
+    // const isContractAddress = useMemo(() => {}, [evmAddress]);
 
     const isExist = useMemo(() => {
-        if (isCanisterId) return isTokenExist({ ic: address });
+        if (isCanisterId) return isTokenExist({ chain: 'ic', address });
         return false;
     }, [isCanisterId, isTokenExist, address]);
+
+    const isEvmExist = useMemo(() => {
+        if (!chain) return false;
+
+        return isTokenExist({ chain, address: evmAddress });
+        // return false;
+    }, [isTokenExist, evmAddress, chain]);
 
     const [ic_token, setIcToken] = useState<IcTokenInfo>();
 
     const [pushing, setPushing] = useState(false);
+
+    const getLogo = (chain: Chain) => {
+        if (chain === 'ic') return CHAIN_IC_SVG;
+        if (chain.indexOf('ethereum') >= 0) return CHAIN_ETH_SVG;
+        if (chain.indexOf('pol') >= 0) return CHAIN_POL_SVG;
+        if (chain.indexOf('bsc') >= 0) return CHAIN_BSC_SVG;
+    };
+
+    const onSelectChange = (val: Chain) => {
+        setChain(val);
+    };
 
     return (
         <Drawer open={open} onOpenChange={setOpen} container={container}>
@@ -55,7 +86,7 @@ const CustomTokenDrawer = ({
             >
                 <DrawerHeader className="w-full shrink-0 border-t border-[#333333] bg-[#0a0600] px-5 pb-0 pt-1 text-left">
                     <DrawerTitle>
-                        <div className="flex w-full items-center justify-between py-3">
+                        <div className="flex justify-between items-center py-3 w-full">
                             <span className="text-sm text-white">Add Custom Token</span>
                             <DrawerClose>
                                 <span className="cursor-pointer text-sm text-[#FFCF13] transition duration-300 hover:opacity-85">
@@ -68,33 +99,111 @@ const CustomTokenDrawer = ({
                 </DrawerHeader>
 
                 <div className="flex h-full w-full shrink flex-col justify-between bg-[#0a0600] px-5 pb-5">
-                    <div className="mt-3 h-full w-full">
-                        <div className="w-full">
-                            <label className="block py-3 text-sm">Canister ID</label>
-                            <input
-                                type="text"
-                                className={cn(
-                                    'h-[48px] w-full rounded-xl border border-[#333333] bg-transparent px-3 text-sm outline-none transition duration-300 hover:border-[#FFCF13] focus:border-[#FFCF13]',
-                                    !isCanisterId && address && '!border-red-500 hover:!border-red-500',
-                                )}
-                                placeholder="Enter canister id"
-                                onChange={(e) => setAddress(e.target.value)}
-                                value={address}
-                            />
+                    <div className="flex-col flex-1 w-full">
+                        <div className="mt-3 w-full">
+                            <div className="w-full">
+                                <label className="block py-3 text-sm">Network</label>
+                                <Select onValueChange={(val) => onSelectChange(val as Chain)}>
+                                    <SelectTrigger className="!h-[48px] w-full rounded-xl border border-[#333333] bg-[#0a0600] px-3 text-sm outline-none transition duration-300 hover:border-[#FFCF13] focus:border-[#FFCF13]">
+                                        <SelectValue className="!h-[48px] !w-full" placeholder="Select Network" />
+                                    </SelectTrigger>
+                                    <SelectContent className="w-full rounded-xl border border-[#333333] bg-[#0a0600] text-sm">
+                                        {chain_networks.map((net) => {
+                                            return (
+                                                <SelectItem
+                                                    key={net.chain}
+                                                    value={net.chain}
+                                                    className="h-[44px] w-full !bg-[#0a0600] px-3 text-sm text-[#eee] outline-none hover:!bg-[#2B2B2B] hover:!text-[#eee]"
+                                                >
+                                                    <div className="flex gap-x-2 items-center w-full h-full justify-">
+                                                        <div className="w-7 h-7 rounded-full">
+                                                            <img
+                                                                src={getLogo(net.chain)}
+                                                                alt=""
+                                                                className="w-full h-full rounded-full"
+                                                            />
+                                                        </div>
+                                                        {net.name}
+                                                    </div>
+                                                </SelectItem>
+                                            );
+                                        })}
+                                        <SelectGroup></SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
-                        <div className="mt-2 w-full">
-                            {!isCanisterId && !address && <div> </div>}
-                            {!isCanisterId && address && <div className="text-red-500"> Wrong Canister Id </div>}
-                            {isCanisterId && (
-                                <LoadCanisterInfo canister_id={address} token={ic_token} setToken={setIcToken} />
-                            )}
-                        </div>
+
+                        {/* ic  */}
+                        {chain === 'ic' && (
+                            <div className="mt-3 w-full">
+                                <div className="w-full">
+                                    <label className="block py-3 text-sm">Canister ID</label>
+                                    <input
+                                        type="text"
+                                        className={cn(
+                                            'h-[48px] w-full rounded-xl border border-[#333333] bg-transparent px-3 text-sm outline-none transition duration-300 hover:border-[#FFCF13] focus:border-[#FFCF13]',
+                                            !isCanisterId && address && '!border-red-500 hover:!border-red-500',
+                                        )}
+                                        placeholder="Enter canister id"
+                                        onChange={(e) => setAddress(e.target.value)}
+                                        value={address}
+                                    />
+                                </div>
+                                <div className="mt-2 w-full">
+                                    {!isCanisterId && !address && <div> </div>}
+                                    {!isCanisterId && address && (
+                                        <div className="text-red-500"> Wrong Canister Id </div>
+                                    )}
+                                    {isCanisterId && (
+                                        <LoadCanisterInfo
+                                            canister_id={address}
+                                            token={ic_token}
+                                            setToken={setIcToken}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {chain !== 'ic' && (
+                            <div className="mt-3 w-full">
+                                <div className="w-full">
+                                    <label className="block py-3 text-sm">Contract address</label>
+                                    <input
+                                        type="text"
+                                        className={cn(
+                                            'h-[48px] w-full rounded-xl border border-[#333333] bg-transparent px-3 text-sm outline-none transition duration-300 hover:border-[#FFCF13] focus:border-[#FFCF13]',
+                                            !isEvmExist && evmAddress && '!border-red-500 hover:!border-red-500',
+                                        )}
+                                        placeholder="Contract address"
+                                        onChange={(e) => setEvmAddress(e.target.value)}
+                                        value={evmAddress}
+                                    />
+                                </div>
+                                <div className="mt-2 w-full">
+                                    {!isEvmExist && !address && <div> </div>}
+                                    {!isEvmExist && address && (
+                                        <div className="text-red-500"> Wrong Contract address </div>
+                                    )}
+                                    {/* TODO: show token info */}
+                                    {/* {isEvmExist && (
+                                        <LoadCanisterInfo
+                                            canister_id={address}
+                                            token={ic_token}
+                                            setToken={setIcToken}
+                                        />
+                                    )} */}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <Button
                         className="h-[48px] shrink-0 bg-[#FFCF13] text-lg font-semibold text-black"
                         isDisabled={!isCanisterId || !ic_token || isExist}
                         onPress={() => {
+                            // TODO：add evm token
                             if (isCanisterId && !ic_token) return;
                             if (pushing) return;
                             if (isCanisterId && ic_token) {
@@ -157,7 +266,7 @@ const LoadCanisterInfo = ({
                             <Skeleton className="h-4 w-[60px] rounded-lg" />
                         </span>
                         <div className="flex items-center">
-                            <Skeleton className="mr-2 flex h-5 w-5 rounded-full" />
+                            <Skeleton className="flex mr-2 w-5 h-5 rounded-full" />
                             <span>
                                 <Skeleton className="h-4 w-[50px] rounded-lg" />
                             </span>
@@ -186,11 +295,11 @@ const LoadCanisterInfo = ({
                         <div className="flex items-center">
                             {logo ? (
                                 <div className="mr-2">
-                                    <img src={logo} className="h-5 w-5 rounded-full" />
+                                    <img src={logo} className="w-5 h-5 rounded-full" />
                                 </div>
                             ) : (
                                 <div className="mr-2">
-                                    <Icon name="icon-defaultImg" className="h-5 w-5"></Icon>
+                                    <Icon name="icon-defaultImg" className="w-5 h-5"></Icon>
                                 </div>
                             )}
                             <span>{token.name}</span>
@@ -213,7 +322,7 @@ const LoadCanisterInfo = ({
                         </span>
                     </div>
                     {0 < token.standards.length && (
-                        <div className="flex w-full items-center justify-between py-3">
+                        <div className="flex justify-between items-center py-3 w-full">
                             <span className="text-[#999999]">Standards</span>
                             <div className="flex items-center">
                                 {token.standards.map((s) => (
