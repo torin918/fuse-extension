@@ -66,34 +66,100 @@
                 color: white;
                 margin-right: 10px;
             }
+            .chain-item {
+                background-color: #f5f5f5;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            .chain-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+            .connection-status {
+                margin: 10px 0;
+                padding: 8px;
+                background-color: #e9e9e9;
+                border-radius: 4px;
+            }
+            .account-info {
+                margin-top: 5px;
+                font-size: 14px;
+            }
         </style>
     </head>
     <body>
         <h1>Fuse Wallet DApp Example</h1>
 
         <div class="container">
-            <h2>Wallet Connection</h2>
-            <div class="chain-selector">
-                <label for="chainSelect">Select Chain:</label>
-                <select id="chainSelect">
-                    <option value="0x1">Ethereum Mainnet</option>
-                    <option value="0xaa36a7">Ethereum Sepolia</option>
-                    <option value="0x89">Polygon</option>
-                    <option value="0x13881">Polygon Amoy</option>
-                    <option value="0x38">BNB Smart Chain</option>
-                    <option value="0x61">BNB Smart Chain Testnet</option>
-                </select>
-            </div>
-            <button id="connectBtn">Connect Wallet</button>
-            <button id="disconnectBtn" disabled>Disconnect</button>
-            <div id="connectionStatus" class="result">Not connected</div>
-        </div>
+            <h2>Chain Connection Status</h2>
 
-        <div class="container">
-            <h2>Account Information</h2>
-            <div class="account-info">
-                <div id="networkBadge" class="network-badge" style="display: none"></div>
-                <div id="accountInfo" class="result">Please connect wallet to view account information</div>
+            <!-- Ethereum Mainnet -->
+            <div class="chain-item">
+                <div class="chain-header">
+                    <span class="network-badge">Ethereum Mainnet</span>
+                    <button class="connect-btn" data-chain="0x1">Connect</button>
+                    <button class="check-btn" data-chain="0x1">Check Connection</button>
+                </div>
+                <div class="connection-status" data-chain="0x1">Not checked</div>
+                <div class="account-info" data-chain="0x1"></div>
+            </div>
+
+            <!-- Ethereum Sepolia -->
+            <div class="chain-item">
+                <div class="chain-header">
+                    <span class="network-badge">Ethereum Sepolia</span>
+                    <button class="connect-btn" data-chain="0xaa36a7">Connect</button>
+                    <button class="check-btn" data-chain="0xaa36a7">Check Connection</button>
+                </div>
+                <div class="connection-status" data-chain="0xaa36a7">Not checked</div>
+                <div class="account-info" data-chain="0xaa36a7"></div>
+            </div>
+
+            <!-- Polygon -->
+            <div class="chain-item">
+                <div class="chain-header">
+                    <span class="network-badge">Polygon</span>
+                    <button class="connect-btn" data-chain="0x89">Connect</button>
+                    <button class="check-btn" data-chain="0x89">Check Connection</button>
+                </div>
+                <div class="connection-status" data-chain="0x89">Not checked</div>
+                <div class="account-info" data-chain="0x89"></div>
+            </div>
+
+            <!-- Polygon Amoy -->
+            <div class="chain-item">
+                <div class="chain-header">
+                    <span class="network-badge">Polygon Amoy</span>
+                    <button class="connect-btn" data-chain="0x13882">Connect</button>
+                    <button class="check-btn" data-chain="0x13882">Check Connection</button>
+                </div>
+                <div class="connection-status" data-chain="0x13882">Not checked</div>
+                <div class="account-info" data-chain="0x13882"></div>
+            </div>
+
+            <!-- BSC -->
+            <div class="chain-item">
+                <div class="chain-header">
+                    <span class="network-badge">BNB Smart Chain</span>
+                    <button class="connect-btn" data-chain="0x38">Connect</button>
+                    <button class="check-btn" data-chain="0x38">Check Connection</button>
+                </div>
+                <div class="connection-status" data-chain="0x38">Not checked</div>
+                <div class="account-info" data-chain="0x38"></div>
+            </div>
+
+            <!-- BSC Testnet -->
+            <div class="chain-item">
+                <div class="chain-header">
+                    <span class="network-badge">BSC Testnet</span>
+                    <button class="connect-btn" data-chain="0x61">Connect</button>
+                    <button class="check-btn" data-chain="0x61">Check Connection</button>
+                </div>
+                <div class="connection-status" data-chain="0x61">Not checked</div>
+                <div class="account-info" data-chain="0x61"></div>
             </div>
         </div>
 
@@ -141,7 +207,7 @@
         <script>
             // Check if Fuse Wallet is installed
             function checkForFuseWallet() {
-                if (window.fusewallet.evm) {
+                if (window.fusewallet && window.fusewallet.evm) {
                     return window.fusewallet.evm;
                 } else {
                     return null;
@@ -150,119 +216,108 @@
 
             // Main function
             async function initApp() {
-                const connectBtn = document.getElementById('connectBtn');
-                const disconnectBtn = document.getElementById('disconnectBtn');
-                const sendBtn = document.getElementById('sendBtn');
-                const signBtn = document.getElementById('signBtn');
-                const connectionStatus = document.getElementById('connectionStatus');
-                const accountInfo = document.getElementById('accountInfo');
-                const txResult = document.getElementById('txResult');
-                const signResult = document.getElementById('signResult');
-                const chainSelect = document.getElementById('chainSelect');
-                const networkBadge = document.getElementById('networkBadge');
-
-                // Check for wallet
                 const provider = checkForFuseWallet();
                 if (!provider) {
-                    connectionStatus.textContent = 'Fuse Wallet not detected. Please install the extension.';
-                    connectBtn.disabled = true;
+                    document.querySelectorAll('.chain-item').forEach((item) => {
+                        item.querySelector('.connection-status').textContent = 'Wallet not installed';
+                    });
                     return;
                 }
 
-                // Chain names mapping
-                const chainNames = {
-                    '0x1': 'Ethereum Mainnet',
-                    '0xaa36a7': 'Ethereum Sepolia',
-                    '0x89': 'Polygon',
-                    '0x13881': 'Polygon Amoy',
-                    '0x38': 'BNB Smart Chain',
-                    '0x61': 'BNB Smart Chain Testnet',
-                };
+                async function checkChainConnection(chainId) {
+                    const statusElement = document.querySelector(`.connection-status[data-chain="${chainId}"]`);
+                    const accountElement = document.querySelector(`.account-info[data-chain="${chainId}"]`);
+                    const connectBtn = document.querySelector(`.connect-btn[data-chain="${chainId}"]`);
 
-                // Update UI with account info
-                async function updateAccountInfo() {
                     try {
-                        const chainId = await provider.request({ method: 'eth_chainId' });
-                        const accounts = await provider.request({ method: 'eth_accounts' });
+                        const isConnected = await provider.isConnected({
+                            chainId: chainId,
+                            timeout: 5000,
+                        });
+                        console.debug('🚀 ~ checkChainConnection ~ isConnected:', isConnected);
 
-                        if (accounts.length > 0) {
-                            const balance = await provider.request({
-                                method: 'eth_getBalance',
-                                params: [accounts[0], 'latest'],
+                        if (isConnected) {
+                            const accounts = await provider.request({
+                                method: 'eth_accounts',
+                                _chainId: chainId,
                             });
+                            console.debug('🚀 ~ checkChainConnection ~ accounts:', accounts);
 
-                            // Convert balance from wei to ETH
-                            const balanceInEth = parseInt(balance, 16) / 1e18;
+                            if (accounts.length > 0) {
+                                statusElement.textContent = `Connected`;
+                                connectBtn.disabled = true;
+                                connectBtn.textContent = 'Connected';
 
-                            networkBadge.textContent = chainNames[chainId] || `Chain: ${chainId}`;
-                            networkBadge.style.display = 'inline-block';
+                                let accountInfo = '';
+                                for (const account of accounts) {
+                                    const balance = await provider.request({
+                                        method: 'eth_getBalance',
+                                        params: [account, 'latest'],
+                                        _chainId: chainId,
+                                    });
+                                    const balanceInEth = parseInt(balance, 16) / 1e18;
+                                    accountInfo += `Address: ${account}\nBalance: ${balanceInEth.toFixed(4)} ETH\n\n`;
+                                }
 
-                            accountInfo.innerHTML = `
-                            <strong>Address:</strong> ${accounts[0]}
-                            <br><strong>Balance:</strong> ${balanceInEth.toFixed(4)} ETH
-                        `;
-
-                            // Enable transaction and signing buttons
-                            sendBtn.disabled = false;
-                            signBtn.disabled = false;
+                                accountElement.textContent = accountInfo.trim();
+                                document.getElementById('sendBtn').disabled = false;
+                                document.getElementById('signBtn').disabled = false;
+                            } else {
+                                statusElement.textContent = 'No accounts connected';
+                                connectBtn.disabled = false;
+                                connectBtn.textContent = 'Connect';
+                                accountElement.textContent = '';
+                            }
                         } else {
-                            accountInfo.textContent = 'No accounts found. Please connect your wallet.';
-                            networkBadge.style.display = 'none';
-                            sendBtn.disabled = true;
-                            signBtn.disabled = true;
+                            statusElement.textContent = 'Not connected';
+                            connectBtn.disabled = false;
+                            connectBtn.textContent = 'Connect';
+                            accountElement.textContent = '';
                         }
                     } catch (error) {
-                        accountInfo.textContent = `Error fetching account: ${error.message}`;
-                        networkBadge.style.display = 'none';
+                        statusElement.textContent = `Error: ${error.message}`;
+                        accountElement.textContent = '';
+                        connectBtn.disabled = false;
+                        connectBtn.textContent = 'Connect';
                     }
                 }
-
-                // Connect wallet
-                connectBtn.addEventListener('click', async () => {
-                    try {
-                        connectionStatus.textContent = 'Connecting...';
-
-                        // Get selected chain
-                        const selectedChain = chainSelect.value;
-
-                        // Request accounts on the selected chain
-                        const accounts = await provider.request({
-                            method: 'eth_requestAccounts',
-                            _chainId: selectedChain, // Using Fuse Wallet's extended parameter
-                        });
-
-                        if (accounts.length > 0) {
-                            connectionStatus.textContent = `Connected to ${accounts[0]}`;
-                            disconnectBtn.disabled = false;
-                            connectBtn.disabled = true;
-                            await updateAccountInfo();
-                        } else {
-                            connectionStatus.textContent = 'Connection failed: No accounts returned';
+                document.querySelectorAll('.connect-btn').forEach((button) => {
+                    button.addEventListener('click', async () => {
+                        const chainId = button.dataset.chain;
+                        try {
+                            await provider.request({
+                                method: 'eth_requestAccounts',
+                                _chainId: chainId,
+                            });
+                            await checkChainConnection(chainId);
+                        } catch (error) {
+                            const statusElement = document.querySelector(`.connection-status[data-chain="${chainId}"]`);
+                            statusElement.textContent = `Connection failed: ${error.message}`;
                         }
-                    } catch (error) {
-                        connectionStatus.textContent = `Connection failed: ${error.message}`;
-                    }
+                    });
                 });
 
-                // Disconnect wallet (this is a UI-only disconnect as EIP-1193 doesn't have a disconnect method)
-                disconnectBtn.addEventListener('click', () => {
-                    try {
-                        provider.removeAllListeners();
-                        connectionStatus.textContent = 'Disconnected';
-                        accountInfo.textContent = 'Please connect wallet to view account information';
-                        networkBadge.style.display = 'none';
-                        disconnectBtn.disabled = true;
-                        connectBtn.disabled = false;
-                        sendBtn.disabled = true;
-                        signBtn.disabled = true;
-                        txResult.textContent = '';
-                        signResult.textContent = '';
-                    } catch (error) {
-                        connectionStatus.textContent = `Disconnect error: ${error.message}`;
+                document.querySelectorAll('.check-btn').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        const chainId = button.dataset.chain;
+                        checkChainConnection(chainId);
+                    });
+                });
+
+                const chains = ['0x1', '0xaa36a7', '0x89', '0x13882', '0x38', '0x61'];
+                for (const chainId of chains) {
+                    await checkChainConnection(chainId);
+                }
+
+                provider.on('fusewallet_accountsChanged', (accounts) => {
+                    for (const chainId of chains) {
+                        checkChainConnection(chainId);
                     }
                 });
 
                 // Send transaction
+                const sendBtn = document.getElementById('sendBtn');
+                const txResult = document.getElementById('txResult');
                 sendBtn.addEventListener('click', async () => {
                     try {
                         const recipient = document.getElementById('recipientAddress').value;
@@ -303,6 +358,8 @@
                 });
 
                 // Sign message
+                const signBtn = document.getElementById('signBtn');
+                const signResult = document.getElementById('signResult');
                 signBtn.addEventListener('click', async () => {
                     try {
                         const message = document.getElementById('message').value;
@@ -333,57 +390,6 @@
                         signResult.textContent = `Signing failed: ${error.message}`;
                     }
                 });
-
-                // Event listeners
-                provider.on('accountsChanged', (accounts) => {
-                    if (accounts.length === 0) {
-                        connectionStatus.textContent = 'Disconnected by wallet';
-                        accountInfo.textContent = 'Please connect wallet to view account information';
-                        networkBadge.style.display = 'none';
-                        disconnectBtn.disabled = true;
-                        connectBtn.disabled = false;
-                        sendBtn.disabled = true;
-                        signBtn.disabled = true;
-                    } else {
-                        connectionStatus.textContent = `Connected to ${accounts[0]}`;
-                        updateAccountInfo();
-                    }
-                });
-
-                provider.on('chainChanged', (chainId) => {
-                    networkBadge.textContent = chainNames[chainId] || `Chain: ${chainId}`;
-                    updateAccountInfo();
-                });
-
-                provider.on('connect', (connectInfo) => {
-                    connectionStatus.textContent = `Connected to chain ${connectInfo.chainId}`;
-                    disconnectBtn.disabled = false;
-                    connectBtn.disabled = true;
-                    updateAccountInfo();
-                });
-
-                provider.on('disconnect', (error) => {
-                    connectionStatus.textContent = `Disconnected: ${error.message}`;
-                    accountInfo.textContent = 'Please connect wallet to view account information';
-                    networkBadge.style.display = 'none';
-                    disconnectBtn.disabled = true;
-                    connectBtn.disabled = false;
-                    sendBtn.disabled = true;
-                    signBtn.disabled = true;
-                });
-
-                // Check if already connected
-                try {
-                    const accounts = await provider.request({ method: 'eth_accounts' });
-                    if (accounts.length > 0) {
-                        connectionStatus.textContent = `Connected to ${accounts[0]}`;
-                        disconnectBtn.disabled = false;
-                        connectBtn.disabled = true;
-                        await updateAccountInfo();
-                    }
-                } catch (error) {
-                    console.error('Error checking initial connection:', error);
-                }
             }
 
             // Initialize when page loads

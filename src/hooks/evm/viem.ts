@@ -3,8 +3,9 @@ import { createPublicClient, http, type PublicClient, type Chain as ViemChain } 
 import { bsc, bscTestnet, mainnet, polygon, polygonAmoy, sepolia } from 'viem/chains';
 
 import { useCurrentChainNetwork, useCurrentIdentity } from '~hooks/store/local-secure';
-import { match_chain, type EvmChain } from '~types/chain';
+import { match_chain, type EvmChain, type EvmChainTest } from '~types/chain';
 import {
+    DEFAULT_CURRENT_CHAIN_EVM_NETWORK,
     get_default_rpc,
     get_identity_network_key,
     type ChainIcIdentityNetwork,
@@ -15,6 +16,10 @@ import type { ChainIcNetwork } from '~types/network/ic';
 
 export const SHOULD_DEHYDRATE_QUERY_KEY = 'SHOULD_DEHYDRATE';
 
+export const get_chain_by_chain_id = (chainId: number): EvmChain | EvmChainTest | undefined => {
+    return Object.entries(DEFAULT_CURRENT_CHAIN_EVM_NETWORK).find(([, network]) => network.chain_id === chainId)?.[1]
+        .chain;
+};
 export const get_viem_chain_by_chain = (chain: EvmChain) => {
     return match_chain<ViemChain>(chain, {
         ic: () => {

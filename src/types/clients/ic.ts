@@ -10,19 +10,7 @@ import { relay_message_request_connect } from '~lib/messages/relay/relay-request
 import { parse_proxy_message, stringify_proxy_message } from '~lib/utils/ic-message';
 
 import { find_favicon } from '../connect';
-import type { CurrentWindow } from '../window';
-
-const DEFAULT_TIMEOUT = 60000; // 60s
-const DEFAULT_CALL_TIMEOUT = 600000; // 10 min
-
-const get_current_window = async (window: Window): Promise<CurrentWindow> => {
-    return {
-        screenX: window.screenX,
-        screenY: window.screenY,
-        outerWidth: window.outerWidth,
-        outerHeight: window.outerHeight,
-    };
-};
+import { DEFAULT_CALL_TIMEOUT, DEFAULT_TIMEOUT, get_current_window } from './index';
 
 export interface RequestConnectRequest {
     timeout?: number;
@@ -52,9 +40,9 @@ export interface CreateActorRequest {
 }
 export type CreateActorResponse<T> = ActorSubclass<T>;
 
-export class FuseClient {
+export class FuseClientByIc {
     #get_current_popup: () => boolean;
-    #backend(self: FuseClient, msg: ProxyMessage) {
+    #backend(self: FuseClientByIc, msg: ProxyMessage) {
         const agent = self.agent as ProxyAgent;
         const body = stringify_proxy_message(msg);
         console.debug('===>>> 📦 before send message', [msg], '->', [body]);

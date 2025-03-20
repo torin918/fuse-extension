@@ -18,6 +18,7 @@ import {
     RELAY_MESSAGE_PING,
     RELAY_MESSAGE_REQUEST_CONNECT,
 } from '~lib/messages';
+import { isInpageMessage } from '~lib/messages/window';
 
 export const config: PlasmoCSConfig = {
     matches: [
@@ -55,3 +56,15 @@ relayMessage<RelayMessageIsConnectedRequestBody>({ name: RELAY_MESSAGE_IS_CONNEC
 relayMessage<RelayMessageDisconnectRequestBody>({ name: RELAY_MESSAGE_DISCONNECT as never });
 relayMessage<RelayMessageGetAddressRequestBody>({ name: RELAY_MESSAGE_GET_ADDRESS as never });
 relayMessage<RelayMessageIcProxyAgentRequestBody>({ name: RELAY_MESSAGE_IC_PROXY_AGENT as never });
+
+// listen message from extension-pages/BGSW
+chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
+    const messageData = message.body;
+    console.debug('🚀 ~ chrome.runtime.onMessage.addListener ~ messageData:', message);
+    if (isInpageMessage(messageData)) {
+        window.postMessage(messageData);
+    }
+    sendResponse({ ok: true });
+    // If the response is asynchronous, return true to keep the message channel open.
+    return true;
+});

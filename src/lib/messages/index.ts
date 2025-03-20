@@ -1,3 +1,5 @@
+import type { FuseWalletInpageMessage } from './window';
+
 export type MessageResult<T, E> = { ok: T; err?: undefined } | { ok?: undefined; err: E };
 
 // message
@@ -14,6 +16,10 @@ export const RELAY_MESSAGE_IS_CONNECTED = 'relay-is-connected';
 export const RELAY_MESSAGE_DISCONNECT = 'relay-disconnect';
 export const RELAY_MESSAGE_GET_ADDRESS = 'relay-get-address';
 export const RELAY_MESSAGE_IC_PROXY_AGENT = 'relay-ic-proxy-agent';
+
+// * Extension-Pages/BGSW -> CS
+
+export type NotificationMessage = FuseWalletInpageMessage;
 
 // ports
 // * Extension-Pages/CS	-> BGSW

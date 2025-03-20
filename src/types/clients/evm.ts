@@ -2,9 +2,11 @@ import { v4 as uuid } from 'uuid';
 import { hexToNumber } from 'viem';
 
 import { get_chain_by_chain_id } from '~hooks/evm/viem';
+import { relay_message_get_address } from '~lib/messages/relay/relay-get-address';
 import { relay_message_is_connected } from '~lib/messages/relay/relay-is-connected';
 import { relay_message_request_connect } from '~lib/messages/relay/relay-request-connect';
-import { isInpageMessage } from '~lib/messages/window';
+import { isInpageMessage, isProviderEventMessage, type AnyFuseWalletMessage } from '~lib/messages/window';
+import { match_chain } from '~types/chain';
 
 import { DEFAULT_TIMEOUT, get_current_window } from '.';
 import { find_favicon } from '../connect';
@@ -27,7 +29,7 @@ export class FuseClientByEvm {
     // Compatible with MetaMask
     public readonly isMetaMask: boolean = false;
 
-    // Currently connected accounts (each chain can have different accounts)
+    // Currently connected accounts (each address can connect to multiple chains)
     private _accounts: Record<string, string[]> = {};
 
     // Current active chain ID
@@ -38,7 +40,7 @@ export class FuseClientByEvm {
         '0x1': DEFAULT_CURRENT_CHAIN_EVM_NETWORK.ethereum,
         '0xaa36a7': DEFAULT_CURRENT_CHAIN_EVM_NETWORK.ethereum_test_sepolia,
         '0x89': DEFAULT_CURRENT_CHAIN_EVM_NETWORK.polygon,
-        '0x13881': DEFAULT_CURRENT_CHAIN_EVM_NETWORK.polygon_test_amoy,
+        '0x13882': DEFAULT_CURRENT_CHAIN_EVM_NETWORK.polygon_test_amoy,
         '0x38': DEFAULT_CURRENT_CHAIN_EVM_NETWORK.bsc,
         '0x61': DEFAULT_CURRENT_CHAIN_EVM_NETWORK.bsc_test,
     };
@@ -55,21 +57,15 @@ export class FuseClientByEvm {
         message: [],
     };
 
+    // (chainId -> address[])
+    private _connectedAddresses: string[] = [];
+
     constructor() {
-        // Initialize accounts for each chain
-        Object.keys(this._chains).forEach((chainId) => {
-            this._accounts[chainId] = [];
-        });
+        // Initialize empty accounts record
+        this._accounts = {};
 
         // Set up message handlers
         this._setupMessageHandlers();
-
-        // Simulate installed wallet behavior
-        setTimeout(() => {
-            if (this._isConnected) {
-                this._emitEvent('connect', { chainId: this._activeChainId });
-            }
-        }, 0);
     }
 
     /**
@@ -97,7 +93,7 @@ export class FuseClientByEvm {
                 return this._handleRequestAccounts(targetChainId);
 
             case 'eth_accounts':
-                return this._accounts[targetChainId] || [];
+                return this._handleEthAccounts(targetChainId);
 
             case 'eth_chainId':
                 return targetChainId;
@@ -211,6 +207,7 @@ export class FuseClientByEvm {
      */
     private _setupMessageHandlers(): void {
         window.addEventListener('message', (event) => {
+            console.debug('🚀 ~ FuseClientByEvm ~ window.addEventListener ~ event:', event);
             if (event.source !== window) return;
             if (!event.data || !event.data.target) return;
             if (isInpageMessage(event.data)) {
@@ -222,21 +219,12 @@ export class FuseClientByEvm {
     /**
      * Handle incoming messages
      */
-    private _handleIncomingMessage(message: any): void {
-        if (message.type === 'accountsChanged') {
-            const { chainId, accounts } = message.data;
-            this._accounts[chainId] = accounts;
-
-            // If accounts change on active chain, trigger standard event
-            if (chainId === this._activeChainId) {
-                this._emitEvent('accountsChanged', accounts);
+    private _handleIncomingMessage(message: AnyFuseWalletMessage): void {
+        if (isInpageMessage(message)) {
+            if (isProviderEventMessage(message.data.data)) {
+                const { method, params } = message.data.data;
+                this._emitEvent(method, params);
             }
-
-            // Trigger custom multi-chain accounts changed event
-            this._emitEvent('multiChainAccountsChanged', { chainId, accounts });
-        } else if (message.type === 'chainChanged') {
-            this._activeChainId = message.data;
-            this._emitEvent('chainChanged', this._activeChainId);
         }
     }
 
@@ -245,64 +233,66 @@ export class FuseClientByEvm {
      */
     private async _handleRequestAccounts(chainId: `0x${string}`): Promise<string[]> {
         const message_id = uuid();
-
-        // Which origin is making request
-        const origin = window.location.origin;
-        const title = window.document.title;
-        const favicon = await find_favicon(window.document, origin);
         const chain = get_chain_by_chain_id(hexToNumber(chainId));
         if (!chain) throw new Error(`Chain ${chainId} not supported`);
-        // Send connection request via relay
-        let connected = false;
-        try {
-            connected = await relay_message_request_connect(
-                {
-                    message_id,
-                    window: await get_current_window(window),
-                    timeout: 60000, // Default timeout
-                    popup: true, // Always show popup for explicit account requests
-                    chain,
-                    origin,
-                    title,
-                    favicon,
-                },
-                60000, // Default timeout
-            );
-        } catch (error) {
-            throw new Error('User rejected the request');
-        }
+        const connected = await relay_message_request_connect({
+            message_id,
+            window: await get_current_window(window),
+            timeout: 60000,
+            popup: true,
+            chain,
+            origin: window.location.origin,
+            title: document.title,
+            favicon: await find_favicon(document, window.location.origin),
+        });
 
         if (!connected) {
-            throw new Error('User rejected the request');
+            throw new Error('User rejected connection request');
         }
 
-        // Update connection status
-        this._isConnected = true;
-
-        // Get accounts via separate request
-        // const accounts = await relay_message_evm_request(
-        //     {
-        //         message_id: uuid(),
-        //         window: await get_current_window(window),
-        //         timeout: 60000,
-        //         chainId: chainId,
-        //         origin,
-        //         method: 'eth_accounts',
-        //         params: [],
-        //     },
-        //     60000,
-        // );
-        // Update accounts for this chain
-        const accountsList = ['0x0000000000000000000000000000000000000000'];
-        this._accounts[chainId] = accountsList;
-
-        // If current active chain, trigger connection events
-        if (chainId === this._activeChainId) {
-            this._emitEvent('connect', { chainId });
-            this._emitEvent('accountsChanged', accountsList);
+        const accounts = await this.request({ method: 'eth_accounts', _chainId: chainId });
+        const address = accounts[0];
+        const chains = this._accounts[address];
+        if (!chains) {
+            this._accounts[address] = [chain];
+        } else {
+            const index = chains.findIndex((c) => c === chainId);
+            if (index === -1) {
+                chains.push(chainId);
+            }
         }
+        this._emitEvent('connect', { chainId });
+        this._emitEvent('accountsChanged', this._connectedAddresses);
 
-        return accountsList;
+        return [address];
+    }
+
+    private async _handleEthAccounts(chainId: `0x${string}`) {
+        const chain = get_chain_by_chain_id(hexToNumber(chainId));
+        if (!chain) throw new Error(`Chain ${chainId} not supported`);
+        const result = await relay_message_get_address({
+            message_id: uuid(),
+            timeout: 60000,
+        });
+        if (!result) throw new Error('Failed to retrieve address');
+        const address = match_chain(chain, {
+            ic: () => {
+                throw new Error('IC chain is not supported');
+            },
+            ethereum: () => result.ethereum?.address,
+            ethereum_test_sepolia: () => result.ethereum_test_sepolia?.address,
+            polygon: () => result.polygon?.address,
+            polygon_test_amoy: () => result.polygon_test_amoy?.address,
+            bsc: () => result.bsc?.address,
+            bsc_test: () => result.bsc_test?.address,
+        });
+        if (!address) {
+            throw new Error('Failed to retrieve address');
+        }
+        if (!this._connectedAddresses.includes(address)) {
+            this._connectedAddresses.push(address);
+        }
+        return [address];
     }
 
     /**
@@ -358,38 +348,13 @@ export class FuseClientByEvm {
      * Handle chain switching
      */
     private async _handleSwitchChain(params: { chainId: string }): Promise<null> {
-        const { chainId } = params;
-
-        // Validate chain ID
-        if (!chainId) {
-            throw new Error('chainId is required');
-        }
-
-        // Check if chain is supported
-        if (!this._chains[chainId]) {
-            throw new Error(`Chain ${chainId} not supported. Please add it first.`);
-        }
-
-        // Update active chain ID
-        this._activeChainId = chainId as `0x${string}`;
-
-        this._emitEvent('chainChanged', chainId);
-
-        // If new chain has accounts, trigger accounts changed event
-        if (this._accounts[chainId] && this._accounts[chainId].length > 0) {
-            this._emitEvent('accountsChanged', this._accounts[chainId]);
-        } else {
-            this._emitEvent('accountsChanged', []);
-        }
-
-        return null;
+        throw new Error('Not support yet');
     }
 
     /**
      * Handle adding chain
      */
     private async _handleAddChain(params: any): Promise<null> {
-        console.log('🚀 ~ FuseClientByEvm ~ _handleAddChain ~ params:', params);
         throw new Error('Not support yet');
     }
 
@@ -448,12 +413,7 @@ export class FuseClientByEvm {
     /**
      * Mock account balance (return different values based on chain ID)
      */
-    private _mockBalance(address: string, chainId: string): string {
-        // Check if address is connected on specified chain
-        if (!this._accounts[chainId] || !this._accounts[chainId].includes(address.toLowerCase())) {
-            throw new Error(`Address ${address} not found in connected accounts for chain ${chainId}`);
-        }
-
+    private _mockBalance(chainId: string): string {
         // Generate different balance based on chain ID
         const baseValue = parseInt(chainId, 16) % 10;
         return `0x${(baseValue * 10 ** 18).toString(16)}`;

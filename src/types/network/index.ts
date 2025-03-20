@@ -10,14 +10,15 @@ import { CHAIN_IC_MAINNET, type ChainIcNetwork } from './ic';
 import { CHAIN_POLYGON_MAINNET, type ChainPolygonNetwork } from './polygon';
 import { CHAIN_POLYGON_TEST_AMOY_MAINNET, type ChainPolygonTestAmoyNetwork } from './polygon-test-amoy';
 
-export type ChainNetwork =
-    | ChainIcNetwork
+export type ChainEvmNetwork =
     | ChainEthereumNetwork
     | ChainEthereumTestSepoliaNetwork
     | ChainPolygonNetwork
     | ChainPolygonTestAmoyNetwork
     | ChainBscNetwork
     | ChainBscTestNetwork;
+
+export type ChainNetwork = ChainIcNetwork | ChainEvmNetwork;
 
 export type ChainNetworks = ChainNetwork[]; // user added networks
 
@@ -33,14 +34,18 @@ export interface CurrentChainNetwork {
 
 export type ChainNetworkKey = keyof CurrentChainNetwork;
 
-export const DEFAULT_CURRENT_CHAIN_NETWORK: CurrentChainNetwork = {
-    ic: CHAIN_IC_MAINNET,
+export const DEFAULT_CURRENT_CHAIN_EVM_NETWORK = {
     ethereum: CHAIN_ETHEREUM_MAINNET,
     ethereum_test_sepolia: CHAIN_ETHEREUM_TEST_SEPOLIA_MAINNET,
     polygon: CHAIN_POLYGON_MAINNET,
     polygon_test_amoy: CHAIN_POLYGON_TEST_AMOY_MAINNET,
     bsc: CHAIN_BSC_MAINNET,
     bsc_test: CHAIN_BSC_TEST_MAINNET,
+};
+
+export const DEFAULT_CURRENT_CHAIN_NETWORK: CurrentChainNetwork = {
+    ic: CHAIN_IC_MAINNET,
+    ...DEFAULT_CURRENT_CHAIN_EVM_NETWORK,
 };
 
 // =================== chain identity network ===================
