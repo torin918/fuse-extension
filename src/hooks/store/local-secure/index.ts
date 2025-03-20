@@ -40,6 +40,7 @@ import {
 } from '../session';
 import { useMarkedAddressesInner2 } from './address/marked_address';
 import { useRecentAddressesInner2 } from './address/recent_address';
+import { useChainNetworksInner } from './chain_networks';
 import { useCurrentChainNetworkInner } from './current/current_chain_network';
 import { get_current_connected_apps, useCurrentConnectedAppsInner } from './current/current_connected_apps';
 import { useKeyRingsInner } from './key_rings';
@@ -238,6 +239,12 @@ export const useShowNetworks = () => {
     const [unlocked] = useUnlocked();
     const storage = useSecureStorageBy(unlocked);
     return useShowNetworksInner2(storage);
+};
+
+export const useAllChainNetworks = () => {
+    const [unlocked] = useUnlocked();
+    const storage = useSecureStorageBy(unlocked);
+    return useChainNetworksInner(storage);
 };
 // ================ set directly by storage ================
 

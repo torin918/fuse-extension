@@ -2,14 +2,14 @@ import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-p
 import { Switch } from '@heroui/react';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AiOutlineMinusCircle } from 'react-icons/ai';
+// import { AiOutlineMinusCircle } from 'react-icons/ai';
 import { BsArrowsMove } from 'react-icons/bs';
 import { GrSort } from 'react-icons/gr';
 
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
-import { ConfirmModal } from '~components/modals/confirm';
+// import { ConfirmModal } from '~components/modals/confirm';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useMounted } from '~hooks/memo/mounted';
@@ -19,6 +19,7 @@ import { get_balance_by_identity_canister_id } from '~hooks/store/local/token/ic
 import { get_token_price_ic_by_canister_id } from '~hooks/store/local/token/ic/price';
 import { cn } from '~lib/utils/cn';
 import { resort_list } from '~lib/utils/sort';
+import type { Chain } from '~types/chain';
 import {
     get_token_name,
     get_token_symbol,
@@ -26,7 +27,7 @@ import {
     is_same_token_info,
     match_combined_token_info,
     search_tokens,
-    TokenTag,
+    // TokenTag,
     type TokenInfo,
 } from '~types/tokens';
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
@@ -34,15 +35,12 @@ import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 import { FunctionHeader } from '../components/header';
 import CustomTokenDrawer from './components/custom-token-drawer';
 
-type Tab = 'current' | 'all' | 'ck' | 'sns' | 'custom';
-const TabNames: Record<Tab, string> = {
-    current: '⭐️',
-    all: 'All',
-    ck: 'CK',
-    sns: 'SNS',
-    custom: 'Custom',
-};
-const TABS: Tab[] = ['current', 'all', 'ck', 'sns', 'custom'];
+type Tab = 'current' | 'all';
+// const TabNames: Record<Tab, string> = {
+//     current: 'Current',
+//     all: 'All',
+// };
+// const TABS: Tab[] = ['current', 'all'];
 
 function FunctionTokenViewPage() {
     const current_state = useCurrentState();
@@ -55,27 +53,29 @@ function FunctionTokenViewPage() {
     const [search, setSearch] = useState('');
 
     const currentTokens = useMemo(() => current, [current]);
-    const allTokens = useMemo(() => [...PRESET_ALL_TOKEN_INFO, ...custom.map((t) => t.token)], [custom]);
-    const ckTokens = useMemo(() => PRESET_ALL_TOKEN_INFO.filter((t) => t.tags.includes(TokenTag.ChainIcCk)), []);
-    const snsTokens = useMemo(() => PRESET_ALL_TOKEN_INFO.filter((t) => t.tags.includes(TokenTag.ChainIcSns)), []);
-    const customTokens = useMemo(() => custom.map((t) => t.token), [custom]);
 
-    const [tab, setTab] = useState<Tab>('current');
+    const allTokens = useMemo(() => [...PRESET_ALL_TOKEN_INFO, ...custom.map((t) => t.token)], [custom]);
+    // const ckTokens = useMemo(() => PRESET_ALL_TOKEN_INFO.filter((t) => t.tags.includes(TokenTag.ChainIcCk)), []);
+    // const snsTokens = useMemo(() => PRESET_ALL_TOKEN_INFO.filter((t) => t.tags.includes(TokenTag.ChainIcSns)), []);
+    // const customTokens = useMemo(() => custom.map((t) => t.token), [custom]);
+
+    const [tab] = useState<Tab>('current');
 
     const tokens = useMemo<(TokenInfo & { id: string; current: boolean })[]>(() => {
         const tokens: Record<Tab, TokenInfo[]> = {
             current: currentTokens,
             all: allTokens,
-            ck: ckTokens,
-            sns: snsTokens,
-            custom: customTokens,
+            // ck: ckTokens,
+            // sns: snsTokens,
+            // custom: customTokens,
         };
-        return search_tokens(tokens[tab], search).map((t) => ({
+        const tokens_list = search ? tokens.all : tokens.current;
+        return search_tokens(tokens_list, search).map((t) => ({
             ...t,
             id: get_token_unique_id(t),
             current: !!currentTokens.find((c) => is_same_token_info(c, t)),
         }));
-    }, [search, tab, currentTokens, allTokens, ckTokens, snsTokens, customTokens]);
+    }, [search, currentTokens, allTokens]);
 
     const [sort, setSort] = useState(false);
 
@@ -112,11 +112,18 @@ function FunctionTokenViewPage() {
     const mounted = useMounted();
 
     const isTokenExist = useCallback(
-        (token: { ic: string }) => {
-            const found = (() => {
-                if ('ic' in token) return allTokens.find((t) => 'ic' in t.info && t.info.ic.canister_id === token.ic);
-                return undefined;
-            })();
+        (token: { chain: Chain; address: string }) => {
+            const found = allTokens.find((t) =>
+                match_combined_token_info<boolean>(t.info, {
+                    ic: (ic) => token.address === ic.canister_id,
+                    ethereum: (t) => token.address === t.address,
+                    ethereum_test_sepolia: (t) => token.address === t.address,
+                    polygon: (t) => token.address === t.address,
+                    polygon_test_amoy: (t) => token.address === t.address,
+                    bsc: (t) => token.address === t.address,
+                    bsc_test: (t) => token.address === t.address,
+                }),
+            );
             return found !== undefined;
         },
         [allTokens],
@@ -143,47 +150,33 @@ function FunctionTokenViewPage() {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center px-5 py-3 w-full">
-                            <div className="flex items-center text-sm">
-                                {TABS.map((t) => (
-                                    <span
-                                        key={t}
-                                        className={cn(
-                                            'cursor-pointer rounded-full px-3 py-1',
-                                            tab === t ? 'bg-[#333333] text-[#EEEEEE]' : 'text-[#999999]',
-                                        )}
-                                        onClick={() => {
-                                            setSort(false);
-                                            setTab(t);
-                                        }}
-                                    >
-                                        {TabNames[t]}
-                                    </span>
-                                ))}
+                        <div className="flex justify-between items-center px-5 pt-3 w-full">
+                            <div className="flex items-center text-sm text-[#eee] hover:text-[#FFCF13]">
+                                Custom Token
                             </div>
+                            <CustomTokenDrawer
+                                trigger={
+                                    <div className="flex cursor-pointer items-center text-sm text-[#eee] hover:text-[#FFCF13]">
+                                        <Icon name="icon-arrow-right" className="w-3 h-3" />
+                                    </div>
+                                }
+                                container={ref.current ?? undefined}
+                                isTokenExist={isTokenExist}
+                                pushIcToken={async (ic_token) => {
+                                    pushCustomIcToken(ic_token).then((token) => {
+                                        if (token) pushToken(token);
+                                    });
+                                }}
+                            />
+                        </div>
 
-                            {tab === 'current' ? (
-                                <GrSort
-                                    className={cn('cursor-pointer text-sm', sort ? 'text-[#FFCF13]' : 'text-[#999999]')}
-                                    onClick={() => setSort((s) => !s)}
-                                />
-                            ) : (
-                                <CustomTokenDrawer
-                                    trigger={
-                                        <div className="flex cursor-pointer items-center text-sm text-[#FFCF13] transition duration-300 hover:opacity-85">
-                                            <span className="pr-1">Add</span>
-                                            <Icon name="icon-arrow-right" className="h-3 w-3 text-[#FFCF13]" />
-                                        </div>
-                                    }
-                                    container={ref.current ?? undefined}
-                                    isTokenExist={isTokenExist}
-                                    pushIcToken={async (ic_token) => {
-                                        pushCustomIcToken(ic_token).then((token) => {
-                                            if (token) pushToken(token);
-                                        });
-                                    }}
-                                />
-                            )}
+                        <div className="flex justify-between items-center px-5 py-3 w-full">
+                            <div className="flex items-center text-sm">Tokens</div>
+
+                            <GrSort
+                                className={cn('cursor-pointer text-sm', sort ? 'text-[#FFCF13]' : 'text-[#999999]')}
+                                onClick={() => setSort((s) => !s)}
+                            />
                         </div>
 
                         {mounted && (
@@ -278,8 +271,8 @@ const ShowTokenItem = ({
     sort,
     token,
     onSwitchToken,
-    onDeleteCustomToken,
-    container,
+    // onDeleteCustomToken,
+    // container,
 }: {
     tab: Tab;
     sort: boolean;
@@ -346,7 +339,7 @@ const ShowTokenItem = ({
                     <BsArrowsMove size={16} className="mr-2" />
                 ) : (
                     <>
-                        {tab === 'custom' && (
+                        {/* {tab === 'custom' && (
                             <ConfirmModal
                                 container={container}
                                 trigger={<AiOutlineMinusCircle size={14} className="text-[#FF0000]" />}
@@ -360,7 +353,7 @@ const ShowTokenItem = ({
                                     </div>
                                 }
                             />
-                        )}
+                        )} */}
                         <div className="scale-[0.6]">
                             <Switch
                                 isSelected={token.current}

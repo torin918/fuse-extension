@@ -43,6 +43,15 @@ export type CombinedTokenInfo =
     | { bsc: BscTokenInfo }
     | { bsc_test: BscTestTokenInfo };
 
+export type AnyTokenInfo =
+    | IcTokenInfo
+    | EthereumTokenInfo
+    | EthereumTestSepoliaTokenInfo
+    | PolygonTokenInfo
+    | PolygonTestAmoyTokenInfo
+    | BscTokenInfo
+    | BscTestTokenInfo;
+
 export const match_combined_token_info = <T>(
     self: CombinedTokenInfo,
     {

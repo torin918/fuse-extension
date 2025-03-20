@@ -21,6 +21,19 @@ export type ChainNetwork =
 
 export type ChainNetworks = ChainNetwork[]; // user added networks
 
+export const DEFAULT_CHAIN_NETWORKS: ChainNetworks = [
+    CHAIN_IC_MAINNET,
+    CHAIN_ETHEREUM_MAINNET,
+    CHAIN_POLYGON_MAINNET,
+    CHAIN_BSC_MAINNET,
+];
+
+export const DEFAULT_CHAIN_NETWORKS_TEST: ChainNetworks = [
+    CHAIN_ETHEREUM_TEST_SEPOLIA_MAINNET,
+    CHAIN_POLYGON_TEST_AMOY_MAINNET,
+    CHAIN_BSC_TEST_MAINNET,
+];
+
 export interface CurrentChainNetwork {
     ic: ChainIcNetwork;
     ethereum: ChainEthereumNetwork;

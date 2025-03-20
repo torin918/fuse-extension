@@ -43,9 +43,9 @@ const SelectChain = ({ trigger, container }: SelectChainProps) => {
 
     const getLogo = (chain: Chain) => {
         if (chain === 'ic') return CHAIN_IC_SVG;
-        if (chain.indexOf('ethereum')) return CHAIN_ETH_SVG;
-        if (chain.indexOf('pol')) return CHAIN_POL_SVG;
-        if (chain.indexOf('bsc')) return CHAIN_BSC_SVG;
+        if (chain.indexOf('ethereum') >= 0) return CHAIN_ETH_SVG;
+        if (chain.indexOf('pol') >= 0) return CHAIN_POL_SVG;
+        if (chain.indexOf('bsc') >= 0) return CHAIN_BSC_SVG;
     };
 
     const chains = useMemo(() => {
