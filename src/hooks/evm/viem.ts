@@ -1,9 +1,22 @@
+import { useMutation } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { createPublicClient, http, type PublicClient, type Chain as ViemChain } from 'viem';
+import {
+    createPublicClient,
+    http,
+    type Account,
+    type Chain,
+    type PublicClient,
+    type SendTransactionParameters,
+    type SendTransactionRequest,
+    type SignTypedDataParameters,
+    type TypedData,
+    type TypedDataDefinition,
+    type Chain as ViemChain,
+} from 'viem';
 import { bsc, bscTestnet, mainnet, polygon, polygonAmoy, sepolia } from 'viem/chains';
 
-import { useCurrentChainNetwork, useCurrentIdentity } from '~hooks/store/local-secure';
-import { match_chain, type EvmChain, type EvmChainTest } from '~types/chain';
+import { useCurrentChainNetwork, useCurrentIdentity, useEvmWalletClientCreator } from '~hooks/store/local-secure';
+import { match_chain, type EvmChain } from '~types/chain';
 import {
     DEFAULT_CURRENT_CHAIN_EVM_NETWORK,
     get_default_rpc,
@@ -16,7 +29,7 @@ import type { ChainIcNetwork } from '~types/network/ic';
 
 export const SHOULD_DEHYDRATE_QUERY_KEY = 'SHOULD_DEHYDRATE';
 
-export const get_chain_by_chain_id = (chainId: number): EvmChain | EvmChainTest | undefined => {
+export const get_chain_by_chain_id = (chainId: number): EvmChain | undefined => {
     return Object.entries(DEFAULT_CURRENT_CHAIN_EVM_NETWORK).find(([, network]) => network.chain_id === chainId)?.[1]
         .chain;
 };
@@ -71,36 +84,99 @@ export const useEvmChainIdentityNetworkKeyByChain = (chain: EvmChain) => {
     return get_identity_network_key(identity_network);
 };
 
-// Store clients in a Map with composite key `${chainId}-${rpc}`
+// Store clients in a Map with composite key `${chain}-${rpc}`
 const clients = new Map<string, PublicClient>();
 
+export const get_client_by_chain_cache_key = (chain: EvmChain, rpc: string): PublicClient => {
+    const cacheKey = `${chain}-${rpc}`;
+    const existingClient = clients.get(cacheKey);
+    if (existingClient) return existingClient;
+
+    // Get chain configuration
+    const viem_chain = get_viem_chain_by_chain(chain);
+
+    // Create a new client with the current RPC
+    const newClient = createPublicClient({
+        chain: viem_chain,
+        transport: http(rpc),
+    });
+
+    // Update cache with new client
+    clients.set(cacheKey, newClient);
+
+    return newClient;
+};
 export const usePublicClientByChain = (chain: EvmChain): PublicClient => {
     const chain_network = useEvmChainNetworkByChain(chain);
     const rpc = chain_network.rpc === 'mainnet' ? get_default_rpc(chain) : chain_network.rpc;
     const client = useMemo(() => {
-        // Create a cache key combining chainId and rpc
-        const cacheKey = `${chain}-${rpc}`;
-
-        // Check if client exists in cache
-        const existingClient = clients.get(cacheKey);
-        if (existingClient) {
-            return existingClient;
-        }
-
-        // Get chain configuration
-        const viem_chain = get_viem_chain_by_chain(chain);
-
-        // Create a new client with the current RPC
-        const newClient = createPublicClient({
-            chain: viem_chain,
-            transport: http(rpc),
-        });
-
-        // Update cache with new client
-        clients.set(cacheKey, newClient);
-
-        return newClient;
+        return get_client_by_chain_cache_key(chain, rpc);
     }, [chain, rpc]);
-
     return client;
+};
+
+// ! send transaction
+export const useSendTransaction = <
+    TChain extends Chain = Chain,
+    TAccount extends Account = Account,
+    TChainOverride extends Chain | undefined = undefined,
+    TRequest extends SendTransactionRequest<TChain, TChainOverride> = SendTransactionRequest<TChain, TChainOverride>,
+>(
+    chain: EvmChain,
+) => {
+    const create_wallet_client = useEvmWalletClientCreator(chain);
+    const identity_network = useEvmChainIdentityNetworkByChain(chain);
+    const identity_key = identity_network && get_identity_network_key(identity_network);
+    const mutationKey = useMemo(() => {
+        if (!identity_key) return [];
+        return [identity_key, 'transaction', 'send'];
+    }, [identity_key]);
+
+    return useMutation({
+        mutationKey,
+        mutationFn: async (params: SendTransactionParameters<TChain, TAccount, TChainOverride, TRequest>) => {
+            const client = create_wallet_client();
+            if (!client) throw new Error('Client is required');
+            return client.sendTransaction(params);
+        },
+    });
+};
+
+export const useSignMessage = <TAccount extends Account | undefined = undefined>(chain: EvmChain) => {
+    const create_wallet_client = useEvmWalletClientCreator(chain);
+    const identity_network = useEvmChainIdentityNetworkByChain(chain);
+    const identity_key = identity_network && get_identity_network_key(identity_network);
+
+    return useMutation({
+        mutationKey: [identity_key, 'message', 'sign'],
+        mutationFn: async ({ message, account }: { message: string; account?: TAccount }) => {
+            const client = create_wallet_client();
+            if (!client) throw new Error('Client is required');
+
+            return client.signMessage({
+                message,
+                account: account || undefined,
+            });
+        },
+    });
+};
+
+export const useSignTypedData = <
+    const typedData extends TypedData | Record<string, unknown>,
+    primaryType extends keyof typedData | 'EIP712Domain' = keyof typedData,
+>(
+    chain: EvmChain,
+) => {
+    const create_wallet_client = useEvmWalletClientCreator(chain);
+    const identity_network = useEvmChainIdentityNetworkByChain(chain);
+    const identity_key = identity_network && get_identity_network_key(identity_network);
+
+    return useMutation({
+        mutationKey: [identity_key, 'message', 'signTypedData'],
+        mutationFn: async (args: TypedDataDefinition<typedData, primaryType>) => {
+            const client = create_wallet_client();
+            if (!client) throw new Error('Client is required');
+            return client.account.signTypedData(args);
+        },
+    });
 };

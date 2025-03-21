@@ -16,7 +16,9 @@ export const RELAY_MESSAGE_IS_CONNECTED = 'relay-is-connected';
 export const RELAY_MESSAGE_DISCONNECT = 'relay-disconnect';
 export const RELAY_MESSAGE_GET_ADDRESS = 'relay-get-address';
 export const RELAY_MESSAGE_IC_PROXY_AGENT = 'relay-ic-proxy-agent';
-
+export const RELAY_MESSAGE_EVM_SEND_TRANSACTION = 'relay-evm-send-transaction';
+export const RELAY_MESSAGE_EVM_GET_BALANCE = 'relay-evm-get-balance';
+export const RELAY_MESSAGE_EVM_SIGN_MESSAGE = 'relay-evm-sign-message';
 // * Extension-Pages/BGSW -> CS
 
 export type NotificationMessage = FuseWalletInpageMessage;

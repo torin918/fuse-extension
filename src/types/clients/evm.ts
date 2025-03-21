@@ -2,10 +2,16 @@ import { v4 as uuid } from 'uuid';
 import { hexToNumber } from 'viem';
 
 import { get_chain_by_chain_id } from '~hooks/evm/viem';
+import { relay_message_disconnect } from '~lib/messages/relay/relay-disconnect';
+import { relay_message_evm_get_balance } from '~lib/messages/relay/relay-evm-get-balance';
+import { relay_message_evm_send_transaction } from '~lib/messages/relay/relay-evm-send-transaction';
+import { relay_message_evm_sign_message } from '~lib/messages/relay/relay-evm-sign-message';
 import { relay_message_get_address } from '~lib/messages/relay/relay-get-address';
 import { relay_message_is_connected } from '~lib/messages/relay/relay-is-connected';
 import { relay_message_request_connect } from '~lib/messages/relay/relay-request-connect';
 import { isInpageMessage, isProviderEventMessage, type AnyFuseWalletMessage } from '~lib/messages/window';
+import type { EvmTransaction } from '~types/actions/approve/evm/send-transaction';
+import { validate_payload, type EvmSignMessagePayload } from '~types/actions/approve/evm/sign-message';
 import { match_chain } from '~types/chain';
 
 import { DEFAULT_TIMEOUT, get_current_window } from '.';
@@ -18,9 +24,17 @@ export interface IsEvmConnectedRequest {
 }
 export type IsEvmConnectedResponse = boolean;
 
+type EventName =
+    | 'fusewallet_connect'
+    | 'fusewallet_disconnect'
+    | 'fusewallet_chainChanged'
+    | 'fusewallet_accountsChanged'
+    | 'fusewallet_message';
+type EventListener = (payload: any) => void;
+
 /**
- * Multi-chain OKX Wallet Provider
- * Extends EIP-1193 standard to support multi-chain operations
+ * Multi-chain Fuse Wallet Provider
+ *
  */
 export class FuseClientByEvm {
     // Identifier
@@ -32,9 +46,6 @@ export class FuseClientByEvm {
     // Currently connected accounts (each address can connect to multiple chains)
     private _accounts: Record<string, string[]> = {};
 
-    // Current active chain ID
-    private _activeChainId = '0x1' as `0x${string}`; // Default Ethereum mainnet
-
     // List of added chains
     private _chains: Record<string, ChainEvmNetwork> = {
         '0x1': DEFAULT_CURRENT_CHAIN_EVM_NETWORK.ethereum,
@@ -45,11 +56,8 @@ export class FuseClientByEvm {
         '0x61': DEFAULT_CURRENT_CHAIN_EVM_NETWORK.bsc_test,
     };
 
-    // Connection status
-    private _isConnected = false;
-
     // Event listeners storage
-    private _eventListeners: Record<string, ((payload: any) => void)[]> = {
+    private _eventListeners: Record<string, EventListener[]> = {
         connect: [],
         disconnect: [],
         chainChanged: [],
@@ -58,7 +66,7 @@ export class FuseClientByEvm {
     };
 
     // (chainId -> address[])
-    private _connectedAddresses: string[] = [];
+    private _connectedAddresses: Record<`0x${string}`, `0x${string}`> = {};
 
     constructor() {
         // Initialize empty accounts record
@@ -70,64 +78,50 @@ export class FuseClientByEvm {
 
     /**
      * Core EIP-1193 method: Send request to wallet
-     * Supports specifying target chain via optional _chainId parameter
+     * Supports specifying target chain via optional chainId parameter
      */
     public async request(args: {
         method: string;
         params?: any[];
-        _chainId?: `0x${string}`; // Extended parameter: specify target chain ID
+        chainId: `0x${string}`; // Extended parameter: specify target chain ID
     }): Promise<any> {
-        const { method, params = [] } = args;
-
-        // Determine target chain ID (use specified chain ID if provided, otherwise use active chain)
-        const targetChainId = args._chainId || this._activeChainId;
+        const { method, params = [], chainId } = args;
 
         // Check if specified chain is added
-        if (args._chainId && !this._chains[args._chainId]) {
-            throw new Error(`Chain ${args._chainId} not supported. Please add it first.`);
+        if (chainId && !this._chains[chainId]) {
+            throw new Error(`Chain ${args.chainId} not supported. Please add it first.`);
         }
-
         // Handle various methods
         switch (method) {
             case 'eth_requestAccounts':
-                return this._handleRequestAccounts(targetChainId);
+                return this._handleRequestAccounts(chainId);
 
             case 'eth_accounts':
-                return this._handleEthAccounts(targetChainId);
-
-            case 'eth_chainId':
-                return targetChainId;
-
-            case 'net_version':
-                return parseInt(targetChainId, 16).toString();
+                return this._handleEthAccounts(chainId);
 
             case 'eth_getBalance':
-                return this._mockBalance(params[0], targetChainId);
+                return this._handleEthBalance(chainId);
 
             case 'eth_sendTransaction':
-                return this._handleSendTransaction(params[0], targetChainId);
+                return this._handleSendTransaction(params[0], chainId);
 
             case 'eth_sign':
             case 'personal_sign':
-                return this._handleSign(params, targetChainId);
-
-            case 'wallet_switchEthereumChain':
-                return this._handleSwitchChain(params[0]);
-
+            case 'eth_signTypedData':
+            case 'eth_signTypedData_v3':
+            case 'eth_signTypedData_v4':
+                const payload = { method, params } as EvmSignMessagePayload;
+                if (!validate_payload(payload)) {
+                    throw new Error('Invalid payload');
+                }
+                return this._handleSign(payload.method, payload.params, chainId);
+            case 'disconnect':
+                return this._handleDisconnect(chainId);
             case 'wallet_addEthereumChain':
                 return this._handleAddChain(params[0]);
 
             case 'fusewallet_getChainList':
                 return this._getChainList();
-
-            case 'fusewallet_getActiveChain':
-                return this._getActiveChain();
-
-            case 'fusewallet_getAllAccounts':
-                return this._getAllAccounts();
-
-            case 'fusewallet_requestMultipleAccounts':
-                return this._requestMultipleAccounts(params[0]);
 
             default:
                 throw new Error(`Method ${method} not supported`);
@@ -137,7 +131,7 @@ export class FuseClientByEvm {
     /**
      * Add event listener
      */
-    public on(eventName: string, listener: (payload: any) => void): void {
+    public on(eventName: string, listener: EventListener): void {
         if (!this._eventListeners[eventName]) {
             this._eventListeners[eventName] = [];
         }
@@ -147,7 +141,7 @@ export class FuseClientByEvm {
     /**
      * Remove event listener
      */
-    public removeListener(eventName: string, listener: (payload: any) => void): void {
+    public removeListener(eventName: string, listener: EventListener): void {
         if (!this._eventListeners[eventName]) return;
 
         this._eventListeners[eventName] = this._eventListeners[eventName].filter(
@@ -156,41 +150,9 @@ export class FuseClientByEvm {
     }
 
     /**
-     * Compatibility with legacy enable method
-     */
-    public async enable(): Promise<string[]> {
-        return this.request({ method: 'eth_requestAccounts' });
-    }
-
-    /**
-     * OKX Wallet specific method: Send multi-chain transactions
-     */
-    public async sendMultiChainTransaction(
-        transactions: { chainId: string; tx: any }[],
-    ): Promise<Record<string, string>> {
-        const results: Record<string, string> = {};
-
-        // Process transactions for each chain sequentially
-        for (const { chainId, tx } of transactions) {
-            try {
-                const txHash = await this.request({
-                    method: 'eth_sendTransaction',
-                    params: [tx],
-                    _chainId: chainId as `0x${string}`,
-                });
-                results[chainId] = txHash;
-            } catch (error: any) {
-                results[chainId] = `error: ${error.message}`;
-            }
-        }
-
-        return results;
-    }
-
-    /**
      * Emit event
      */
-    private _emitEvent(eventName: string, payload: any): void {
+    private _emitEvent(eventName: EventName, payload: any): void {
         if (!this._eventListeners[eventName]) return;
 
         for (const listener of this._eventListeners[eventName]) {
@@ -250,7 +212,7 @@ export class FuseClientByEvm {
             throw new Error('User rejected connection request');
         }
 
-        const accounts = await this.request({ method: 'eth_accounts', _chainId: chainId });
+        const accounts = await this.request({ method: 'eth_accounts', chainId });
         const address = accounts[0];
         const chains = this._accounts[address];
         if (!chains) {
@@ -261,9 +223,9 @@ export class FuseClientByEvm {
                 chains.push(chainId);
             }
         }
-        this._emitEvent('connect', { chainId });
-        this._emitEvent('accountsChanged', this._connectedAddresses);
-
+        this._emitEvent('fusewallet_connect', { chainId, address });
+        this._connectedAddresses[chainId] = address;
+        this._emitEvent('fusewallet_accountsChanged', this._connectedAddresses);
         return [address];
     }
 
@@ -289,66 +251,79 @@ export class FuseClientByEvm {
         if (!address) {
             throw new Error('Failed to retrieve address');
         }
-        if (!this._connectedAddresses.includes(address)) {
-            this._connectedAddresses.push(address);
-        }
         return [address];
+    }
+
+    private async _handleDisconnect(chain_id: `0x${string}`) {
+        this._emitEvent('fusewallet_disconnect', chain_id);
+        const message_id = uuid();
+        const timeout = DEFAULT_TIMEOUT;
+        const chain = get_chain_by_chain_id(hexToNumber(chain_id));
+        if (!chain) throw new Error(`Chain ${chain_id} not supported`);
+        // which origin request
+        const origin = window.location.origin;
+        await relay_message_disconnect(
+            {
+                message_id,
+                window: await get_current_window(window),
+                timeout,
+                chain,
+                origin,
+            },
+            timeout,
+        );
+    }
+
+    private async _handleEthBalance(chainId: `0x${string}`) {
+        const chain = get_chain_by_chain_id(hexToNumber(chainId));
+        if (!chain) throw new Error(`Chain ${chainId} not supported`);
+        const result = await relay_message_evm_get_balance({
+            message_id: uuid(),
+            timeout: 60000,
+            chain,
+            origin: window.location.origin,
+        });
+        return result;
     }
 
     /**
      * Handle send transaction (supports specified chain)
      */
-    private async _handleSendTransaction(txParams: any, chainId: string): Promise<string> {
+    private async _handleSendTransaction(txParams: EvmTransaction, chainId: `0x${string}`): Promise<string> {
         // Validate transaction parameters
         if (!txParams.from) {
             throw new Error('Transaction requires a from address');
         }
 
-        // Validate user connection
-        if (!this._isConnected) {
-            throw new Error('Please connect your wallet first');
-        }
-
-        // Validate from address is connected account
-        if (!this._accounts[chainId] || !this._accounts[chainId].includes(txParams.from.toLowerCase())) {
-            throw new Error(`From address not found in connected accounts for chain ${chainId}`);
-        }
-
-        // Simulate transaction hash (includes chain ID info for distinction)
-        return `0x${chainId.slice(2, 6)}${Array(60)
-            .fill(0)
-            .map(() => Math.floor(Math.random() * 16).toString(16))
-            .join('')}`;
+        const hash = await relay_message_evm_send_transaction({
+            chainId,
+            message_id: uuid(),
+            timeout: DEFAULT_TIMEOUT,
+            origin: window.location.origin,
+            transaction: txParams,
+        });
+        return hash;
     }
 
     /**
      * Handle sign request (supports specified chain)
      */
-    private async _handleSign(params: any[], chainId: string): Promise<string> {
-        // Validate parameters
-        if (params.length < 2) {
-            throw new Error('eth_sign requires 2 parameters');
-        }
-
-        const address = params[0];
-
-        // Validate address is connected on specified chain
-        if (!this._accounts[chainId] || !this._accounts[chainId].includes(address.toLowerCase())) {
-            throw new Error(`Address ${address} not found in connected accounts for chain ${chainId}`);
-        }
-
-        // Simulate signature (includes chain ID info for distinction)
-        return `0x${chainId.slice(2, 6)}${Array(126)
-            .fill(0)
-            .map(() => Math.floor(Math.random() * 16).toString(16))
-            .join('')}`;
-    }
-
-    /**
-     * Handle chain switching
-     */
-    private async _handleSwitchChain(params: { chainId: string }): Promise<null> {
-        throw new Error('Not support yet');
+    private async _handleSign(
+        method: EvmSignMessagePayload['method'],
+        params: EvmSignMessagePayload['params'],
+        chainId: `0x${string}`,
+    ): Promise<string> {
+        const hash = await relay_message_evm_sign_message({
+            message_id: uuid(),
+            timeout: DEFAULT_TIMEOUT,
+            origin: window.location.origin,
+            chainId,
+            payload: {
+                method,
+                params,
+            } as EvmSignMessagePayload,
+        });
+        return hash;
     }
 
     /**
@@ -365,63 +340,8 @@ export class FuseClientByEvm {
         return this._chains;
     }
 
-    /**
-     * Get current active chain info
-     */
-    private _getActiveChain() {
-        return this._chains[this._activeChainId];
-    }
-
-    /**
-     * Get all accounts for all chains
-     */
-    private _getAllAccounts(): Record<string, string[]> {
-        return this._accounts;
-    }
-
-    /**
-     * Request account authorization for multiple chains
-     */
-    private async _requestMultipleAccounts(chainIds: string[]): Promise<
-        Record<
-            string,
-            {
-                accounts: string[];
-                error?: string;
-            }
-        >
-    > {
-        const results: Record<string, { accounts: string[]; error?: string }> = {};
-
-        for (const chainId of chainIds) {
-            if (!this._chains[chainId]) {
-                results[chainId] = { accounts: [], error: `Chain ${chainId} not supported` };
-                continue;
-            }
-
-            try {
-                const accounts = await this._handleRequestAccounts(chainId as `0x${string}`);
-                results[chainId] = { accounts };
-            } catch (error: any) {
-                results[chainId] = { accounts: [], error: error.message };
-            }
-        }
-
-        return results;
-    }
-
-    /**
-     * Mock account balance (return different values based on chain ID)
-     */
-    private _mockBalance(chainId: string): string {
-        // Generate different balance based on chain ID
-        const baseValue = parseInt(chainId, 16) % 10;
-        return `0x${(baseValue * 10 ** 18).toString(16)}`;
-    }
-
     async isConnected(request?: IsEvmConnectedRequest): Promise<IsEvmConnectedResponse> {
         const message_id = uuid();
-
         // args
         let { timeout } = request ?? {};
         const chain_id = request?.chainId ?? '0x1';

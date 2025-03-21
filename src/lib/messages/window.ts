@@ -1,3 +1,5 @@
+import type { IdentityAddress } from '~types/identity';
+
 // Message targets
 export type MessageTarget = 'fusewallet-inpage' | 'fusewallet-contentscript';
 
@@ -66,7 +68,7 @@ export interface MessageData {
 
 // Event parameters mapping
 export type ProviderEventParams = {
-    fusewallet_accountsChanged: string[]; // Array of addresses ["0x1234..."]
+    fusewallet_accountsChanged: IdentityAddress; // Array of addresses ["0x1234..."]
     fusewallet_chainChanged: string; // Chain ID in hex format "0x1"
     fusewallet_connect: { chainId: string }; // Connection info with chain ID
     fusewallet_disconnect: { code: number; message: string };

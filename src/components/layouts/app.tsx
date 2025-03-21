@@ -14,6 +14,7 @@ import { useBackground } from '~hooks/memo/background';
 import type { WindowType } from '~types/pages';
 
 import { ReactQueryProvider } from './provider';
+import { useWatchCurrentIdentity } from '~hooks/memo/identity';
 
 export const SinglePageApp = ({
     className,
@@ -55,6 +56,7 @@ export const SinglePageApp = ({
 
 const PageRoutes = ({ routes }: { routes: RouteObject[] }) => {
     useBackground();
+    useWatchCurrentIdentity();
     const views = useRoutes(routes);
     return <>{views}</>;
 };

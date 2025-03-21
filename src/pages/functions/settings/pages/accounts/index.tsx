@@ -26,7 +26,6 @@ const AccountItem = ({
     switchIdentity: (id: string) => Promise<boolean | undefined>;
 }) => {
     const { navigate } = useGoto();
-    const { current_identity: current_identity_address } = useCurrentIdentity();
     return (
         <div
             className="flex items-center justify-between"
@@ -41,16 +40,6 @@ const AccountItem = ({
                                 if (r === undefined) return;
                                 if (r === false) throw Error('switch identity failed');
                                 // notice successful
-                            });
-                            broadcastMessage({
-                                target: 'fusewallet-inpage',
-                                data: {
-                                    name: 'fusewallet-provider',
-                                    data: {
-                                        method: 'fusewallet_accountsChanged',
-                                        params: [current_identity_address?.address.ethereum?.address],
-                                    },
-                                },
                             });
                         }
                         e.preventDefault();

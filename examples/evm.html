@@ -88,6 +88,46 @@
                 margin-top: 5px;
                 font-size: 14px;
             }
+            .disconnect-btn {
+                background-color: #ff4444;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .disconnect-btn:hover {
+                background-color: #cc0000;
+            }
+            .disconnect-btn:disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+            }
+            /* Loading style */
+            .connect-btn.loading {
+                position: relative;
+                color: transparent; /* Hide button text */
+            }
+
+            .connect-btn.loading::after {
+                content: '';
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                top: 50%;
+                left: 50%;
+                margin: -8px 0 0 -8px;
+                border: 2px solid #ffffff;
+                border-radius: 50%;
+                border-right-color: transparent;
+                animation: spin 0.75s linear infinite;
+            }
+
+            @keyframes spin {
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
         </style>
     </head>
     <body>
@@ -101,7 +141,7 @@
                 <div class="chain-header">
                     <span class="network-badge">Ethereum Mainnet</span>
                     <button class="connect-btn" data-chain="0x1">Connect</button>
-                    <button class="check-btn" data-chain="0x1">Check Connection</button>
+                    <button class="disconnect-btn" data-chain="0x1" disabled>Disconnect</button>
                 </div>
                 <div class="connection-status" data-chain="0x1">Not checked</div>
                 <div class="account-info" data-chain="0x1"></div>
@@ -112,7 +152,7 @@
                 <div class="chain-header">
                     <span class="network-badge">Ethereum Sepolia</span>
                     <button class="connect-btn" data-chain="0xaa36a7">Connect</button>
-                    <button class="check-btn" data-chain="0xaa36a7">Check Connection</button>
+                    <button class="disconnect-btn" data-chain="0xaa36a7" disabled>Disconnect</button>
                 </div>
                 <div class="connection-status" data-chain="0xaa36a7">Not checked</div>
                 <div class="account-info" data-chain="0xaa36a7"></div>
@@ -123,7 +163,7 @@
                 <div class="chain-header">
                     <span class="network-badge">Polygon</span>
                     <button class="connect-btn" data-chain="0x89">Connect</button>
-                    <button class="check-btn" data-chain="0x89">Check Connection</button>
+                    <button class="disconnect-btn" data-chain="0x89" disabled>Disconnect</button>
                 </div>
                 <div class="connection-status" data-chain="0x89">Not checked</div>
                 <div class="account-info" data-chain="0x89"></div>
@@ -134,7 +174,7 @@
                 <div class="chain-header">
                     <span class="network-badge">Polygon Amoy</span>
                     <button class="connect-btn" data-chain="0x13882">Connect</button>
-                    <button class="check-btn" data-chain="0x13882">Check Connection</button>
+                    <button class="disconnect-btn" data-chain="0x13882" disabled>Disconnect</button>
                 </div>
                 <div class="connection-status" data-chain="0x13882">Not checked</div>
                 <div class="account-info" data-chain="0x13882"></div>
@@ -145,7 +185,7 @@
                 <div class="chain-header">
                     <span class="network-badge">BNB Smart Chain</span>
                     <button class="connect-btn" data-chain="0x38">Connect</button>
-                    <button class="check-btn" data-chain="0x38">Check Connection</button>
+                    <button class="disconnect-btn" data-chain="0x38" disabled>Disconnect</button>
                 </div>
                 <div class="connection-status" data-chain="0x38">Not checked</div>
                 <div class="account-info" data-chain="0x38"></div>
@@ -156,7 +196,7 @@
                 <div class="chain-header">
                     <span class="network-badge">BSC Testnet</span>
                     <button class="connect-btn" data-chain="0x61">Connect</button>
-                    <button class="check-btn" data-chain="0x61">Check Connection</button>
+                    <button class="disconnect-btn" data-chain="0x61" disabled>Disconnect</button>
                 </div>
                 <div class="connection-status" data-chain="0x61">Not checked</div>
                 <div class="account-info" data-chain="0x61"></div>
@@ -166,6 +206,16 @@
         <div class="container">
             <h2>Send Transaction</h2>
             <div>
+                <label for="chainSelector">Select Chain:</label>
+                <select id="chainSelector" style="width: 100%; padding: 8px; margin: 5px 0 15px 0">
+                    <option value="0x1">Ethereum Mainnet</option>
+                    <option value="0xaa36a7">Ethereum Sepolia</option>
+                    <option value="0x89">Polygon</option>
+                    <option value="0x13882">Polygon Amoy</option>
+                    <option value="0x38">BNB Smart Chain</option>
+                    <option value="0x61">BSC Testnet</option>
+                </select>
+
                 <label for="recipientAddress">Recipient Address:</label>
                 <input
                     type="text"
@@ -192,6 +242,16 @@
         <div class="container">
             <h2>Sign Message</h2>
             <div>
+                <label for="messageChainSelector">Select Chain:</label>
+                <select id="messageChainSelector" style="width: 100%; padding: 8px; margin: 5px 0 15px 0">
+                    <option value="0x1">Ethereum Mainnet</option>
+                    <option value="0xaa36a7">Ethereum Sepolia</option>
+                    <option value="0x89">Polygon</option>
+                    <option value="0x13882">Polygon Amoy</option>
+                    <option value="0x38">BNB Smart Chain</option>
+                    <option value="0x61">BSC Testnet</option>
+                </select>
+
                 <label for="message">Message:</label>
                 <textarea
                     id="message"
@@ -201,6 +261,35 @@
 
                 <button id="signBtn" disabled>Sign Message</button>
                 <div id="signResult" class="result"></div>
+            </div>
+        </div>
+
+        <div class="container">
+            <h2>Sign Typed Data (EIP-712)</h2>
+            <div>
+                <label for="typedDataChainSelector">Select Chain:</label>
+                <select id="typedDataChainSelector" style="width: 100%; padding: 8px; margin: 5px 0 15px 0">
+                    <option value="0x1">Ethereum Mainnet</option>
+                    <option value="0xaa36a7">Ethereum Sepolia</option>
+                    <option value="0x89">Polygon</option>
+                    <option value="0x13882">Polygon Amoy</option>
+                    <option value="0x38">BNB Smart Chain</option>
+                    <option value="0x61">BSC Testnet</option>
+                </select>
+
+                <label for="signVersion">Signing Method:</label>
+                <select id="signVersion" style="width: 100%; padding: 8px; margin: 5px 0 15px 0">
+                    <option value="eth_signTypedData">eth_signTypedData</option>
+                    <option value="eth_signTypedData_v3">eth_signTypedData_v3</option>
+                    <option value="eth_signTypedData_v4" selected>eth_signTypedData_v4</option>
+                </select>
+
+                <div id="typedDataFields">
+                    <!-- Will be dynamically populated with sample data -->
+                </div>
+
+                <button id="signTypedDataBtn" disabled>Sign Typed Data</button>
+                <div id="typedDataResult" class="result"></div>
             </div>
         </div>
 
@@ -224,28 +313,65 @@
                     return;
                 }
 
+                // Handle disconnection
+                async function handleDisconnect(chainId) {
+                    const statusElement = document.querySelector(`.connection-status[data-chain="${chainId}"]`);
+                    const accountElement = document.querySelector(`.account-info[data-chain="${chainId}"]`);
+                    const connectBtn = document.querySelector(`.connect-btn[data-chain="${chainId}"]`);
+                    const disconnectBtn = document.querySelector(`.disconnect-btn[data-chain="${chainId}"]`);
+
+                    try {
+                        await provider.request({
+                            method: 'disconnect',
+                            chainId,
+                        });
+
+                        statusElement.textContent = 'Disconnected';
+                        accountElement.textContent = '';
+                        connectBtn.disabled = false;
+                        connectBtn.textContent = 'Connect';
+                        disconnectBtn.disabled = true;
+
+                        document.getElementById('sendBtn')?.setAttribute('disabled', 'true');
+                        document.getElementById('signBtn')?.setAttribute('disabled', 'true');
+                    } catch (error) {
+                        statusElement.textContent = `Disconnect failed: ${error.message}`;
+                        console.error('Disconnect error:', error);
+                    }
+                }
+
+                // Add event listeners to disconnect buttons
+                document.querySelectorAll('.disconnect-btn').forEach((button) => {
+                    button.addEventListener('click', async () => {
+                        const chainId = button.dataset.chain;
+                        await handleDisconnect(chainId);
+                    });
+                });
+
+                // Check chain connection status
                 async function checkChainConnection(chainId) {
                     const statusElement = document.querySelector(`.connection-status[data-chain="${chainId}"]`);
                     const accountElement = document.querySelector(`.account-info[data-chain="${chainId}"]`);
                     const connectBtn = document.querySelector(`.connect-btn[data-chain="${chainId}"]`);
+                    const disconnectBtn = document.querySelector(`.disconnect-btn[data-chain="${chainId}"]`);
 
                     try {
                         const isConnected = await provider.isConnected({
-                            chainId: chainId,
+                            chainId,
                             timeout: 5000,
                         });
-                        console.debug('🚀 ~ checkChainConnection ~ isConnected:', isConnected);
 
                         if (isConnected) {
                             const accounts = await provider.request({
                                 method: 'eth_accounts',
-                                _chainId: chainId,
+                                chainId,
                             });
-                            console.debug('🚀 ~ checkChainConnection ~ accounts:', accounts);
 
                             if (accounts.length > 0) {
                                 statusElement.textContent = `Connected`;
                                 connectBtn.disabled = true;
+                                connectBtn.classList.remove('loading');
+                                disconnectBtn.disabled = false;
                                 connectBtn.textContent = 'Connected';
 
                                 let accountInfo = '';
@@ -253,10 +379,10 @@
                                     const balance = await provider.request({
                                         method: 'eth_getBalance',
                                         params: [account, 'latest'],
-                                        _chainId: chainId,
+                                        chainId,
                                     });
-                                    const balanceInEth = parseInt(balance, 16) / 1e18;
-                                    accountInfo += `Address: ${account}\nBalance: ${balanceInEth.toFixed(4)} ETH\n\n`;
+                                    const balance_eth = Number(BigInt(balance) / BigInt(1e18));
+                                    accountInfo += `Address: ${account}\nBalance: ${balance_eth.toFixed(4)} ETH\n\n`;
                                 }
 
                                 accountElement.textContent = accountInfo.trim();
@@ -265,12 +391,16 @@
                             } else {
                                 statusElement.textContent = 'No accounts connected';
                                 connectBtn.disabled = false;
+                                connectBtn.classList.remove('loading');
+                                disconnectBtn.disabled = true;
                                 connectBtn.textContent = 'Connect';
                                 accountElement.textContent = '';
                             }
                         } else {
                             statusElement.textContent = 'Not connected';
                             connectBtn.disabled = false;
+                            connectBtn.classList.remove('loading');
+                            disconnectBtn.disabled = true;
                             connectBtn.textContent = 'Connect';
                             accountElement.textContent = '';
                         }
@@ -278,38 +408,41 @@
                         statusElement.textContent = `Error: ${error.message}`;
                         accountElement.textContent = '';
                         connectBtn.disabled = false;
+                        connectBtn.classList.remove('loading');
+                        disconnectBtn.disabled = true;
                         connectBtn.textContent = 'Connect';
                     }
                 }
+
                 document.querySelectorAll('.connect-btn').forEach((button) => {
                     button.addEventListener('click', async () => {
                         const chainId = button.dataset.chain;
                         try {
+                            button.classList.add('loading');
+                            button.disabled = true;
+
                             await provider.request({
                                 method: 'eth_requestAccounts',
-                                _chainId: chainId,
+                                chainId,
                             });
                             await checkChainConnection(chainId);
                         } catch (error) {
                             const statusElement = document.querySelector(`.connection-status[data-chain="${chainId}"]`);
                             statusElement.textContent = `Connection failed: ${error.message}`;
+                        } finally {
+                            button.classList.remove('loading');
+                            button.disabled = false;
                         }
                     });
                 });
 
-                document.querySelectorAll('.check-btn').forEach((button) => {
-                    button.addEventListener('click', () => {
-                        const chainId = button.dataset.chain;
-                        checkChainConnection(chainId);
-                    });
-                });
-
+                // Check status for all chains
                 const chains = ['0x1', '0xaa36a7', '0x89', '0x13882', '0x38', '0x61'];
                 for (const chainId of chains) {
                     await checkChainConnection(chainId);
                 }
 
-                provider.on('fusewallet_accountsChanged', (accounts) => {
+                provider.on('fusewallet_accountsChanged', (addresses) => {
                     for (const chainId of chains) {
                         checkChainConnection(chainId);
                     }
@@ -322,6 +455,7 @@
                     try {
                         const recipient = document.getElementById('recipientAddress').value;
                         const amount = document.getElementById('amount').value;
+                        const chainId = document.getElementById('chainSelector').value;
 
                         if (!recipient || !amount) {
                             txResult.textContent = 'Please provide both recipient address and amount';
@@ -330,14 +464,28 @@
 
                         txResult.textContent = 'Preparing transaction...';
 
-                        const accounts = await provider.request({ method: 'eth_accounts' });
+                        const accounts = await provider.request({
+                            method: 'eth_accounts',
+                            chainId,
+                        });
+
                         if (!accounts || accounts.length === 0) {
-                            txResult.textContent = 'No account connected';
+                            txResult.textContent = 'No account connected on selected chain';
+                            return;
+                        }
+
+                        const isConnected = await provider.isConnected({
+                            chainId,
+                            timeout: 5000,
+                        });
+
+                        if (!isConnected) {
+                            txResult.textContent = 'Please connect to the selected chain first';
                             return;
                         }
 
                         // Convert ETH to wei
-                        const weiAmount = '0x' + (parseFloat(amount) * 1e18).toString(16);
+                        const weiAmount = BigInt(amount * 1e18).toString();
 
                         const txHash = await provider.request({
                             method: 'eth_sendTransaction',
@@ -349,6 +497,7 @@
                                     gas: '0x5208', // 21000 gas
                                 },
                             ],
+                            chainId,
                         });
 
                         txResult.textContent = `Transaction sent! Hash: ${txHash}`;
@@ -363,6 +512,7 @@
                 signBtn.addEventListener('click', async () => {
                     try {
                         const message = document.getElementById('message').value;
+                        const chainId = document.getElementById('messageChainSelector').value;
 
                         if (!message) {
                             signResult.textContent = 'Please enter a message to sign';
@@ -371,18 +521,30 @@
 
                         signResult.textContent = 'Preparing to sign...';
 
-                        const accounts = await provider.request({ method: 'eth_accounts' });
+                        const accounts = await provider.request({
+                            method: 'eth_accounts',
+                            chainId,
+                        });
+
                         if (!accounts || accounts.length === 0) {
-                            signResult.textContent = 'No account connected';
+                            signResult.textContent = 'No account connected on selected chain';
                             return;
                         }
 
-                        // Convert message to hex
-                        const msgHex = '0x' + Buffer.from(message, 'utf8').toString('hex');
+                        const isConnected = await provider.isConnected({
+                            chainId,
+                            timeout: 5000,
+                        });
+
+                        if (!isConnected) {
+                            signResult.textContent = 'Please connect to the selected chain first';
+                            return;
+                        }
 
                         const signature = await provider.request({
                             method: 'personal_sign',
-                            params: [msgHex, accounts[0]],
+                            params: [message, accounts[0]],
+                            chainId,
                         });
 
                         signResult.textContent = `Message signed! Signature: ${signature}`;
@@ -390,6 +552,140 @@
                         signResult.textContent = `Signing failed: ${error.message}`;
                     }
                 });
+
+                // Listen for disconnect events
+                provider.on('fusewallet_disconnect', (chainId) => {
+                    console.debug('Disconnect event received');
+                });
+
+                // Generate sample form for typed data
+                function generateTypedDataForm() {
+                    const exampleData = {
+                        domain: {
+                            name: 'Example DApp',
+                            version: '1',
+                            chainId: parseInt(document.getElementById('typedDataChainSelector').value, 16),
+                            verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+                        },
+                        types: {
+                            Person: [
+                                { name: 'name', type: 'string' },
+                                { name: 'wallet', type: 'address' },
+                            ],
+                            Mail: [
+                                { name: 'from', type: 'Person' },
+                                { name: 'to', type: 'Person' },
+                                { name: 'contents', type: 'string' },
+                            ],
+                        },
+                        primaryType: 'Mail',
+                        message: {
+                            from: {
+                                name: 'Alice',
+                                wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+                            },
+                            to: {
+                                name: 'Bob',
+                                wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+                            },
+                            contents: 'Hello, Bob!',
+                        },
+                    };
+
+                    // Display sample data in readonly textarea
+                    const typedDataFields = document.getElementById('typedDataFields');
+                    typedDataFields.innerHTML = `
+                        <label for="typedData">Typed Data:</label>
+                        <textarea id="typedData" readonly style="width: 100%; padding: 8px; margin: 5px 0 15px 0; min-height: 200px; font-family: monospace;">${JSON.stringify(exampleData, null, 2)}</textarea>
+                    `;
+
+                    // Update chainId when chain selection changes
+                    document.getElementById('typedDataChainSelector').addEventListener('change', function () {
+                        const typedData = JSON.parse(document.getElementById('typedData').value);
+                        typedData.domain.chainId = parseInt(this.value, 16);
+                        document.getElementById('typedData').value = JSON.stringify(typedData, null, 2);
+                    });
+                }
+
+                generateTypedDataForm();
+
+                // Sign typed data
+                const signTypedDataBtn = document.getElementById('signTypedDataBtn');
+                const typedDataResult = document.getElementById('typedDataResult');
+                signTypedDataBtn.addEventListener('click', async () => {
+                    try {
+                        const chainId = document.getElementById('typedDataChainSelector').value;
+                        const signVersion = document.getElementById('signVersion').value;
+                        const typedDataString = document.getElementById('typedData').value;
+
+                        typedDataResult.textContent = 'Preparing to sign typed data...';
+
+                        const accounts = await provider.request({
+                            method: 'eth_accounts',
+                            chainId,
+                        });
+
+                        if (!accounts || accounts.length === 0) {
+                            typedDataResult.textContent = 'No account connected on selected chain';
+                            return;
+                        }
+
+                        const isConnected = await provider.isConnected({
+                            chainId,
+                            timeout: 5000,
+                        });
+
+                        if (!isConnected) {
+                            typedDataResult.textContent = 'Please connect to the selected chain first';
+                            return;
+                        }
+
+                        // Construct params based on version
+                        let params;
+                        const typedData = JSON.parse(typedDataString);
+
+                        switch (signVersion) {
+                            case 'eth_signTypedData':
+                                // v1: [data, address]
+                                params = [typedData, accounts[0]];
+                                break;
+
+                            case 'eth_signTypedData_v3':
+                            case 'eth_signTypedData_v4':
+                                // v3/v4: [address, JSON string]
+                                params = [accounts[0], JSON.stringify(typedData)];
+                                break;
+                        }
+
+                        const signature = await provider.request({
+                            method: signVersion,
+                            params: params,
+                            chainId,
+                        });
+
+                        typedDataResult.textContent = `Typed data signed! Signature: ${signature}`;
+                    } catch (error) {
+                        typedDataResult.textContent = `Signing typed data failed: ${error.message}`;
+                        console.error('Signing error:', error);
+                    }
+                });
+
+                // Enable buttons if connected to any chain
+                const enableButtonsIfConnected = () => {
+                    const anyConnected = ['0x1', '0xaa36a7', '0x89', '0x13882', '0x38', '0x61'].some(
+                        async (chainId) => {
+                            return await provider.isConnected({ chainId });
+                        },
+                    );
+
+                    if (anyConnected) {
+                        document.getElementById('sendBtn').disabled = false;
+                        document.getElementById('signBtn').disabled = false;
+                        document.getElementById('signTypedDataBtn').disabled = false;
+                    }
+                };
+
+                enableButtonsIfConnected();
             }
 
             // Initialize when page loads

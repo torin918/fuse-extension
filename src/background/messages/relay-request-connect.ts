@@ -101,7 +101,6 @@ const handler: PlasmoMessaging.MessageHandler<RequestBody, ResponseBody> = async
                             return got_response({ ok: connected }, interval_id);
                         }
                     }
-
                     const window = await get_current_notification(false); // do not focus window
                     if (window === undefined && !popup) {
                         popup = true; // * only open notification once

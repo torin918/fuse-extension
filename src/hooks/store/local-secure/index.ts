@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { createWalletClient as createEvmWalletClient, http } from 'viem';
+import { createWalletClient as createEvmWalletClient, http, type PrivateKeyAccount } from 'viem';
 import { privateKeyToAccount as evmPrivateKeyToAccount } from 'viem/accounts';
 
 import { SecureStorage } from '@plasmohq/storage/secure';
@@ -143,7 +143,7 @@ export const useEvmWalletClientCreator = (chain: EvmChain) => {
                     bsc_test: () => current_identity_network.bsc_test,
                 });
                 if (!identity_network) return undefined;
-                const account = match_identity_network(identity_network, {
+                const account = match_identity_network<PrivateKeyAccount | undefined>(identity_network, {
                     ic: () => {
                         throw new Error('IC chain is not supported');
                     },

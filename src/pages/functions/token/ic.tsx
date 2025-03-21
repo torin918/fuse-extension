@@ -245,7 +245,6 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
                                 },
                                 {
                                     callback: () => {
-                                        // 滚动到Transactions部分
                                         transactionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                     },
                                     icon: 'icon-history',
