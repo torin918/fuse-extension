@@ -1,10 +1,12 @@
 import { Storage } from '@plasmohq/storage';
 
+import type { MessageResult } from '~lib/messages';
 import type { IdentityNetwork } from '~types/network';
 import type { FuseRecord, FuseRecordList } from '~types/records';
 
 import { format_record_date } from '../common';
 import {
+    LOCAL_KEY_ACTION_RESULT,
     LOCAL_KEY_CACHED_KEY,
     LOCAL_KEY_PASSWORD_HASHED,
     LOCAL_KEY_RECORD_COUNT,
@@ -138,4 +140,18 @@ export const push_local_record = async (identity_network: IdentityNetwork, now: 
     await LOCAL_STORAGE.set(key, next);
     await increment_local_record_count(identity_network);
     await assure_local_record_started(identity_network, now);
+};
+
+export const set_local_action_result = async <T, E>(message_id: string, result: MessageResult<T, E>) => {
+    const key = LOCAL_KEY_ACTION_RESULT(message_id);
+    await LOCAL_STORAGE.set(key, result);
+};
+export const get_local_action_result = async <T, E>(message_id: string) => {
+    const key = LOCAL_KEY_ACTION_RESULT(message_id);
+    return await LOCAL_STORAGE.get<MessageResult<T, E>>(key);
+};
+
+export const delete_local_action_result = async (message_id: string) => {
+    const key = LOCAL_KEY_ACTION_RESULT(message_id);
+    await LOCAL_STORAGE.remove(key);
 };

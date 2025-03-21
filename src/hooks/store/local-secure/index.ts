@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react';
-import { createWalletClient as createEvmWalletClient, http } from 'viem';
+import { useCallback } from 'react';
+import { createWalletClient as createEvmWalletClient, http, type PrivateKeyAccount } from 'viem';
 import { privateKeyToAccount as evmPrivateKeyToAccount } from 'viem/accounts';
 
 import { SecureStorage } from '@plasmohq/storage/secure';
@@ -104,17 +104,7 @@ export const useCurrentChainNetwork = () => {
 export const useCurrentConnectedApps = () => {
     const [unlocked] = useUnlocked();
     const storage = useSecureStorageBy(unlocked);
-    const [key_rings] = useKeyRingsInner(storage);
-    const current_chain_network = useCurrentChainNetwork();
-    const current_identity_network: CurrentIdentityNetwork | undefined = useMemo(() => {
-        if (!key_rings) return undefined;
-        const current = key_rings.keys.find((i) => i.id === key_rings.current);
-        if (!current) return undefined;
-        const address = current.address;
-        return {
-            ic: address.ic ? { chain: 'ic', owner: address.ic.owner, network: current_chain_network.ic } : undefined,
-        };
-    }, [key_rings, current_chain_network]);
+    const { current_identity_network } = useCurrentIdentity();
     return useCurrentConnectedAppsInner(storage, current_identity_network);
 };
 
@@ -154,7 +144,7 @@ export const useEvmWalletClientCreator = (chain: EvmChain) => {
                     bsc_test: () => current_identity_network.bsc_test,
                 });
                 if (!identity_network) return undefined;
-                const account = match_identity_network(identity_network, {
+                const account = match_identity_network<PrivateKeyAccount | undefined>(identity_network, {
                     ic: () => {
                         throw new Error('IC chain is not supported');
                     },
@@ -317,6 +307,7 @@ export const get_current_info = async (
         storage,
         current_identity_network,
     );
+    console.debug('🚀 ~ current_connected_apps:', current_connected_apps);
 
     return {
         current_identity: key_rings.current,

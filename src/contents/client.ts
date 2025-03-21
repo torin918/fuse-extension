@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PlasmoCSConfig } from 'plasmo';
 
-import { FuseClient } from '~types/clients/ic';
+import { FuseClientByEvm } from '~types/clients/evm';
+import { FuseClientByIc } from '~types/clients/ic';
 
 export const config: PlasmoCSConfig = {
     matches: [
@@ -16,30 +18,32 @@ export const config: PlasmoCSConfig = {
 const [hidden, visibilityChange] = (() => {
     if (typeof document.hidden !== 'undefined') {
         return ['hidden', 'visibilitychange'];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } else if (typeof (document as any).msHidden !== 'undefined') {
         return ['msHidden', 'msvisibilitychange']; // cspell: disable-line
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } else if (typeof (document as any).webkitHidden !== 'undefined') {
         return ['webkitHidden', 'webkitvisibilitychange']; // cspell: disable-line
     }
     return [];
 })();
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 let is_page_visible = hidden ? !(document as any)[hidden] : false;
 // console.debug(`🚀 ~ is_page_visible:`, is_page_visible);
 if (hidden && visibilityChange) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     document.addEventListener(visibilityChange, () => (is_page_visible = !(document as any)[hidden]), false);
 }
 
 // inject
 const name = 'fuse'; // export name
-const client = new FuseClient(() => is_page_visible);
-
+const ic_client = new FuseClientByIc(() => is_page_visible);
+const evm_client = new FuseClientByEvm();
 if (typeof window !== 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const w = window as any;
     if (w.ic === undefined) w.ic = {};
-    w.ic[name] = client;
+    w.ic[name] = ic_client;
+    if (w.fusewallet === undefined) {
+        w.fusewallet = {
+            ic: ic_client,
+            evm: evm_client,
+        };
+    }
 }

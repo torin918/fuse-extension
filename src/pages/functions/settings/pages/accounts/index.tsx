@@ -2,11 +2,12 @@ import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-p
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BsArrowsMove } from 'react-icons/bs';
 
+import { broadcastMessage } from '~background';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
-import { useIdentityKeys } from '~hooks/store/local-secure';
+import { useCurrentIdentity, useIdentityKeys } from '~hooks/store/local-secure';
 import { useSonnerToast } from '~hooks/toast';
 import { cn } from '~lib/utils/cn';
 import { resort_list } from '~lib/utils/sort';
@@ -25,7 +26,6 @@ const AccountItem = ({
     switchIdentity: (id: string) => Promise<boolean | undefined>;
 }) => {
     const { navigate } = useGoto();
-
     return (
         <div
             className="flex items-center justify-between"

@@ -7,6 +7,8 @@ import { match_popup_action, type PopupAction } from '~types/actions';
 import type { WindowType } from '~types/pages';
 import { CurrentState } from '~types/state';
 
+import ApproveEvmSendTransactionActionPage from './approve/evm/send-transaction';
+import ApproveEvmSignMessageActionPage from './approve/evm/sign-message';
 import ApproveIcActionPage from './approve/ic';
 import ConnectActionPage from './connect';
 
@@ -49,6 +51,20 @@ const SingleActionPage = ({
                     <ApproveIcActionPage
                         action={action}
                         approve_ic={approve_ic}
+                        deletePopupAction={deletePopupAction}
+                    />
+                ),
+                approve_evm_send_transaction: (approve_evm_send_transaction) => (
+                    <ApproveEvmSendTransactionActionPage
+                        action={action}
+                        approveEvmSendTransactionAction={approve_evm_send_transaction}
+                        deletePopupAction={deletePopupAction}
+                    />
+                ),
+                approve_evm_sign_message: (approve_evm_sign_message) => (
+                    <ApproveEvmSignMessageActionPage
+                        action={action}
+                        approveEvmSignMessageAction={approve_evm_sign_message}
                         deletePopupAction={deletePopupAction}
                     />
                 ),

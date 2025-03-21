@@ -63,7 +63,8 @@ export const LOCAL_KEY_RECORD_DATE = (identity_network: IdentityNetwork, date: s
     `${LOCAL_KEY_PREFIX_RECORD}:${get_identity_network_key(identity_network)}:date:${date}`; // * local
 // !react query
 export const LOCAL_KEY_REACT_QUERY_CACHE = `${LOCAL_KEY_PREFIX}:react:query:cache`; // * local
-
+// action result
+export const LOCAL_KEY_ACTION_RESULT = (message_id: string) => `${LOCAL_KEY_PREFIX}:action:result:${message_id}`; // * local
 // ############### SESSION ###############
 
 export const SESSION_KEY_UNLOCKED = `${SESSION_KEY_PREFIX}:unlocked`; // * session
