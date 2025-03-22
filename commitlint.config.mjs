@@ -20,7 +20,7 @@ export default {
 
         'scope-case': [2, 'always', 'lower-case'],
 
-        'subject-min-length': [2, 'always', 10],
+        'subject-min-length': [2, 'always', 4],
         'subject-max-length': [2, 'always', 100],
         'subject-case': [2, 'never', ['sentence-case', 'start-case', 'pascal-case', 'upper-case']],
         'subject-empty': [2, 'never'],
