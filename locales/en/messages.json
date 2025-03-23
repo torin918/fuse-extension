@@ -10,9 +10,5 @@
     "popup": {
         "message": "Logic is the beginning of wisdom, not the end.",
         "description": "Popup message."
-    },
-    "test_popup": {
-        "message": "en123",
-        "description": "Popup message."
     }
 }
