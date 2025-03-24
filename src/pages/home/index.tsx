@@ -15,7 +15,12 @@ import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import type { ShowIdentityKey } from '~types/identity';
 import { get_token_unique_id, group_tokens_by_chain, TokenTag } from '~types/tokens';
+import { BscTokenStandard } from '~types/tokens/chain/bsc';
+import { BscTestTokenStandard } from '~types/tokens/chain/bsc-test';
 import { EthereumTokenStandard } from '~types/tokens/chain/ethereum';
+import { EthereumTestSepoliaTokenStandard } from '~types/tokens/chain/ethereum-test-sepolia';
+import { PolygonTokenStandard } from '~types/tokens/chain/polygon';
+import { PolygonTestAmoyTokenStandard } from '~types/tokens/chain/polygon-test-amoy';
 
 import { AddressTooltip } from './components/address-tooltip';
 import SelectChain from './components/select-chain';
@@ -58,6 +63,7 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
             return true;
         });
     }, [current_tokens, show_networks]);
+    console.debug('🚀 ~ constshow_tokens=useMemo ~ show_tokens:', show_tokens);
 
     const token_prices = useTokenPrices(current_tokens);
 
@@ -68,19 +74,55 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
         [tokens_by_chain.ic],
     );
     const [ic_balances] = useTokenBalanceIcByRefreshing(current_identity.address.ic?.owner, canisters, 15000);
-    const { balances: evm_balances } = useERC20Balances(
+
+    const { balances: ethereum_balances } = useERC20Balances(
         'ethereum',
         current_identity.address.ethereum?.address,
         tokens_by_chain.ethereum
             .filter((t) => !t.info.ethereum.standards.includes(EthereumTokenStandard.NATIVE))
             .map((t) => t.info.ethereum.address),
     );
-    console.debug('🚀 ~ InnerHomePage ~ evm_balances:', evm_balances);
+    const { balances: ethereum_test_sepolia_balances } = useERC20Balances(
+        'ethereum-test-sepolia',
+        current_identity.address.ethereum_test_sepolia?.address,
+        tokens_by_chain.ethereum_test_sepolia
+            .filter((t) => !t.info.ethereum_test_sepolia.standards.includes(EthereumTestSepoliaTokenStandard.NATIVE))
+            .map((t) => t.info.ethereum_test_sepolia.address),
+    );
+    const { balances: bsc_balances } = useERC20Balances(
+        'bsc',
+        current_identity.address.bsc?.address,
+        tokens_by_chain.bsc
+            .filter((t) => !t.info.bsc.standards.includes(BscTokenStandard.NATIVE))
+            .map((t) => t.info.bsc.address),
+    );
+    const { balances: bsc_test_balances } = useERC20Balances(
+        'bsc-test',
+        current_identity.address.bsc_test?.address,
+        tokens_by_chain.bsc_test
+            .filter((t) => !t.info.bsc_test.standards.includes(BscTestTokenStandard.NATIVE))
+            .map((t) => t.info.bsc_test.address),
+    );
+    const { balances: polygon_balances } = useERC20Balances(
+        'polygon',
+        current_identity.address.polygon?.address,
+        tokens_by_chain.polygon
+            .filter((t) => !t.info.polygon.standards.includes(PolygonTokenStandard.NATIVE))
+            .map((t) => t.info.polygon.address),
+    );
+    const { balances: polygon_test_amoy_balances } = useERC20Balances(
+        'polygon-test-amoy',
+        current_identity.address.polygon_test_amoy?.address,
+        tokens_by_chain.polygon_test_amoy
+            .filter((t) => !t.info.polygon_test_amoy.standards.includes(PolygonTestAmoyTokenStandard.NATIVE))
+            .map((t) => t.info.polygon_test_amoy.address),
+    );
+
     const { usd, usd_changed, usd_changed_24h } = useTokenPriceUsd(current_tokens, token_prices, ic_balances);
 
     const ref = useRef<HTMLDivElement>(null);
     return (
-        <div ref={ref} className="relative w-full h-full">
+        <div ref={ref} className="relative h-full w-full">
             <div className="absolute top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
                 <div className="flex items-center">
                     <div
@@ -103,7 +145,7 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                         container={ref.current ?? undefined}
                         trigger={
                             <div className="flex flex-row items-center justify-center text-[#EEEEEE] transition duration-300 hover:text-[#FFCF13]">
-                                <span className="px-2 text-base cursor-pointer">{current_identity.name}</span>
+                                <span className="cursor-pointer px-2 text-base">{current_identity.name}</span>
                                 <Icon name="icon-copy" className="h-[14px] w-[14px] cursor-pointer" />
                             </div>
                         }
@@ -159,9 +201,9 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
             </div>
 
             <div className="h-full flex-1 overflow-y-auto pb-5 pt-[60px]">
-                <div className="py-2 w-full">
+                <div className="w-full py-2">
                     <div className="block text-center text-4xl font-semibold text-[#FFCF13]">${usd}</div>
-                    <div className="flex justify-center items-center mt-2 w-full">
+                    <div className="mt-2 flex w-full items-center justify-center">
                         <span className="mr-2 text-sm text-[#00C431]">
                             {usd_changed.gt(BigNumber(0)) ? '+' : usd_changed.lt(BigNumber(0)) ? '-' : ''}$
                             {usd_changed.abs().toFormat(2)}
@@ -173,7 +215,7 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
                     </div>
                 </div>
 
-                <div className="flex justify-between items-center px-5 mt-2 w-full">
+                <div className="mt-2 flex w-full items-center justify-between px-5">
                     {[
                         { callback: () => navigate('/home/transfer'), icon: 'icon-send', name: 'Send' },
                         { callback: () => navigate('/home/receive'), icon: 'icon-receive', name: 'Receive' },
