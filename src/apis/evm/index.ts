@@ -182,9 +182,18 @@ export const getMultipleErc20TokenPrices = async (chainId: number, tokens: Token
             throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
-        const result: Awaited<ReturnType<typeof Moralis.EvmApi.token.getMultipleTokenPrices>> = await response.json();
+        const result: Awaited<ReturnType<typeof Moralis.EvmApi.token.getMultipleTokenPrices>>['raw'] =
+            await response.json();
 
-        return result.raw;
+        return result.reduce(
+            (acc, token) => {
+                if (token?.tokenAddress) {
+                    acc[token.tokenAddress.toLowerCase()] = token;
+                }
+                return acc;
+            },
+            {} as Record<string, (typeof result)[0]>,
+        );
     } catch (error) {
         console.error('Error fetching multiple token prices:', error);
         throw error;

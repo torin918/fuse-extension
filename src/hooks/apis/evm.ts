@@ -9,7 +9,7 @@ import {
     type GetErc20TransactionsHistoryArgs,
     type GetTransactionsHistoryArgs,
 } from '~apis/evm';
-import { useEvmChainIdentityNetworkByChain } from '~hooks/evm/viem';
+import { SHOULD_DEHYDRATE_QUERY_KEY, useEvmChainIdentityNetworkByChain } from '~hooks/evm/viem';
 import type { EvmChain } from '~types/chain';
 import { get_identity_network_key } from '~types/network';
 
@@ -121,7 +121,7 @@ export const useMultipleTokenPrices = (args: { addresses: Address[]; chain: EvmC
     const enabled = !!identity_key && !!chainId && !!addresses;
 
     return useQuery({
-        queryKey: [identity_key, 'multiple_token_prices', addresses],
+        queryKey: [identity_key, 'multiple_token_prices', addresses, SHOULD_DEHYDRATE_QUERY_KEY],
         queryFn: () => {
             if (!chainId) throw new Error('Chain ID is not set');
             return getMultipleErc20TokenPrices(
