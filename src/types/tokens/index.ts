@@ -44,7 +44,6 @@ export type CombinedTokenInfo =
     | { bsc_test: BscTestTokenInfo };
 
 export type AnyTokenInfo =
-    | IcTokenInfo
     | EthereumTokenInfo
     | EthereumTestSepoliaTokenInfo
     | PolygonTokenInfo
