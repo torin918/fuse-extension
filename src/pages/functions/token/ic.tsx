@@ -26,7 +26,7 @@ import type { TokenTransferredIcRecord } from '~types/records/token/transferred_
 import type { IcTokenInfo } from '~types/tokens/chain/ic';
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 
-import TokenMetadata from './components/token-metadata';
+import { TokenMetadataIc } from './components/token-metadata';
 import TransferDetailDrawer from './components/transfer-detail-drawer';
 
 const TransferItem = ({
@@ -265,7 +265,7 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
                             ))}
                         </div>
 
-                        <TokenMetadata canister_id={canister_id} />
+                        <TokenMetadataIc canister_id={canister_id} />
 
                         <div ref={transactionsRef} className="mt-5 w-full pb-5">
                             <h3 className="block px-5 pb-4 text-sm text-[#999999]">Transactions</h3>

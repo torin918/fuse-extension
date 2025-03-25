@@ -1,20 +1,31 @@
 import BigNumber from 'bignumber.js';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CiWallet } from 'react-icons/ci';
+import { useInView } from 'react-intersection-observer';
 import { useLocation } from 'react-router-dom';
 
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
+import { useWalletNativeTransactionsHistory } from '~hooks/apis/evm';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import { FunctionHeader } from '~pages/functions/components/header';
+import type { EvmChain } from '~types/chain';
 import type { TokenTransferredIcRecord } from '~types/records/token/transferred_ic';
 import { match_combined_token_info, type CurrentTokenShowInfo } from '~types/tokens';
+import { BscTokenStandard } from '~types/tokens/chain/bsc';
+import { BscTestTokenStandard } from '~types/tokens/chain/bsc-test';
+import { EthereumTokenStandard } from '~types/tokens/chain/ethereum';
+import { EthereumTestSepoliaTokenStandard } from '~types/tokens/chain/ethereum-test-sepolia';
 import type { IcTokenInfo } from '~types/tokens/chain/ic';
+import { PolygonTokenStandard } from '~types/tokens/chain/polygon';
+import { PolygonTestAmoyTokenStandard } from '~types/tokens/chain/polygon-test-amoy';
 import { get_token_logo } from '~types/tokens/preset';
+
+import { TokenMetadataEvm } from './components/token-metadata';
 
 const TransferItem = ({
     item,
@@ -88,38 +99,74 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
     useEffect(() => {
         get_token_logo(token.info).then(setLogo);
     }, [token]);
-    const { symbol, name } = match_combined_token_info(token.info, {
+    const { symbol, name, chain, isNative } = match_combined_token_info<{
+        symbol: string;
+        name: string;
+        chain: EvmChain;
+        isNative: boolean;
+    }>(token.info, {
         ic: () => {
             throw new Error('ic token not supported');
         },
         ethereum: (ethereum) => ({
             symbol: ethereum.symbol,
             name: ethereum.name,
+            chain: 'ethereum',
+            isNative: ethereum.standards.includes(EthereumTokenStandard.NATIVE),
         }),
         ethereum_test_sepolia: (ethereum_test_sepolia) => ({
             symbol: ethereum_test_sepolia.symbol,
             name: ethereum_test_sepolia.name,
+            chain: 'ethereum-test-sepolia',
+            isNative: ethereum_test_sepolia.standards.includes(EthereumTestSepoliaTokenStandard.NATIVE),
         }),
         polygon: (polygon) => ({
             symbol: polygon.symbol,
             name: polygon.name,
+            chain: 'polygon',
+            isNative: polygon.standards.includes(PolygonTokenStandard.NATIVE),
         }),
         polygon_test_amoy: (polygon_test_amoy) => ({
             symbol: polygon_test_amoy.symbol,
             name: polygon_test_amoy.name,
+            chain: 'polygon-test-amoy',
+            isNative: polygon_test_amoy.standards.includes(PolygonTestAmoyTokenStandard.NATIVE),
         }),
         bsc: (bsc) => ({
             symbol: bsc.symbol,
             name: bsc.name,
+            chain: 'bsc',
+            isNative: bsc.standards.includes(BscTokenStandard.NATIVE),
         }),
         bsc_test: (bsc_test) => ({
             symbol: bsc_test.symbol,
             name: bsc_test.name,
+            chain: 'bsc-test',
+            isNative: bsc_test.standards.includes(BscTestTokenStandard.NATIVE),
         }),
     });
     const ref = useRef<HTMLDivElement>(null);
 
     const transactionsRef = useRef<HTMLDivElement>(null);
+    const { ref: loadMoreRef, inView } = useInView();
+    const {
+        data: transactionsData,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading,
+    } = useWalletNativeTransactionsHistory({
+        chain,
+        limit: 10,
+        enabled: isNative,
+    });
+    console.debug('🚀 ~ InnerPage ~ transactionsData:', transactionsData);
+
+    useEffect(() => {
+        if (inView && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+        }
+    }, [inView, hasNextPage, isFetchingNextPage]);
 
     return (
         <div ref={ref} className="relative h-full w-full overflow-hidden">
@@ -213,32 +260,63 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
                             ))}
                         </div>
 
-                        {/* <TokenMetadata canister_id={canister_id} /> */}
+                        <TokenMetadataEvm token={token} />
 
                         <div ref={transactionsRef} className="mt-5 w-full pb-5">
                             <h3 className="block px-5 pb-4 text-sm text-[#999999]">Transactions</h3>
                             <div className="flex w-full flex-col">
-                                {/* {Object.entries(token_transferred_ic_list).map(([date, records]) => (
-                                    <div className="w-full" key={`transfer_${date}`}>
-                                        <div className="px-5 py-[5px] text-xs text-[#999999]">{date}</div>
-                                        {records &&
-                                            records.map((record, idx) => {
-                                                return (
-                                                    <div className="w-full" key={`transfer_item_${idx}`}>
-                                                        <TransferDetailDrawer
-                                                            trigger={
-                                                                <TransferItem item={record} logo={logo} token={token} />
-                                                            }
-                                                            currentDetail={record}
-                                                            token={token}
-                                                            logo={logo}
-                                                            container={ref.current ?? undefined}
-                                                        />
+                                {isLoading ? (
+                                    Array(3)
+                                        .fill(0)
+                                        .map((_, idx) => (
+                                            <div
+                                                key={idx}
+                                                className="flex w-full items-center justify-between px-5 py-[10px]"
+                                            >
+                                                <div className="flex items-center">
+                                                    <div className="h-10 w-10 animate-pulse rounded-full bg-[#181818]" />
+                                                    <div className="ml-[10px] space-y-2">
+                                                        <div className="h-4 w-20 animate-pulse rounded bg-[#181818]" />
+                                                        <div className="h-3 w-32 animate-pulse rounded bg-[#181818]" />
                                                     </div>
-                                                );
-                                            })}
-                                    </div>
-                                ))} */}
+                                                </div>
+                                                <div className="h-4 w-24 animate-pulse rounded bg-[#181818]" />
+                                            </div>
+                                        ))
+                                ) : (
+                                    <>
+                                        {transactionsData?.pages.map((page, pageIndex) => (
+                                            <React.Fragment key={pageIndex}>
+                                                {page.data.map((transaction, idx) => (
+                                                    <div key={`${pageIndex}-${idx}`} className="w-full">
+                                                        <div>{transaction.hash}</div>
+                                                    </div>
+                                                ))}
+                                            </React.Fragment>
+                                        ))}
+
+                                        <div ref={loadMoreRef} className="py-4">
+                                            {isFetchingNextPage && (
+                                                <div className="flex justify-center">
+                                                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#FFCF13] border-t-transparent" />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {!hasNextPage && transactionsData?.pages[0]?.data.length && (
+                                            <div className="py-4 text-center text-sm text-[#999999]">
+                                                No more transactions
+                                            </div>
+                                        )}
+
+                                        {transactionsData?.pages[0]?.data.length === 0 && (
+                                            <div className="flex flex-col items-center justify-center py-8">
+                                                <Icon name="icon-empty" className="h-12 w-12 text-[#999999]" />
+                                                <span className="mt-2 text-sm text-[#999999]">No transactions yet</span>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
