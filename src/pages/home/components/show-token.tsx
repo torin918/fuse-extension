@@ -5,7 +5,7 @@ import type { GotoFunction } from '~hooks/memo/goto';
 import { match_combined_token_info, type CurrentTokenShowInfo } from '~types/tokens';
 import { get_token_logo } from '~types/tokens/preset';
 
-export const HomeShowToken = ({ goto, info }: { goto: GotoFunction; info: CurrentTokenShowInfo }) => {
+export const TokenCard = ({ goto, info }: { goto: GotoFunction; info: CurrentTokenShowInfo }) => {
     const { token, price, balance, usd_value } = info;
     const { price: price_value, price_change_24h } = price;
     const [logo, setLogo] = useState<string>();
