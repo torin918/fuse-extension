@@ -228,7 +228,7 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
                         <div className="my-2 flex w-full items-center justify-between px-5">
                             {[
                                 {
-                                    callback: () => navigate('/home/token/evm/transfer', { state: info }),
+                                    callback: () => navigate('/home/token/evm/transfer', { state: { chain, address } }),
                                     icon: 'icon-send',
                                     name: 'Send',
                                 },

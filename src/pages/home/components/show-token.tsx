@@ -73,7 +73,7 @@ export const TokenCard = ({
                 return;
             }
 
-            goto(`/home/token/evm/transfer`, { state: info });
+            goto(`/home/token/evm/transfer`, { state: chainAndAddress });
             return;
         }
         if (type === TransferType.RECEIVE) {

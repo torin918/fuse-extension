@@ -45,7 +45,7 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
     const { tokens_info, all_usd, all_usd_changed, all_usd_changed_24h } = useCurrentTokensShowInfo();
     return (
         <div ref={ref} className="relative h-full w-full">
-            <div className="absolute top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
+            <div className="absolute top-0 z-10 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">
                 <div className="flex items-center">
                     <div
                         className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#333333] text-lg font-semibold text-[#999999]"
