@@ -99,11 +99,12 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
     useEffect(() => {
         get_token_logo(token.info).then(setLogo);
     }, [token]);
-    const { symbol, name, chain, isNative } = match_combined_token_info<{
+    const { symbol, name, chain, isNative, address } = match_combined_token_info<{
         symbol: string;
         name: string;
         chain: EvmChain;
         isNative: boolean;
+        address: string;
     }>(token.info, {
         ic: () => {
             throw new Error('ic token not supported');
@@ -112,36 +113,42 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
             symbol: ethereum.symbol,
             name: ethereum.name,
             chain: 'ethereum',
+            address: ethereum.address,
             isNative: ethereum.standards.includes(EthereumTokenStandard.NATIVE),
         }),
         ethereum_test_sepolia: (ethereum_test_sepolia) => ({
             symbol: ethereum_test_sepolia.symbol,
             name: ethereum_test_sepolia.name,
             chain: 'ethereum-test-sepolia',
+            address: ethereum_test_sepolia.address,
             isNative: ethereum_test_sepolia.standards.includes(EthereumTestSepoliaTokenStandard.NATIVE),
         }),
         polygon: (polygon) => ({
             symbol: polygon.symbol,
             name: polygon.name,
             chain: 'polygon',
+            address: polygon.address,
             isNative: polygon.standards.includes(PolygonTokenStandard.NATIVE),
         }),
         polygon_test_amoy: (polygon_test_amoy) => ({
             symbol: polygon_test_amoy.symbol,
             name: polygon_test_amoy.name,
             chain: 'polygon-test-amoy',
+            address: polygon_test_amoy.address,
             isNative: polygon_test_amoy.standards.includes(PolygonTestAmoyTokenStandard.NATIVE),
         }),
         bsc: (bsc) => ({
             symbol: bsc.symbol,
             name: bsc.name,
             chain: 'bsc',
+            address: bsc.address,
             isNative: bsc.standards.includes(BscTokenStandard.NATIVE),
         }),
         bsc_test: (bsc_test) => ({
             symbol: bsc_test.symbol,
             name: bsc_test.name,
             chain: 'bsc-test',
+            address: bsc_test.address,
             isNative: bsc_test.standards.includes(BscTestTokenStandard.NATIVE),
         }),
     });
@@ -226,7 +233,8 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
                                     name: 'Send',
                                 },
                                 {
-                                    callback: () => navigate('/home/token/evm/receive'),
+                                    // callback: () => navigate('/home/token/evm/receive'),
+                                    callback: () => navigate('/home/receive', { state: { chain, address } }),
                                     icon: 'icon-receive',
                                     name: 'Receive',
                                 },

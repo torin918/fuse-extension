@@ -1,6 +1,7 @@
 import Fuse from 'fuse.js';
 import { throttle } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
@@ -12,7 +13,15 @@ import { FunctionHeader } from '~pages/functions/components/header';
 import { TokenCard } from '~pages/home/components/show-token';
 import { get_token_unique_id } from '~types/tokens';
 
+enum TransferType {
+    TRANSFER = 'transfer',
+    RECEIVE = 'receive',
+    DETAILS = 'details',
+}
+
 function FunctionTransferPage() {
+    const { type = TransferType.DETAILS } = useParams<{ type: TransferType }>();
+
     const current_state = useCurrentState();
 
     const { setHide, goto: _goto, navigate } = useGoto();
@@ -99,6 +108,7 @@ function FunctionTransferPage() {
                                     typeof path === 'number' ? navigate(path) : navigate(path, options)
                                 }
                                 info={info}
+                                type={type}
                             />
                         ))}
                     </div>

@@ -145,8 +145,9 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
 
                 <div className="mt-2 flex w-full items-center justify-between px-5">
                     {[
-                        { callback: () => navigate('/home/transfer'), icon: 'icon-send', name: 'Send' },
-                        { callback: () => navigate('/home/receive'), icon: 'icon-receive', name: 'Receive' },
+                        { callback: () => navigate('/home/transfer/transfer'), icon: 'icon-send', name: 'Send' },
+                        // { callback: () => navigate('/home/receive'), icon: 'icon-receive', name: 'Receive' },
+                        { callback: () => navigate('/home/transfer/receive'), icon: 'icon-receive', name: 'Receive' },
                         {
                             callback: () => {
                                 toast.info('Come soon');

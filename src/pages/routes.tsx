@@ -91,7 +91,7 @@ export const getRoutes = (wt: WindowType) => {
         // -------------- home icons --------------
 
         // send
-        ...(hit(wt, []) ? [{ path: '/home/transfer', element: <FunctionTransferPage   /> }] : []),
+        ...(hit(wt, []) ? [{ path: '/home/transfer/:type', element: <FunctionTransferPage   /> }] : []),
         // send token
         ...(hit(wt, []) ? [{ path: '/home/transfer/token/ic', element: <FunctionTransferTokenIcPage   /> }] : []),
 

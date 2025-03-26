@@ -1,4 +1,5 @@
 import { get_cached_data } from '~hooks/store/local';
+import { match_chain, type Chain } from '~types/chain';
 
 import { is_same_token_info, match_combined_token_info, TokenTag, type CombinedTokenInfo, type TokenInfo } from '..';
 import {
@@ -93,6 +94,18 @@ export const get_token_logo = async (info: CombinedTokenInfo): Promise<string | 
     if (preset) return preset;
     const key = get_token_logo_key(info);
     return get_cached_data(key, async () => undefined, 1000 * 60 * 60 * 24 * 365 * 100);
+};
+
+export const get_token_logo_by_address = async (address: string, chain: Chain): Promise<string | undefined> => {
+    return match_chain(chain, {
+        ic: () => PRESET_LOGO_IC[`ic#${address}`],
+        ethereum: () => get_token_logo_from_covalent(address, 1),
+        ethereum_test_sepolia: () => get_token_logo_from_covalent(address, 11155111),
+        polygon: () => PRESET_LOGO_POLYGON[address] ?? get_token_logo_from_covalent(address, 137),
+        polygon_test_amoy: () => get_token_logo_from_covalent(address, 80001),
+        bsc: () => get_token_logo_from_covalent(address, 56),
+        bsc_test: () => get_token_logo_from_covalent(address, 97),
+    });
 };
 
 export const DEFAULT_TOKEN_INFO: TokenInfo[] = [
