@@ -271,16 +271,16 @@ const TokenMetadataEvm = ({ token }: { token: TokenInfo }) => {
 
                         return (
                             <span key={`${key}-${value}`} onClick={() => window.open(value, '_blank')}>
-                                {key === 'Website' && (
+                                {key === 'website' && (
                                     <BsGlobe className="h-4 w-4 cursor-pointer duration-300 hover:text-[#FFCF13]" />
                                 )}
-                                {key === 'Telegram' && (
-                                    <BsTelegram className="h-4 w-4 cursor-pointer duration-300 hover:text-[#FFCF13]" />
-                                )}
-                                {key === 'Twitter' && (
+                                {key === 'twitter' && (
                                     <BsTwitterX className="h-4 w-4 cursor-pointer duration-300 hover:text-[#FFCF13]" />
                                 )}
-                                {key === 'Discord' && (
+                                {key === 'telegram' && (
+                                    <BsTelegram className="h-4 w-4 cursor-pointer duration-300 hover:text-[#FFCF13]" />
+                                )}
+                                {/* {key === 'Discord' && (
                                     <BsDiscord className="h-4 w-4 cursor-pointer duration-300 hover:text-[#FFCF13]" />
                                 )}
                                 {key === 'Github' && (
@@ -288,7 +288,7 @@ const TokenMetadataEvm = ({ token }: { token: TokenInfo }) => {
                                 )}
                                 {key === 'Medium' && (
                                     <BsMedium className="h-4 w-4 cursor-pointer duration-300 hover:text-[#FFCF13]" />
-                                )}
+                                )} */}
                             </span>
                         );
                     })}
