@@ -316,25 +316,15 @@ interface TokenDetail {
  * @returns Token Detail
  */
 export const getTokenDetail = async (chainId: number, address: Address, isNative = false) => {
-    const queryParams =
-        'localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false';
-    let url = GECKO_PUBLIC_API_BASE_URL;
-    switch (chainId) {
-        case 1:
-            url += `/coins/ethereum${isNative ? '' : `/contract/${address.toLowerCase()}`}`;
-            break;
-        case 56:
-            url += `/coins/bsc${isNative ? '' : `/contract/${address.toLowerCase()}`}`;
-            break;
-        case 137:
-            url += `/coins/polygon${isNative ? '' : `/contract/${address.toLowerCase()}`}`;
-            break;
-        default:
-            // not supported
-            return undefined;
+    const params = new URLSearchParams({
+        chainId: `${chainId}`,
+        address,
+    });
+    if (isNative) {
+        params.append('isNative', 'true');
     }
     try {
-        const response = await fetch(`${url}/?${queryParams}`);
+        const response = await fetch(`${API_BASE_URL}/api/token-detail?${params}`);
 
         if (!response.ok) {
             const errorData = await response.json();
