@@ -47,7 +47,7 @@ function FunctionTokenViewPage() {
 
     const { setHide, goto: _goto } = useGoto();
 
-    const [custom, { pushCustomIcToken, removeCustomToken }] = useTokenInfoCustom();
+    const [custom, { pushCustomIcToken, pushCustomToken, removeCustomToken }] = useTokenInfoCustom();
     const [current, { pushToken, removeToken, resortToken }] = useTokenInfoCurrent();
 
     const [search, setSearch] = useState('');
@@ -167,6 +167,11 @@ function FunctionTokenViewPage() {
                                         if (token) pushToken(token);
                                     });
                                 }}
+                                pushCustomToken={async (token, chain) => {
+                                    pushCustomToken(token, chain).then((token) => {
+                                        if (token) pushToken(token);
+                                    });
+                                }}
                             />
                         </div>
 
@@ -210,6 +215,11 @@ function FunctionTokenViewPage() {
                                                         isTokenExist={isTokenExist}
                                                         pushIcToken={async (ic_token) => {
                                                             pushCustomIcToken(ic_token).then((token) => {
+                                                                if (token) pushToken(token);
+                                                            });
+                                                        }}
+                                                        pushCustomToken={async (token, chain) => {
+                                                            pushCustomToken(token, chain).then((token) => {
                                                                 if (token) pushToken(token);
                                                             });
                                                         }}
