@@ -16,10 +16,10 @@ import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
 import { useSonnerToast } from '~hooks/toast';
+import TokenLogo from '~pages/home/components/token-logo';
 import { match_chain, type Chain } from '~types/chain';
 
 import { FunctionHeader } from './components/header';
-import TokenLogo from './transfer/components/token-logo';
 
 function FunctionReceivePage() {
     const toast = useSonnerToast();
