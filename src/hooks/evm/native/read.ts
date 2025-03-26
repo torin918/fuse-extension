@@ -18,7 +18,7 @@ export const useNativeBalance = (chain: EvmChain) => {
             if (!client) throw new Error('Client is required');
             if (!identity_network) throw new Error('evm chain is required');
             const balance = await client.getBalance({ address: identity_network.address });
-            return balance;
+            return balance.toString();
         },
         enabled,
         refetchInterval: 10000,

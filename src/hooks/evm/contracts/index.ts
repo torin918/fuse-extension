@@ -14,7 +14,7 @@ import { useEvmWalletClientCreator } from '~hooks/store/local-secure';
 import type { EvmChain } from '~types/chain';
 import { get_identity_network_key } from '~types/network';
 
-import { useEvmChainIdentityNetworkByChain, usePublicClientByChain } from '../viem';
+import { SHOULD_DEHYDRATE_QUERY_KEY, useEvmChainIdentityNetworkByChain, usePublicClientByChain } from '../viem';
 
 export interface UseReadContractConfig<
     TAbi extends Abi | readonly unknown[],
@@ -27,7 +27,8 @@ export interface UseReadContractConfig<
     args?: ContractFunctionArgs<TAbi, 'pure' | 'view', TFunctionName>;
     queryOptions?: Omit<UseQueryOptions, 'queryFn' | 'queryKey'>;
 }
-
+// need to de-hydrate query
+const SHOULD_DEHYDRATE_QUERY_FUNCTION_NAME = ['balanceOf', 'aggregate3'];
 export const useReadContract = <
     TAbi extends Abi | readonly unknown[],
     TFunctionName extends ContractFunctionName<TAbi, 'pure' | 'view'>,
@@ -38,7 +39,16 @@ export const useReadContract = <
     const client = usePublicClientByChain(chain);
     const identity_network = useEvmChainIdentityNetworkByChain(chain);
     const identity_key = identity_network && get_identity_network_key(identity_network);
-    const queryKey = identity_key ? [identity_key, 'contract', address, functionName, args] : [];
+    const queryKey = identity_key
+        ? [
+              identity_key,
+              'contract',
+              address,
+              functionName,
+              args,
+              SHOULD_DEHYDRATE_QUERY_FUNCTION_NAME.includes(functionName) ? SHOULD_DEHYDRATE_QUERY_KEY : undefined,
+          ]
+        : [];
     const enabled = !!client && !!(!queryOptions || queryOptions.enabled);
     return useQuery({
         queryKey,

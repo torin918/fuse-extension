@@ -51,13 +51,7 @@ import {
     TOKEN_INFO_POLYGON_USDT,
     TOKEN_INFO_POLYGON_WMATIC,
 } from './polygon';
-import {
-    PRESET_ALL_TOKEN_INFO_POLYGON_TEST_AMOY,
-    TOKEN_INFO_POLYGON_TEST_AMOY_MATIC,
-    TOKEN_INFO_POLYGON_TEST_AMOY_USDC,
-    TOKEN_INFO_POLYGON_TEST_AMOY_USDT,
-    TOKEN_INFO_POLYGON_TEST_AMOY_WMATIC,
-} from './polygon-test-amoy';
+import { PRESET_ALL_TOKEN_INFO_POLYGON_TEST_AMOY, TOKEN_INFO_POLYGON_TEST_AMOY_MATIC } from './polygon-test-amoy';
 
 export const get_token_logo_key = (
     token:
@@ -144,9 +138,6 @@ export const DEFAULT_TOKEN_INFO: TokenInfo[] = [
     { info: { polygon: TOKEN_INFO_POLYGON_USDT }, tags: [TokenTag.ChainPolygon] },
     // POLYGON TEST AMOY
     { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_MATIC }, tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_WMATIC }, tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_USDC }, tags: [TokenTag.ChainPolygonTestAmoy] },
-    { info: { polygon_test_amoy: TOKEN_INFO_POLYGON_TEST_AMOY_USDT }, tags: [TokenTag.ChainPolygonTestAmoy] },
     // BSC
     { info: { bsc: TOKEN_INFO_BSC_BNB }, tags: [TokenTag.ChainBsc] },
     { info: { bsc: TOKEN_INFO_BSC_WBNB }, tags: [TokenTag.ChainBsc] },

@@ -12,6 +12,7 @@ export interface GetTransactionsHistoryArgs {
 export interface GetErc20TransactionsHistoryArgs extends GetTransactionsHistoryArgs {
     contractAddresses?: Address[];
 }
+const GECKO_PUBLIC_API_BASE_URL = process.env.PLASMO_PUBLIC_GECKO_API_BASE_URL;
 /**
  * Get native token transaction history for a wallet address
  * @param chainId - The ID of the blockchain network
@@ -38,11 +39,11 @@ export const getWalletNativeTransactionsHistory = async (chainId: number, args: 
             throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
-        const result: Awaited<ReturnType<typeof Moralis.EvmApi.transaction.getWalletTransactions>> =
+        const result: Awaited<ReturnType<typeof Moralis.EvmApi.transaction.getWalletTransactions>>['raw'] =
             await response.json();
 
         return {
-            data: result.raw.result.map((tx) => ({
+            data: result.result.map((tx) => ({
                 hash: tx.hash,
                 from: tx.from_address,
                 to: tx.to_address,
@@ -53,8 +54,7 @@ export const getWalletNativeTransactionsHistory = async (chainId: number, args: 
                 gasPrice: tx.gas_price,
                 isError: tx.receipt_status !== '1',
             })),
-            total: result.raw.total,
-            cursor: result.raw.cursor,
+            cursor: result.cursor,
         };
     } catch (error) {
         console.error('Error fetching native transactions:', error);
@@ -182,40 +182,166 @@ export const getMultipleErc20TokenPrices = async (chainId: number, tokens: Token
             throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
-        const result: Awaited<ReturnType<typeof Moralis.EvmApi.token.getMultipleTokenPrices>> = await response.json();
+        const result: Awaited<ReturnType<typeof Moralis.EvmApi.token.getMultipleTokenPrices>>['raw'] =
+            await response.json();
 
-        return result.raw;
+        return result.reduce(
+            (acc, token) => {
+                if (token?.tokenAddress) {
+                    acc[token.tokenAddress.toLowerCase()] = token;
+                }
+                return acc;
+            },
+            {} as Record<string, (typeof result)[0]>,
+        );
     } catch (error) {
         console.error('Error fetching multiple token prices:', error);
         throw error;
     }
 };
 
+interface TokenPlatformDetail {
+    decimal_place: number;
+    contract_address: string;
+}
+interface TokenMarketData {
+    current_price: {
+        usd: number;
+    };
+    ath: {
+        usd: number;
+    };
+    ath_change_percentage: {
+        usd: number;
+    };
+    ath_date: {
+        usd: string;
+    };
+    atl: {
+        usd: number;
+    };
+    atl_change_percentage: {
+        usd: number;
+    };
+    atl_date: {
+        usd: string;
+    };
+    market_cap: {
+        usd: number;
+    };
+    market_cap_rank: number;
+    total_volume: {
+        usd: number;
+    };
+    high_24h: {
+        usd: number;
+    };
+    low_24h: {
+        usd: number;
+    };
+    price_change_24h: number;
+    price_change_percentage_24h: number;
+    price_change_percentage_7d: number;
+    price_change_percentage_14d: number;
+    price_change_percentage_30d: number;
+    price_change_percentage_60d: number;
+    price_change_percentage_200d: number;
+    price_change_percentage_1y: number;
+    market_cap_change_24h: number;
+    market_cap_change_percentage_24h: number;
+    total_supply: number;
+    max_supply: number | null;
+    circulating_supply: number;
+    last_updated: string;
+}
+interface TokenLinks {
+    homepage: string[];
+    whitepaper: string;
+    blockchain_site: string[];
+    official_forum_url: string[];
+    chat_url: string[];
+    announcement_url: string[];
+    snapshot_url: string | null;
+    twitter_screen_name: string;
+    facebook_username: string;
+    bitcointalk_thread_identifier: number | null;
+    telegram_channel_identifier: string;
+    subreddit_url: string;
+    repos_url: {
+        github: string[];
+        bitbucket: string[];
+    };
+}
+
+interface TokenImage {
+    thumb: string;
+    small: string;
+    large: string;
+}
+
+interface TokenDetail {
+    id: string;
+    symbol: string;
+    name: string;
+    web_slug: string;
+    asset_platform_id: string;
+    platforms: Record<string, string>;
+    detail_platforms: Record<string, TokenPlatformDetail>;
+    block_time_in_minutes: number;
+    hashing_algorithm: string | null;
+    categories: string[];
+    preview_listing: boolean;
+    public_notice: string;
+    additional_notices: string[];
+    description: {
+        en: string;
+    };
+    links: TokenLinks;
+    image: TokenImage;
+    country_origin: string;
+    genesis_date: string | null;
+    contract_address: string;
+    sentiment_votes_up_percentage: number;
+    sentiment_votes_down_percentage: number;
+    watchlist_portfolio_users: number;
+    market_cap_rank: number;
+    status_updates: any[];
+    last_updated: string;
+    market_data: TokenMarketData;
+}
 /**
  * Get token Detail
  * @param chainId - Chain ID (1: Ethereum, 11155111: Sepolia)
  * @param address - Token contract address
  * @returns Token Detail
  */
-export const getTokenDetail = async (chainId: number, address: Address) => {
+export const getTokenDetail = async (chainId: number, address: Address, isNative = false) => {
+    const queryParams =
+        'localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false';
+    let url = GECKO_PUBLIC_API_BASE_URL;
+    switch (chainId) {
+        case 1:
+            url += `/coins/ethereum${isNative ? '' : `/contract/${address.toLowerCase()}`}`;
+            break;
+        case 56:
+            url += `/coins/bsc${isNative ? '' : `/contract/${address.toLowerCase()}`}`;
+            break;
+        case 137:
+            url += `/coins/polygon${isNative ? '' : `/contract/${address.toLowerCase()}`}`;
+            break;
+        default:
+            // not supported
+            return undefined;
+    }
     try {
-        const response = await fetch(`${API_BASE_URL}/api/token-info`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                chainId,
-                address,
-            }),
-        });
+        const response = await fetch(`${url}/?${queryParams}`);
 
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
-        const result: Awaited<ReturnType<typeof Moralis.EvmApi.token.getTokenMetadata>> = await response.json();
-        return result.raw;
+        const result: Awaited<TokenDetail> = await response.json();
+        return result;
     } catch (error) {
         console.error('Error fetching token info:', error);
         throw error;
