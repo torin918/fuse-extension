@@ -1,5 +1,9 @@
 // import { Button } from '@heroui/react';
 import { useState } from 'react';
+import { AiFillCar } from 'react-icons/ai';
+import { BsLightning } from 'react-icons/bs';
+import { IoSettingsOutline } from 'react-icons/io5';
+import { PiBicycle } from 'react-icons/pi';
 
 import Icon from '~components/icon';
 import {
@@ -16,7 +20,7 @@ import { cn } from '~lib/utils/cn';
 
 export interface NetworkFee {
     id: number;
-    icon: string;
+    icon: string | React.ReactNode;
     name: string;
     time: string;
     gwei: string;
@@ -28,7 +32,8 @@ export interface NetworkFee {
 const feeList: NetworkFee[] = [
     {
         id: 1,
-        icon: 'icon-slow',
+        // icon: 'icon-slow',
+        icon: <PiBicycle className="h-8 w-8 text-[#F15A24]" />,
         name: 'Slow',
         time: '1 min',
         gwei: '0.90',
@@ -38,7 +43,7 @@ const feeList: NetworkFee[] = [
     },
     {
         id: 2,
-        icon: 'icon-avg',
+        icon: <AiFillCar className="h-8 w-8 text-[#32B1FB]" />,
         name: 'Average',
         time: '30 sec',
         gwei: '0.90',
@@ -48,7 +53,8 @@ const feeList: NetworkFee[] = [
     },
     {
         id: 3,
-        icon: 'icon-fast',
+        // icon: 'icon-fast',
+        icon: <BsLightning className="h-8 w-8 text-[#07C160]" />,
         name: 'Fast',
         time: '15 sec',
         gwei: '2.40',
@@ -58,7 +64,8 @@ const feeList: NetworkFee[] = [
     },
     {
         id: 4,
-        icon: 'icon-setting',
+        // icon: 'icon-setting',
+        icon: <IoSettingsOutline className="h-8 w-8 text-[#999]" />,
         name: 'Custom',
         time: '1 min',
         gwei: '0.90',
@@ -120,7 +127,8 @@ export const NetworkFeeDrawer = ({
                                     }}
                                 >
                                     <div className="mr-4 flex h-9 w-9 items-center justify-center">
-                                        <Icon name={item.icon} className={cn('h-8 w-8', item.className)} />
+                                        {item.icon}
+                                        {/* <Icon name={item.icon} className={cn('h-8 w-8', item.className)} /> */}
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex w-full justify-between">
