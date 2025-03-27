@@ -1,19 +1,36 @@
 import BigNumber from 'bignumber.js';
-import { useEffect, useState } from 'react';
 
 import type { GotoFunction } from '~hooks/memo/goto';
+import type { Chain } from '~types/chain';
 import { match_combined_token_info, type CurrentTokenShowInfo } from '~types/tokens';
-import { get_token_logo } from '~types/tokens/preset';
 
-export const TokenCard = ({ goto, info }: { goto: GotoFunction; info: CurrentTokenShowInfo }) => {
+// import { get_token_logo } from '~types/tokens/preset';
+
+import TokenLogo from './token-logo';
+
+enum TransferType {
+    TRANSFER = 'transfer',
+    RECEIVE = 'receive',
+    DETAILS = 'details',
+}
+
+export const TokenCard = ({
+    goto,
+    info,
+    type = TransferType.DETAILS,
+}: {
+    goto: GotoFunction;
+    info: CurrentTokenShowInfo;
+    type?: TransferType;
+}) => {
     const { token, price, balance, usd_value } = info;
     const { price: price_value, price_change_24h } = price;
-    const [logo, setLogo] = useState<string>();
+    // const [logo, setLogo] = useState<string>();
     const { formatted: formatted_balance } = balance;
     const { formatted: formatted_usd_value } = usd_value;
-    useEffect(() => {
-        get_token_logo(token.info).then(setLogo);
-    }, [token]);
+    // useEffect(() => {
+    //     get_token_logo(token.info).then(setLogo);
+    // }, [token]);
     const symbol = match_combined_token_info(token.info, {
         ic: (ic) => ic.symbol,
         ethereum: (ethereum) => ethereum.symbol,
@@ -32,13 +49,49 @@ export const TokenCard = ({ goto, info }: { goto: GotoFunction; info: CurrentTok
         bsc: () => 'evm',
         bsc_test: () => 'evm',
     });
+    const chainAndAddress = match_combined_token_info<{ chain: Chain; address: string }>(token.info, {
+        ic: (ic) => ({ chain: 'ic', address: ic.canister_id }),
+        ethereum: (ethereum) => ({ chain: 'ethereum', address: ethereum.address }),
+        ethereum_test_sepolia: (ethereum_test_sepolia) => ({
+            chain: 'ethereum-test-sepolia',
+            address: ethereum_test_sepolia.address,
+        }),
+        polygon: (polygon) => ({ chain: 'polygon', address: polygon.address }),
+        polygon_test_amoy: (polygon_test_amoy) => ({ chain: 'polygon-test-amoy', address: polygon_test_amoy.address }),
+        bsc: (bsc) => ({ chain: 'bsc', address: bsc.address }),
+        bsc_test: (bsc_test) => ({ chain: 'bsc-test', address: bsc_test.address }),
+    });
+
+    const goNext = () => {
+        if (type === TransferType.DETAILS) {
+            goto(`/home/token/${route_key}`, { state: info });
+            return;
+        }
+        if (type === TransferType.TRANSFER) {
+            if (route_key === 'ic') {
+                goto(`/home/token/ic/transfer`, { state: { canister_id: chainAndAddress.address } });
+                return;
+            }
+
+            goto(`/home/token/evm/transfer`, { state: chainAndAddress });
+            return;
+        }
+        if (type === TransferType.RECEIVE) {
+            goto('/home/receive', { state: chainAndAddress });
+            return;
+        }
+
+        goto('/');
+    };
+
     return (
         <div
             className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-[#181818] p-[10px] transition duration-300 hover:bg-[#2B2B2B]"
-            onClick={() => goto(`/home/token/${route_key}`, { state: info })}
+            onClick={() => goNext()}
         >
             <div className="flex items-center">
-                <img src={logo} className="h-10 w-10 rounded-full" />
+                {/* <img src={logo} className="w-10 h-10 rounded-full" /> */}
+                <TokenLogo chain={chainAndAddress.chain} address={chainAndAddress.address} />
                 <div className="ml-[10px]">
                     <strong className="block text-base text-[#EEEEEE]">{symbol}</strong>
                     {price_value === undefined && (

@@ -15,7 +15,15 @@ interface AddressItem {
     address: ChainAddress;
 }
 
-function FunctionTransferTokenIcAddressPage({ logo, onNext }: { logo?: string; onNext: (to: string) => void }) {
+function FunctionTransferTokenEvmAddressPage({
+    logo,
+    chain,
+    onNext,
+}: {
+    logo?: string;
+    chain: Chain;
+    onNext: (to: string) => void;
+}) {
     const [marked, { pushOrUpdateMarkedAddress }] = useMarkedAddresses();
     const [recent] = useRecentAddresses();
     const { current_identity, identity_list } = useIdentityKeys();
@@ -38,14 +46,14 @@ function FunctionTransferTokenIcAddressPage({ logo, onNext }: { logo?: string; o
     const markedAddresses = useMemo<AddressItem[]>(() => {
         const addresses = [];
         // do filter ic address
-        for (const m of (marked ?? []).filter((m) => m.address.type === 'ic')) addresses.push(m);
+        for (const m of (marked ?? []).filter((m) => m.address.type === 'evm')) addresses.push(m);
         return addresses;
     }, [marked]);
 
     const recentAddresses = useMemo<AddressItem[]>(() => {
         const addresses = [];
         let _recent = [...(recent ?? [])];
-        _recent = _recent.filter((m) => m.address.type === 'ic');
+        _recent = _recent.filter((m) => m.address.type === 'evm');
         _recent = _.uniqBy(_recent, (r) => r.address.address);
         _recent = _.reverse(_recent);
         for (const r of _recent) addresses.push(r);
@@ -57,14 +65,14 @@ function FunctionTransferTokenIcAddressPage({ logo, onNext }: { logo?: string; o
         // do filter ic address
         if (identity_list && identity_list.length > 0) {
             for (const i of identity_list) {
-                const address = getChainAddress('ic', i.address);
+                const address = getChainAddress(chain, i.address);
                 if (i.id !== current_identity && address) {
                     addresses.push({ name: i.name, address: { address } });
                 }
             }
         }
         return addresses as unknown as AddressItem[];
-    }, [current_identity, identity_list]);
+    }, [chain, current_identity, identity_list]);
 
     const [to, setTo] = useState<string>('');
     const [noAddressBook, setNoAddressBook] = useState<boolean>(false);
@@ -98,7 +106,7 @@ function FunctionTransferTokenIcAddressPage({ logo, onNext }: { logo?: string; o
                         type="text"
                         value={to}
                         onChange={(e) => setTo(e.target.value)}
-                        placeholder="Principal ID or Account ID"
+                        placeholder="Wallet Address"
                         className="h-[48px] w-full rounded-xl border border-[#333333] bg-transparent px-2 text-sm text-[#EEEEEE] outline-none duration-300 placeholder:text-[#999999] hover:border-[#FFCF13] focus:border-[#FFCF13]"
                     />
                 </div>
@@ -181,7 +189,7 @@ function FunctionTransferTokenIcAddressPage({ logo, onNext }: { logo?: string; o
             <div className="w-full p-5">
                 <Button
                     className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
-                    isDisabled={!check_chain_address({ type: 'ic', address: to })}
+                    isDisabled={!check_chain_address({ type: 'evm', address: to })}
                     onPress={() => onNext(to)}
                 >
                     Next
@@ -191,4 +199,4 @@ function FunctionTransferTokenIcAddressPage({ logo, onNext }: { logo?: string; o
     );
 }
 
-export default FunctionTransferTokenIcAddressPage;
+export default FunctionTransferTokenEvmAddressPage;

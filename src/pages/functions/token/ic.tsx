@@ -231,7 +231,9 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
                                     name: 'Send',
                                 },
                                 {
-                                    callback: () => navigate('/home/token/ic/receive'),
+                                    // callback: () => navigate('/home/token/ic/receive'),
+                                    callback: () =>
+                                        navigate('/home/receive', { state: { chain: 'ic', address: canister_id } }),
                                     icon: 'icon-receive',
                                     name: 'Receive',
                                 },
