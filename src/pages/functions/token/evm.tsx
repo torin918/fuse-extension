@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CiWallet } from 'react-icons/ci';
 import { useInView } from 'react-intersection-observer';
 import { useLocation } from 'react-router-dom';
-import { isAddressEqual, type Address } from 'viem';
+import { isAddressEqual, type Address, type Hash } from 'viem';
 
 import type { GetTransactionsHistoryItem } from '~apis/evm';
 import Icon from '~components/icon';
@@ -27,6 +27,7 @@ import { PolygonTestAmoyTokenStandard } from '~types/tokens/chain/polygon-test-a
 import { get_token_logo } from '~types/tokens/preset';
 
 import { TokenMetadataEvm } from './components/token-metadata';
+import { TransferDetailDrawerEvm } from './components/transfer-detail-drawer';
 
 export const format_number_smart = (value: BigNumber | string | number): string => {
     const bn = new BigNumber(value);
@@ -123,12 +124,14 @@ const TransactionCard = ({
     logo,
     symbol,
     decimals,
+    onClick,
 }: {
     chain: EvmChain;
     transaction: GetTransactionsHistoryItem;
     logo?: string;
     symbol: string;
     decimals: number;
+    onClick: () => void;
 }) => {
     const { current_identity } = useCurrentIdentity();
     const self = match_chain(chain, {
@@ -145,7 +148,11 @@ const TransactionCard = ({
     const isSent = self && isAddressEqual(transaction.from, self);
     const { from, to } = transaction;
     return (
-        <div key={transaction.hash} className="flex w-full items-center justify-between px-5 py-3 hover:bg-[#333333]">
+        <div
+            key={transaction.hash}
+            onClick={onClick}
+            className="flex w-full items-center justify-between px-5 py-3 hover:bg-[#333333]"
+        >
             <div className="flex items-center">
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#333]">
                     <img src={logo} className="h-10 w-10" />
@@ -181,11 +188,12 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
     useEffect(() => {
         get_token_logo(token.info).then(setLogo);
     }, [token]);
-    const { symbol, name, chain, isNative, decimals, address } = match_combined_token_info<{
+    const { symbol, name, chain, isNative, decimals, address, isErc20 } = match_combined_token_info<{
         symbol: string;
         name: string;
         chain: EvmChain;
         isNative: boolean;
+        isErc20: boolean;
         address: Address;
         decimals: number;
     }>(token.info, {
@@ -197,6 +205,7 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
             name: ethereum.name,
             chain: 'ethereum',
             isNative: ethereum.standards.includes(EthereumTokenStandard.NATIVE),
+            isErc20: ethereum.standards.includes(EthereumTokenStandard.ERC20),
             address: ethereum.address,
             decimals: ethereum.decimals,
         }),
@@ -205,6 +214,7 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
             name: ethereum_test_sepolia.name,
             chain: 'ethereum-test-sepolia',
             isNative: ethereum_test_sepolia.standards.includes(EthereumTestSepoliaTokenStandard.NATIVE),
+            isErc20: ethereum_test_sepolia.standards.includes(EthereumTestSepoliaTokenStandard.ERC20),
             address: ethereum_test_sepolia.address,
             decimals: ethereum_test_sepolia.decimals,
         }),
@@ -213,6 +223,7 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
             name: polygon.name,
             chain: 'polygon',
             isNative: polygon.standards.includes(PolygonTokenStandard.NATIVE),
+            isErc20: polygon.standards.includes(PolygonTokenStandard.ERC20),
             address: polygon.address,
             decimals: polygon.decimals,
         }),
@@ -221,6 +232,7 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
             name: polygon_test_amoy.name,
             chain: 'polygon-test-amoy',
             isNative: polygon_test_amoy.standards.includes(PolygonTestAmoyTokenStandard.NATIVE),
+            isErc20: polygon_test_amoy.standards.includes(PolygonTestAmoyTokenStandard.ERC20),
             address: polygon_test_amoy.address,
             decimals: polygon_test_amoy.decimals,
         }),
@@ -229,6 +241,7 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
             name: bsc.name,
             chain: 'bsc',
             isNative: bsc.standards.includes(BscTokenStandard.NATIVE),
+            isErc20: bsc.standards.includes(BscTokenStandard.BEP20),
             address: bsc.address,
             decimals: bsc.decimals,
         }),
@@ -237,11 +250,12 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
             name: bsc_test.name,
             chain: 'bsc-test',
             isNative: bsc_test.standards.includes(BscTestTokenStandard.NATIVE),
+            isErc20: bsc_test.standards.includes(BscTestTokenStandard.BEP20),
             address: bsc_test.address,
             decimals: bsc_test.decimals,
         }),
     });
-    const ref = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const transactionsRef = useRef<HTMLDivElement>(null);
     const { ref: loadMoreRef, inView } = useInView();
@@ -271,7 +285,6 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
     const isLoading = isNative ? isLoadingNative : isLoadingErc20;
     const isFetchingNextPage = isNative ? isFetchingNextPageNative : isFetchingNextErc20Page;
     const transactionsData = isNative ? nativeTransactionsData : erc20TransactionsData;
-    console.debug('🚀 ~ InnerPage ~ transactionsData:', transactionsData);
     const fetchNextPage = isNative ? fetchNextNativePage : fetchNextErc20Page;
     const hasNextPage = isNative ? hasNextNativePage : hasNextErc20Page;
     useEffect(() => {
@@ -279,14 +292,30 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
             fetchNextPage();
         }
     }, [inView, hasNextPage, isFetchingNextPage]);
-
+    const [currentTransaction, setCurrentTransaction] = useState<GetTransactionsHistoryItem>();
+    const [transacionDetailOpen, setTransacionDetailOpen] = useState<boolean>(false);
     return (
-        <div ref={ref} className="relative h-full w-full overflow-hidden">
+        <div ref={containerRef} className="relative h-full w-full overflow-hidden">
             <FusePageTransition
                 setHide={setHide}
                 className="relative flex h-full w-full flex-col items-center justify-center pt-[52px]"
                 header={<FunctionHeader title={symbol || ''} onBack={() => _goto('/')} onClose={() => _goto('/')} />}
             >
+                <TransferDetailDrawerEvm
+                    open={transacionDetailOpen}
+                    setOpen={setTransacionDetailOpen}
+                    key={`detail-${currentTransaction?.hash}`}
+                    container={containerRef.current}
+                    info={{
+                        hash: currentTransaction?.hash as Hash,
+                        chain,
+                        logo,
+                        symbol,
+                        decimals,
+                        decoded_transaction: currentTransaction,
+                    }}
+                ></TransferDetailDrawerEvm>
+
                 <div className="flex h-full flex-col justify-between">
                     <div className="w-full flex-1 overflow-y-auto">
                         <div className="flex w-full items-center px-5">
@@ -423,6 +452,10 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
                                                                     logo={logo}
                                                                     symbol={symbol}
                                                                     decimals={decimals}
+                                                                    onClick={() => {
+                                                                        setTransacionDetailOpen(true);
+                                                                        setCurrentTransaction(transaction);
+                                                                    }}
                                                                 />
                                                             ))}
                                                         </div>
