@@ -5,7 +5,6 @@ import { BsLightning } from 'react-icons/bs';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { PiBicycle } from 'react-icons/pi';
 
-import Icon from '~components/icon';
 import {
     Drawer,
     DrawerClose,

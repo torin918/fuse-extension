@@ -1,24 +1,14 @@
 import { Button } from '@heroui/react';
 import _ from 'lodash';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
+import Icon from '~components/icon';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~components/ui/accordion';
 import { useIdentityKeys, useMarkedAddresses, useRecentAddresses } from '~hooks/store/local-secure';
+import { AddAddressDrawer } from '~pages/functions/settings/pages/address/components/drawer';
 import { check_chain_address, type ChainAddress } from '~types/address';
 import { match_chain, type Chain } from '~types/chain';
 import type { IdentityAddress } from '~types/identity';
-
-// const getChainAddress = (chain: Chain) => {
-//     return match_chain(chain, {
-//         ic: () => {},
-//         ethereum: (eth) => ({ type: 'evm', address: eth.address }),
-//         ethereum_test_sepolia: () => ({ type: 'evm', address, chain }),
-//         polygon: () => ({ type: 'evm', address, chain }),
-//         polygon_test_amoy: () => ({ type: 'evm', address, chain }),
-//         bsc: () => ({ type: 'evm', address, chain }),
-//         bsc_test: () => ({ type: 'evm', address, chain }),
-//     });
-// };
 
 interface AddressItem {
     name?: string;
@@ -34,7 +24,7 @@ function FunctionTransferTokenEvmAddressPage({
     chain: Chain;
     onNext: (to: string) => void;
 }) {
-    const [marked] = useMarkedAddresses();
+    const [marked, { pushOrUpdateMarkedAddress }] = useMarkedAddresses();
     const [recent] = useRecentAddresses();
     const { current_identity, identity_list } = useIdentityKeys();
 
@@ -85,9 +75,25 @@ function FunctionTransferTokenEvmAddressPage({
     }, [chain, current_identity, identity_list]);
 
     const [to, setTo] = useState<string>('');
+    const [noAddressBook, setNoAddressBook] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!to) return setNoAddressBook(false);
+
+        const allAddress = [...recentAddresses, ...markedAddresses, ...wallets];
+        const _allAddress = _.uniqBy(allAddress, (a) => a.address.address);
+        const had_address = _allAddress.find((a) => a.address.address === to);
+        if (!had_address) {
+            setNoAddressBook(true);
+        } else {
+            setNoAddressBook(false);
+        }
+    }, [markedAddresses, recentAddresses, to, wallets]);
+
+    const ref = useRef<HTMLDivElement>(null);
 
     return (
-        <div className="flex h-full w-full flex-col justify-between">
+        <div ref={ref} className="flex h-full w-full flex-col justify-between">
             <div className="flex w-full flex-1 flex-col">
                 <div className="w-full px-5">
                     <div className="mb-8 mt-5 flex w-full justify-center">
@@ -104,6 +110,23 @@ function FunctionTransferTokenEvmAddressPage({
                         className="h-[48px] w-full rounded-xl border border-[#333333] bg-transparent px-2 text-sm text-[#EEEEEE] outline-none duration-300 placeholder:text-[#999999] hover:border-[#FFCF13] focus:border-[#FFCF13]"
                     />
                 </div>
+                {noAddressBook && (
+                    <div className="mt-2 px-5 text-left text-sm text-[#999]">
+                        <span>Not in address book</span>
+
+                        <AddAddressDrawer
+                            trigger={
+                                <span className="ml-2 flex items-center text-[#FFCF13]">
+                                    Add Now
+                                    <Icon name="icon-arrow-right" className="h-3 w-3 cursor-pointer" />
+                                </span>
+                            }
+                            container={ref.current ?? undefined}
+                            onAddAddress={pushOrUpdateMarkedAddress}
+                            address={to}
+                        />
+                    </div>
+                )}
                 <div className="relative w-full flex-1 px-5">
                     <Accordion
                         type="multiple"
