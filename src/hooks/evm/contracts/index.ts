@@ -7,6 +7,7 @@ import {
     type Chain,
     type ContractFunctionArgs,
     type ContractFunctionName,
+    type Hash,
     type WriteContractParameters,
 } from 'viem';
 
@@ -62,6 +63,26 @@ export const useReadContract = <
             });
         },
         enabled,
+    });
+};
+
+export const useTransactionReceipt = ({ chain, hash }: { chain: EvmChain; hash?: Hash }) => {
+    const identity_network = useEvmChainIdentityNetworkByChain(chain);
+    const identity_key = identity_network && get_identity_network_key(identity_network);
+    const client = usePublicClientByChain(chain);
+    const queryKey = identity_key ? [identity_key, 'contract'] : [];
+    const enabled = !!client && !!hash;
+    return useQuery({
+        queryKey,
+        queryFn: async () => {
+            if (!client) throw new Error('Client is required');
+            if (!hash) throw new Error('Hash is required');
+            return client.getTransactionReceipt({
+                hash,
+            });
+        },
+        enabled,
+        refetchInterval: 10 * 60,
     });
 };
 

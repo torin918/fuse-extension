@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import ic_svg from '~assets/svg/chains/ic.min.svg';
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
+import { useTransactionReceipt } from '~hooks/evm/contracts';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useCurrentIdentity } from '~hooks/store/local-secure';
 import { useCurrentTokensShowInfo } from '~hooks/store/local/token';
@@ -43,6 +44,11 @@ function InnerHomePage({ current_identity }: { current_identity: ShowIdentityKey
 
     const ref = useRef<HTMLDivElement>(null);
     const { tokens_info, all_usd, all_usd_changed, all_usd_changed_24h } = useCurrentTokensShowInfo();
+    const { data } = useTransactionReceipt({
+        chain: 'polygon',
+        hash: '0x0e16122a3542270f1823915dd9d69b33d760c0864a2b170550457c841469b22d',
+    });
+    console.debug('🚀 ~ InnerHomePage ~ data:', data);
     return (
         <div ref={ref} className="relative h-full w-full">
             <div className="absolute top-0 flex w-full items-center justify-between bg-[#0a0600] px-5 py-3">

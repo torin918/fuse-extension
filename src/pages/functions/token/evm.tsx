@@ -1,91 +1,173 @@
 import BigNumber from 'bignumber.js';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CiWallet } from 'react-icons/ci';
 import { useInView } from 'react-intersection-observer';
 import { useLocation } from 'react-router-dom';
+import { isAddressEqual, type Address } from 'viem';
 
+import type { GetTransactionsHistoryItem } from '~apis/evm';
 import Icon from '~components/icon';
 import { FusePage } from '~components/layouts/page';
 import { FusePageTransition } from '~components/layouts/transition';
-import { useWalletNativeTransactionsHistory } from '~hooks/apis/evm';
+import { useWalletErc20TransactionsHistory, useWalletNativeTransactionsHistory } from '~hooks/apis/evm';
 import { useCurrentState } from '~hooks/memo/current_state';
 import { useGoto } from '~hooks/memo/goto';
+import { useCurrentIdentity } from '~hooks/store/local-secure';
 import { useSonnerToast } from '~hooks/toast';
 import { truncate_text } from '~lib/utils/text';
 import { FunctionHeader } from '~pages/functions/components/header';
-import type { EvmChain } from '~types/chain';
-import type { TokenTransferredIcRecord } from '~types/records/token/transferred_ic';
+import { match_chain, type EvmChain } from '~types/chain';
 import { match_combined_token_info, type CurrentTokenShowInfo } from '~types/tokens';
 import { BscTokenStandard } from '~types/tokens/chain/bsc';
 import { BscTestTokenStandard } from '~types/tokens/chain/bsc-test';
 import { EthereumTokenStandard } from '~types/tokens/chain/ethereum';
 import { EthereumTestSepoliaTokenStandard } from '~types/tokens/chain/ethereum-test-sepolia';
-import type { IcTokenInfo } from '~types/tokens/chain/ic';
 import { PolygonTokenStandard } from '~types/tokens/chain/polygon';
 import { PolygonTestAmoyTokenStandard } from '~types/tokens/chain/polygon-test-amoy';
 import { get_token_logo } from '~types/tokens/preset';
 
 import { TokenMetadataEvm } from './components/token-metadata';
 
-const TransferItem = ({
-    item,
+export const format_number_smart = (value: BigNumber | string | number): string => {
+    const bn = new BigNumber(value);
+
+    if (bn.isZero()) return '0';
+
+    if (bn.abs().isGreaterThanOrEqualTo(1e9)) {
+        return `${bn
+            .dividedBy(1e9)
+            .toFixed(2)
+            .replace(/\.?0+$/, '')}B`;
+    } else if (bn.abs().isGreaterThanOrEqualTo(1e6)) {
+        return `${bn
+            .dividedBy(1e6)
+            .toFixed(2)
+            .replace(/\.?0+$/, '')}M`;
+    } else if (bn.abs().isGreaterThanOrEqualTo(1e3)) {
+        return `${bn
+            .dividedBy(1e3)
+            .toFixed(1)
+            .replace(/\.?0+$/, '')}K`;
+    }
+
+    if (bn.abs().isLessThan(1)) {
+        const absStr = bn.abs().toFixed();
+
+        if (absStr.includes('e')) {
+            return bn.toExponential(2);
+        }
+
+        const parts = absStr.split('.');
+        if (parts.length > 1) {
+            const decimalPart = parts[1];
+
+            let leadingZeros = 0;
+            while (leadingZeros < decimalPart.length && decimalPart[leadingZeros] === '0') {
+                leadingZeros++;
+            }
+
+            if (leadingZeros >= decimalPart.length) {
+                return bn.toExponential(2);
+            }
+
+            const significantDigits = leadingZeros + 3;
+            const formattedDecimal = bn.toFixed(Math.min(significantDigits, 20));
+
+            return formattedDecimal.replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
+        }
+    }
+
+    return bn.toFixed(2).replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
+};
+
+const formatDate = (timestamp: string) => {
+    const date = new Date(timestamp);
+
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const todayWithoutTime = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const yesterdayWithoutTime = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+
+    if (dateWithoutTime.getTime() === todayWithoutTime.getTime()) {
+        return 'Today';
+    } else if (dateWithoutTime.getTime() === yesterdayWithoutTime.getTime()) {
+        return 'Yesterday';
+    } else {
+        return date
+            .toLocaleDateString('en-US', {
+                month: '2-digit',
+                day: '2-digit',
+                year: 'numeric',
+            })
+            .replace(/\//g, '/');
+    }
+};
+
+const groupTransactionsByDate = (transactions: GetTransactionsHistoryItem[]) => {
+    return transactions.reduce((groups: { [key: string]: GetTransactionsHistoryItem[] }, transaction) => {
+        const date = formatDate(transaction.timestamp);
+        if (!groups[date]) {
+            groups[date] = [];
+        }
+        groups[date].push(transaction);
+        return groups;
+    }, {});
+};
+
+const TransactionCard = ({
+    chain,
+    transaction,
     logo,
-    token,
+    symbol,
+    decimals,
 }: {
-    item: TokenTransferredIcRecord;
-    logo: string | undefined;
-    token: IcTokenInfo | undefined;
+    chain: EvmChain;
+    transaction: GetTransactionsHistoryItem;
+    logo?: string;
+    symbol: string;
+    decimals: number;
 }) => {
-    const toAccount = useMemo(() => {
-        if (item.to === undefined) return '';
-        if (typeof item.to === 'string') {
-            return item.to;
-        } else {
-            return item.to.owner;
-        }
-    }, [item.to]);
-
-    const amount = useMemo(() => {
-        if (item.amount === undefined || token === undefined) return '';
-        return new BigNumber(item.amount).dividedBy(new BigNumber(10).pow(new BigNumber(token.decimals))).toFixed(2);
-    }, [item, token]);
-
-    const method = useMemo(() => {
-        if (item.method === undefined) return '';
-        if (item.method === 'icrc1_transfer' || item.method === 'transfer') {
-            return 'Send';
-        }
-        // TODO: receive and swap check
-        return 'Receive';
-    }, [item.method]);
-
+    const { current_identity } = useCurrentIdentity();
+    const self = match_chain(chain, {
+        ic: () => {
+            throw new Error('ic token not supported');
+        },
+        ethereum: () => current_identity?.address.ethereum?.address,
+        ethereum_test_sepolia: () => current_identity?.address.ethereum_test_sepolia?.address,
+        polygon: () => current_identity?.address.polygon?.address,
+        polygon_test_amoy: () => current_identity?.address.polygon_test_amoy?.address,
+        bsc: () => current_identity?.address.bsc?.address,
+        bsc_test: () => current_identity?.address.bsc_test?.address,
+    });
+    const isSent = self && isAddressEqual(transaction.from, self);
+    const { from, to } = transaction;
     return (
-        <div className="flex w-full cursor-pointer items-center justify-between px-5 py-[10px] transition duration-300 hover:bg-[#333333]">
+        <div key={transaction.hash} className="flex w-full items-center justify-between px-5 py-3 hover:bg-[#333333]">
             <div className="flex items-center">
-                <img
-                    src={logo ?? 'https://metrics.icpex.org/images/ryjl3-tyaaa-aaaaa-aaaba-cai.png'}
-                    className="h-10 w-10 rounded-full"
-                />
-                <div className="ml-[10px] text-left">
-                    <strong className="block text-base text-[#EEEEEE]">{method}</strong>
-                    <span className="text-xs text-[#999999]">To {truncate_text(toAccount)}</span>
-                    {/* TODO: swap */}
-                    {/* <span className="text-xs text-[#999999]">To ICS</span> */}
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#333]">
+                    <img src={logo} className="h-10 w-10" />
+                </div>
+                <div className="ml-3">
+                    <div className="text-base text-[#EEEEEE]">{isSent ? 'Sent' : 'Received'}</div>
+                    <div className="text-xs text-[#999999]">
+                        {isSent
+                            ? to
+                                ? `To ${truncate_text(to)}`
+                                : `To ${truncate_text(from)}`
+                            : `From ${truncate_text(from)}`}
+                    </div>
                 </div>
             </div>
-
-            <div className="text-base font-semibold text-[#EEEEEE]">
-                -{amount} {token?.symbol}
+            <div className="text-right">
+                <div className={`text-base font-medium ${isSent ? 'text-[#EEEEEE]' : 'text-[#00C431]'}`}>
+                    {isSent ? '-' : '+'}
+                    {format_number_smart(BigNumber(transaction.value).dividedBy(new BigNumber(10).pow(decimals)))}{' '}
+                    {symbol}
+                </div>
             </div>
-
-            {/* TODO: receive */}
-            {/* <div className="text-base font-semibold text-[#00C431]">+36.98 {token.symbol}</div> */}
-
-            {/* TODO: swap */}
-            {/* <div className="flex flex-col items-end">
-                <div className="text-sm text-[#999999]">-1.34 {token.symbol}</div>
-                <div className="text-base font-semibold text-[#00C431]">+42,582.76 {token.symbol}</div>
-            </div> */}
         </div>
     );
 };
@@ -99,11 +181,13 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
     useEffect(() => {
         get_token_logo(token.info).then(setLogo);
     }, [token]);
-    const { symbol, name, chain, isNative } = match_combined_token_info<{
+    const { symbol, name, chain, isNative, decimals, address } = match_combined_token_info<{
         symbol: string;
         name: string;
         chain: EvmChain;
         isNative: boolean;
+        address: Address;
+        decimals: number;
     }>(token.info, {
         ic: () => {
             throw new Error('ic token not supported');
@@ -113,36 +197,48 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
             name: ethereum.name,
             chain: 'ethereum',
             isNative: ethereum.standards.includes(EthereumTokenStandard.NATIVE),
+            address: ethereum.address,
+            decimals: ethereum.decimals,
         }),
         ethereum_test_sepolia: (ethereum_test_sepolia) => ({
             symbol: ethereum_test_sepolia.symbol,
             name: ethereum_test_sepolia.name,
             chain: 'ethereum-test-sepolia',
             isNative: ethereum_test_sepolia.standards.includes(EthereumTestSepoliaTokenStandard.NATIVE),
+            address: ethereum_test_sepolia.address,
+            decimals: ethereum_test_sepolia.decimals,
         }),
         polygon: (polygon) => ({
             symbol: polygon.symbol,
             name: polygon.name,
             chain: 'polygon',
             isNative: polygon.standards.includes(PolygonTokenStandard.NATIVE),
+            address: polygon.address,
+            decimals: polygon.decimals,
         }),
         polygon_test_amoy: (polygon_test_amoy) => ({
             symbol: polygon_test_amoy.symbol,
             name: polygon_test_amoy.name,
             chain: 'polygon-test-amoy',
             isNative: polygon_test_amoy.standards.includes(PolygonTestAmoyTokenStandard.NATIVE),
+            address: polygon_test_amoy.address,
+            decimals: polygon_test_amoy.decimals,
         }),
         bsc: (bsc) => ({
             symbol: bsc.symbol,
             name: bsc.name,
             chain: 'bsc',
             isNative: bsc.standards.includes(BscTokenStandard.NATIVE),
+            address: bsc.address,
+            decimals: bsc.decimals,
         }),
         bsc_test: (bsc_test) => ({
             symbol: bsc_test.symbol,
             name: bsc_test.name,
             chain: 'bsc-test',
             isNative: bsc_test.standards.includes(BscTestTokenStandard.NATIVE),
+            address: bsc_test.address,
+            decimals: bsc_test.decimals,
         }),
     });
     const ref = useRef<HTMLDivElement>(null);
@@ -150,18 +246,34 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
     const transactionsRef = useRef<HTMLDivElement>(null);
     const { ref: loadMoreRef, inView } = useInView();
     const {
-        data: transactionsData,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        isLoading,
+        data: nativeTransactionsData,
+        fetchNextPage: fetchNextNativePage,
+        hasNextPage: hasNextNativePage,
+        isFetchingNextPage: isFetchingNextPageNative,
+        isLoading: isLoadingNative,
     } = useWalletNativeTransactionsHistory({
         chain,
         limit: 10,
         enabled: isNative,
     });
+    const {
+        data: erc20TransactionsData,
+        fetchNextPage: fetchNextErc20Page,
+        hasNextPage: hasNextErc20Page,
+        isFetchingNextPage: isFetchingNextErc20Page,
+        isLoading: isLoadingErc20,
+    } = useWalletErc20TransactionsHistory({
+        chain,
+        limit: 10,
+        enabled: !isNative,
+        contractAddresses: [address],
+    });
+    const isLoading = isNative ? isLoadingNative : isLoadingErc20;
+    const isFetchingNextPage = isNative ? isFetchingNextPageNative : isFetchingNextErc20Page;
+    const transactionsData = isNative ? nativeTransactionsData : erc20TransactionsData;
     console.debug('🚀 ~ InnerPage ~ transactionsData:', transactionsData);
-
+    const fetchNextPage = isNative ? fetchNextNativePage : fetchNextErc20Page;
+    const hasNextPage = isNative ? hasNextNativePage : hasNextErc20Page;
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
             fetchNextPage();
@@ -285,31 +397,53 @@ const InnerPage = ({ info }: { info: CurrentTokenShowInfo }) => {
                                         ))
                                 ) : (
                                     <>
-                                        {transactionsData?.pages.map((page, pageIndex) => (
-                                            <React.Fragment key={pageIndex}>
-                                                {page.data.map((transaction, idx) => (
-                                                    <div key={`${pageIndex}-${idx}`} className="w-full">
-                                                        <div>{transaction.hash}</div>
-                                                    </div>
-                                                ))}
-                                            </React.Fragment>
-                                        ))}
+                                        {transactionsData?.pages.length &&
+                                        transactionsData.pages.length &&
+                                        transactionsData.pages[0] &&
+                                        transactionsData.pages[0]?.data.length > 0 ? (
+                                            <>
+                                                {(() => {
+                                                    // Flatten all transactions from all pages
+                                                    const allTransactions = transactionsData.pages.flatMap(
+                                                        (page) => page.data,
+                                                    );
+                                                    // Group transactions by date after flattening
+                                                    const groupedByDate = groupTransactionsByDate(allTransactions);
 
-                                        <div ref={loadMoreRef} className="py-4">
-                                            {isFetchingNextPage && (
-                                                <div className="flex justify-center">
-                                                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#FFCF13] border-t-transparent" />
+                                                    return Object.entries(groupedByDate).map(([date, transactions]) => (
+                                                        <div key={date} className="w-full">
+                                                            <div className="sticky top-0 px-5 py-2 text-xs text-[#999999]">
+                                                                {date}
+                                                            </div>
+                                                            {transactions.map((transaction, idx) => (
+                                                                <TransactionCard
+                                                                    key={transaction.hash || idx}
+                                                                    transaction={transaction}
+                                                                    chain={chain}
+                                                                    logo={logo}
+                                                                    symbol={symbol}
+                                                                    decimals={decimals}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    ));
+                                                })()}
+
+                                                <div ref={loadMoreRef} className="py-4">
+                                                    {isFetchingNextPage && (
+                                                        <div className="flex justify-center">
+                                                            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#FFCF13] border-t-transparent" />
+                                                        </div>
+                                                    )}
                                                 </div>
-                                            )}
-                                        </div>
 
-                                        {!hasNextPage && transactionsData?.pages[0]?.data.length && (
-                                            <div className="py-4 text-center text-sm text-[#999999]">
-                                                No more transactions
-                                            </div>
-                                        )}
-
-                                        {transactionsData?.pages[0]?.data.length === 0 && (
+                                                {!hasNextPage && transactionsData.pages[0]?.data.length > 0 && (
+                                                    <div className="py-4 text-center text-sm text-[#999999]">
+                                                        No more transactions
+                                                    </div>
+                                                )}
+                                            </>
+                                        ) : (
                                             <div className="flex flex-col items-center justify-center py-8">
                                                 <Icon name="icon-empty" className="h-12 w-12 text-[#999999]" />
                                                 <span className="mt-2 text-sm text-[#999999]">No transactions yet</span>

@@ -12,14 +12,30 @@ export interface GetTransactionsHistoryArgs {
 export interface GetErc20TransactionsHistoryArgs extends GetTransactionsHistoryArgs {
     contractAddresses?: Address[];
 }
-const GECKO_PUBLIC_API_BASE_URL = process.env.PLASMO_PUBLIC_GECKO_API_BASE_URL;
+export type GetTransactionsHistoryItem = {
+    hash: string;
+    from: Address;
+    to: Address;
+    value: string;
+    timestamp: string;
+    blockNumber: string;
+    gas?: string;
+    gasPrice?: string;
+    isError?: boolean;
+};
 /**
  * Get native token transaction history for a wallet address
  * @param chainId - The ID of the blockchain network
  * @param args - Query parameters including address, page number and items per page
  * @returns Formatted native transaction data with pagination info
  */
-export const getWalletNativeTransactionsHistory = async (chainId: number, args: GetTransactionsHistoryArgs) => {
+export const getWalletNativeTransactionsHistory = async (
+    chainId: number,
+    args: GetTransactionsHistoryArgs,
+): Promise<{
+    data: GetTransactionsHistoryItem[];
+    cursor: string | undefined;
+}> => {
     try {
         const response = await fetch(`${API_BASE_URL}/api/native-transactions`, {
             method: 'POST',
@@ -45,8 +61,8 @@ export const getWalletNativeTransactionsHistory = async (chainId: number, args: 
         return {
             data: result.result.map((tx) => ({
                 hash: tx.hash,
-                from: tx.from_address,
-                to: tx.to_address,
+                from: tx.from_address as Address,
+                to: (tx.to_address ?? tx.receipt_contract_address) as Address,
                 value: tx.value,
                 timestamp: tx.block_timestamp,
                 blockNumber: tx.block_number,
@@ -68,7 +84,13 @@ export const getWalletNativeTransactionsHistory = async (chainId: number, args: 
  * @param args - Query parameters including address, limit and cursor
  * @returns Formatted ERC20 transfer data with pagination info
  */
-export const getWalletErc20TransactionsHistory = async (chainId: number, args: GetErc20TransactionsHistoryArgs) => {
+export const getWalletErc20TransactionsHistory = async (
+    chainId: number,
+    args: GetErc20TransactionsHistoryArgs,
+): Promise<{
+    data: GetTransactionsHistoryItem[];
+    cursor: string | undefined;
+}> => {
     const { address, limit, cursor, contractAddresses } = args;
     try {
         const response = await fetch(`${API_BASE_URL}/api/token-transfers`, {
@@ -90,29 +112,19 @@ export const getWalletErc20TransactionsHistory = async (chainId: number, args: G
             throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
-        const result: Awaited<ReturnType<typeof Moralis.EvmApi.token.getWalletTokenTransfers>> = await response.json();
+        const result: Awaited<ReturnType<typeof Moralis.EvmApi.token.getWalletTokenTransfers>>['raw'] =
+            await response.json();
 
         return {
-            data: result.raw.result.map((transfer) => ({
+            data: result.result.map((transfer) => ({
                 hash: transfer.transaction_hash,
-                tokenName: transfer.token_name,
-                tokenSymbol: transfer.token_symbol,
-                tokenLogo: transfer.token_logo,
-                tokenDecimals: transfer.token_decimals,
-                contractAddress: transfer.address,
-                from: transfer.from_address,
-                fromLabel: transfer.from_address_label,
-                to: transfer.to_address,
-                toLabel: transfer.to_address_label,
+                from: transfer.from_address as Address,
+                to: transfer.to_address as Address,
                 value: transfer.value,
                 timestamp: transfer.block_timestamp,
                 blockNumber: transfer.block_number,
-                transactionIndex: transfer.transaction_index,
-                logIndex: transfer.log_index,
-                possibleSpam: transfer.possible_spam,
             })),
-            total: result.raw.total,
-            cursor: result.raw.cursor,
+            cursor: result.cursor,
         };
     } catch (error) {
         console.error('Error fetching ERC20 transfers:', error);
