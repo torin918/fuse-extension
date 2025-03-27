@@ -2,60 +2,59 @@ import { isPrincipalText } from '@choptop/haw';
 import { Button } from '@heroui/react';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { formatUnits, type Address } from 'viem';
 
 import Icon from '~components/icon';
+import { useERC20ReadContractBalanceOf } from '~hooks/evm/contracts/erc20/read';
+import { useERC20Transfer } from '~hooks/evm/contracts/erc20/write';
+import { useNativeBalance } from '~hooks/evm/native/read';
+import { useNativeTransfer } from '~hooks/evm/native/write';
 import type { GotoFunction } from '~hooks/memo/goto';
+import { useCurrentIdentity } from '~hooks/store/local-secure';
 import { cn } from '~lib/utils/cn';
 import { truncate_principal, truncate_text } from '~lib/utils/text';
-import type { Chain } from '~types/chain';
+import { format_number_smart } from '~pages/functions/token/evm';
+import { match_chain, type Chain } from '~types/chain';
+import { get_evm_token_info, type CurrentTokenShowInfo } from '~types/tokens';
 
 import { NetworkFeeDrawer, type NetworkFee } from './network_fee_drawer';
 
+const validate_transfer_amount = (amount: string, max_amount: BigNumber) => {
+    const parsed_amount_bn = new BigNumber(amount);
+    if (parsed_amount_bn.isNegative()) {
+        throw new Error('Amount cannot be negative');
+    }
+    if (!parsed_amount_bn.isInteger()) {
+        throw new Error('Amount is invalid');
+    }
+    if (parsed_amount_bn.gt(max_amount)) {
+        throw new Error('Insufficient balance');
+    }
+    return parsed_amount_bn;
+};
 function FunctionTransferTokenEvmAmountPage({
-    address,
-    chain,
     logo,
     to,
     goto: _goto,
+    info,
 }: {
-    address: string;
-    chain: Chain;
     logo?: string;
-    to: string;
+    to?: Address;
     goto: GotoFunction;
+    info: CurrentTokenShowInfo;
 }) {
-    // const toast = useSonnerToast();
-    // const [, { pushRecentAddress }] = useRecentAddresses();
-
     const [amount, setAmount] = useState('0');
     const [hex, setHex] = useState('');
     const [showHexInput, setShowHexInput] = useState(false);
-
     // current token info
     const current_token = undefined;
 
     const showUsd = useMemo<string | undefined>(() => {
         if (current_token === undefined) return '0.00';
         if (!amount) return '0.00';
-
-        // return (Number(current_token.price) * Number(amount)).toFixed(2);
     }, [current_token, amount]);
 
-    const [transferring, setTransferring] = useState(false);
     const [current_free, setCurrentFee] = useState<NetworkFee>();
-    const onConfirm = useCallback(async () => {
-        // if (BigInt(balance) < BigInt(amount_text) + BigInt(token.fee)) {
-        //     toast.success('InsufficientFunds');
-        //     return;
-        // }
-
-        if (transferring) return;
-
-        // do transfer and update balance and push recent
-
-        setTransferring(true);
-        setTransferring(false);
-    }, [transferring]);
 
     const sendRef = useRef<HTMLInputElement>(null);
 
@@ -64,6 +63,73 @@ function FunctionTransferTokenEvmAmountPage({
     }, [sendRef]);
 
     const freeFef = useRef<HTMLDivElement>(null);
+    const { symbol, chain, isNative, decimals, address } = get_evm_token_info(info.token.info);
+    const { current_identity_network } = useCurrentIdentity();
+    const self = match_chain(chain, {
+        ic: () => {
+            throw new Error('IC chain is not supported');
+        },
+        ethereum: () => current_identity_network?.ethereum?.address,
+        ethereum_test_sepolia: () => current_identity_network?.ethereum_test_sepolia?.address,
+        polygon: () => current_identity_network?.polygon?.address,
+        polygon_test_amoy: () => current_identity_network?.polygon_test_amoy?.address,
+        bsc: () => current_identity_network?.bsc?.address,
+        bsc_test: () => current_identity_network?.bsc_test?.address,
+    });
+    // balance
+    const { data: erc20Balance } = useERC20ReadContractBalanceOf(chain, address, self && [self], {
+        enabled: !!self && !isNative,
+    });
+    const { data: nativeBalance } = useNativeBalance(chain);
+
+    const balance = isNative ? BigInt(nativeBalance ?? '0') : erc20Balance;
+    const formatted_balance = format_number_smart(formatUnits(balance ?? BigInt(0), decimals));
+
+    // parsed amount
+    const parsed_amount = useMemo(() => {
+        return new BigNumber(amount).times(new BigNumber(10).pow(decimals)).toFixed();
+    }, [amount, decimals]);
+
+    const [fee, setFee] = useState<string>('0');
+    // native balance enough for (fee + native amount)
+    const is_enough_native = useMemo(() => {
+        return isNative
+            ? BigNumber(nativeBalance?.toString() ?? '0')
+                  .minus(BigNumber(fee ?? '0'))
+                  .minus(BigNumber(parsed_amount ?? '0'))
+                  .gte(0)
+            : BigNumber(nativeBalance?.toString() ?? '0').gte(BigNumber(fee ?? '0'));
+    }, [balance, fee, parsed_amount]);
+
+    // max amount (native/erc20)
+    const max_amount = useMemo(() => {
+        const max_amount_bn = isNative
+            ? BigNumber(balance?.toString() ?? '0').minus(new BigNumber(fee ?? '0'))
+            : BigNumber(balance?.toString() ?? '0');
+        if (max_amount_bn.isNegative()) return BigNumber(0);
+        return max_amount_bn;
+    }, [balance, fee, decimals]);
+
+    // transfer
+    const { mutateAsync: transfer_native, isPending: is_transferring_native } = useNativeTransfer(chain);
+    const { transfer: transfer_erc20, isPending: is_transferring_erc20 } = useERC20Transfer(chain);
+    const is_transferring = is_transferring_native || is_transferring_erc20;
+    const onConfirm = useCallback(async () => {
+        try {
+            if (is_transferring) return;
+            if (!to) return;
+            if (!parsed_amount) return;
+            if (!is_enough_native) throw new Error('Insufficient native balance');
+            const parsed_amount_bn = validate_transfer_amount(parsed_amount, max_amount);
+            if (isNative) {
+                await transfer_native({ to, amount: BigInt(parsed_amount_bn.toFixed()) });
+            } else {
+                await transfer_erc20(address, to, BigInt(parsed_amount_bn.toFixed()));
+            }
+        } catch (error) {
+            console.debug('🚀 ~ onConfirm ~ error:', error);
+        }
+    }, [is_transferring, to, parsed_amount, max_amount, transfer_native, is_enough_native]);
 
     if (!address || !to) return <></>;
 
@@ -82,24 +148,51 @@ function FunctionTransferTokenEvmAmountPage({
                         value={amount}
                         onChange={(e) => {
                             const value = e.target.value.trim();
-                            if (/^\d*\.?\d*$/.test(value)) {
+                            const regex = new RegExp(`^(0|[1-9]\\d*)(\\.\\d{0,${decimals}})?$`);
+                            if (value === '' || value === '0' || value === '.' || regex.test(value)) {
                                 setAmount(value);
+                            }
+                        }}
+                        onBlur={() => {
+                            if (amount.endsWith('.')) {
+                                setAmount(amount.slice(0, -1));
                             }
                         }}
                         className="h-[48px] min-w-[50px] border-none bg-transparent pr-3 text-right text-5xl font-bold text-white outline-none"
                         style={{ width: `${amount.length + 1}ch` }}
                         ref={sendRef}
                     />
-                    {/* TODO: symbol */}
-                    {/* <span className="text-5xl font-bold text-white">{token?.symbol}</span> */}
+                    <span className="text-5xl font-bold text-white">{symbol}</span>
                 </div>
                 <span className="block w-full py-2 text-center text-base text-[#999999]">${showUsd}</span>
                 <div className="flex items-center justify-center text-sm">
                     <span className="pr-2 text-[#999999]">Available:</span>
-                    {/* TODO: balance */}
-                    {/* <span className="pr-3 text-[#EEEEEE]">{showBalance}</span> */}
-                    <span className="cursor-pointer px-1 text-[#FFCF13] duration-300 hover:opacity-85">50%</span>
-                    <span className="cursor-pointer px-1 text-[#FFCF13] duration-300 hover:opacity-85">Max</span>
+                    <span className="pr-3 text-[#EEEEEE]">{formatted_balance}</span>
+                    <div
+                        className="cursor-pointer px-1 text-[#FFCF13] duration-300 hover:opacity-85"
+                        onClick={() => {
+                            setAmount(
+                                BigNumber(balance?.toString() ?? '0')
+                                    .div(2)
+                                    .div(new BigNumber(10).pow(decimals))
+                                    .toFixed(),
+                            );
+                        }}
+                    >
+                        50%
+                    </div>
+                    <div
+                        className="cursor-pointer px-1 text-[#FFCF13] duration-300 hover:opacity-85"
+                        onClick={() => {
+                            const value = max_amount.div(new BigNumber(10).pow(decimals)).toFixed();
+                            setAmount(value);
+                            if (sendRef.current) {
+                                sendRef.current.style.width = `${value.length + 1}ch`;
+                            }
+                        }}
+                    >
+                        Max
+                    </div>
                 </div>
                 <div className="mt-7 w-full rounded-xl bg-[#181818]">
                     <div className="flex w-full justify-between border-b border-[#333333] px-3 py-4">
@@ -180,7 +273,7 @@ function FunctionTransferTokenEvmAmountPage({
                     //     new BigNumber(showBalance ?? '0').lt(new BigNumber(amount).plus(new BigNumber(showFee ?? '0')))
                     // }
                     onPress={onConfirm}
-                    isLoading={transferring}
+                    isLoading={is_transferring}
                 >
                     Confirm
                 </Button>

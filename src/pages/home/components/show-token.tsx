@@ -49,7 +49,7 @@ export const TokenCard = ({
         bsc: () => 'evm',
         bsc_test: () => 'evm',
     });
-    const chainAndAddress = match_combined_token_info<{ chain: Chain; address: string }>(token.info, {
+    const { address, chain } = match_combined_token_info<{ chain: Chain; address: string }>(token.info, {
         ic: (ic) => ({ chain: 'ic', address: ic.canister_id }),
         ethereum: (ethereum) => ({ chain: 'ethereum', address: ethereum.address }),
         ethereum_test_sepolia: (ethereum_test_sepolia) => ({
@@ -69,15 +69,25 @@ export const TokenCard = ({
         }
         if (type === TransferType.TRANSFER) {
             if (route_key === 'ic') {
-                goto(`/home/token/ic/transfer`, { state: { canister_id: chainAndAddress.address } });
+                goto(`/home/token/ic/transfer`, { state: { canister_id: address } });
                 return;
             }
-
-            goto(`/home/token/evm/transfer`, { state: chainAndAddress });
+            goto(`/home/token/evm/transfer`, {
+                state: {
+                    chain,
+                    address,
+                    info,
+                },
+            });
             return;
         }
         if (type === TransferType.RECEIVE) {
-            goto('/home/receive', { state: chainAndAddress });
+            goto('/home/receive', {
+                state: {
+                    chain,
+                    address: address,
+                },
+            });
             return;
         }
 
@@ -90,8 +100,7 @@ export const TokenCard = ({
             onClick={() => goNext()}
         >
             <div className="flex items-center">
-                {/* <img src={logo} className="w-10 h-10 rounded-full" /> */}
-                <TokenLogo chain={chainAndAddress.chain} address={chainAndAddress.address} />
+                <TokenLogo chain={chain} address={address} />
                 <div className="ml-[10px]">
                     <strong className="block text-base text-[#EEEEEE]">{symbol}</strong>
                     {price_value === undefined && (

@@ -1,12 +1,15 @@
 import _ from 'lodash';
+import type { Address as EvmAddress } from 'viem';
 
-import type { BscTokenInfo } from './chain/bsc';
-import type { BscTestTokenInfo } from './chain/bsc-test';
-import type { EthereumTokenInfo } from './chain/ethereum';
-import type { EthereumTestSepoliaTokenInfo } from './chain/ethereum-test-sepolia';
+import type { EvmChain } from '~types/chain';
+
+import { BscTokenStandard, type BscTokenInfo } from './chain/bsc';
+import { BscTestTokenStandard, type BscTestTokenInfo } from './chain/bsc-test';
+import { EthereumTokenStandard, type EthereumTokenInfo } from './chain/ethereum';
+import { EthereumTestSepoliaTokenStandard, type EthereumTestSepoliaTokenInfo } from './chain/ethereum-test-sepolia';
 import type { IcTokenInfo } from './chain/ic';
-import type { PolygonTokenInfo } from './chain/polygon';
-import type { PolygonTestAmoyTokenInfo } from './chain/polygon-test-amoy';
+import { PolygonTokenStandard, type PolygonTokenInfo } from './chain/polygon';
+import { PolygonTestAmoyTokenStandard, type PolygonTestAmoyTokenInfo } from './chain/polygon-test-amoy';
 import type { ShowTokenPrice } from './price';
 
 export enum TokenTag {
@@ -242,4 +245,74 @@ export type CurrentTokenShowInfo = {
         raw: string | undefined;
         formatted: string | undefined;
     };
+};
+
+export const get_evm_token_info = (info: CombinedTokenInfo) => {
+    return match_combined_token_info<{
+        symbol: string;
+        name: string;
+        chain: EvmChain;
+        isNative: boolean;
+        isErc20: boolean;
+        address: EvmAddress;
+        decimals: number;
+    }>(info, {
+        ic: () => {
+            throw new Error('ic token not supported');
+        },
+        ethereum: (ethereum) => ({
+            symbol: ethereum.symbol,
+            name: ethereum.name,
+            chain: 'ethereum',
+            address: ethereum.address,
+            isNative: ethereum.standards.includes(EthereumTokenStandard.NATIVE),
+            isErc20: ethereum.standards.includes(EthereumTokenStandard.ERC20),
+            decimals: ethereum.decimals,
+        }),
+        ethereum_test_sepolia: (ethereum_test_sepolia) => ({
+            symbol: ethereum_test_sepolia.symbol,
+            name: ethereum_test_sepolia.name,
+            chain: 'ethereum-test-sepolia',
+            address: ethereum_test_sepolia.address,
+            isNative: ethereum_test_sepolia.standards.includes(EthereumTestSepoliaTokenStandard.NATIVE),
+            isErc20: ethereum_test_sepolia.standards.includes(EthereumTestSepoliaTokenStandard.ERC20),
+            decimals: ethereum_test_sepolia.decimals,
+        }),
+        polygon: (polygon) => ({
+            symbol: polygon.symbol,
+            name: polygon.name,
+            chain: 'polygon',
+            address: polygon.address,
+            isNative: polygon.standards.includes(PolygonTokenStandard.NATIVE),
+            isErc20: polygon.standards.includes(PolygonTokenStandard.ERC20),
+            decimals: polygon.decimals,
+        }),
+        polygon_test_amoy: (polygon_test_amoy) => ({
+            symbol: polygon_test_amoy.symbol,
+            name: polygon_test_amoy.name,
+            chain: 'polygon-test-amoy',
+            address: polygon_test_amoy.address,
+            isNative: polygon_test_amoy.standards.includes(PolygonTestAmoyTokenStandard.NATIVE),
+            isErc20: polygon_test_amoy.standards.includes(PolygonTestAmoyTokenStandard.ERC20),
+            decimals: polygon_test_amoy.decimals,
+        }),
+        bsc: (bsc) => ({
+            symbol: bsc.symbol,
+            name: bsc.name,
+            chain: 'bsc',
+            address: bsc.address,
+            isNative: bsc.standards.includes(BscTokenStandard.NATIVE),
+            isErc20: bsc.standards.includes(BscTokenStandard.BEP20),
+            decimals: bsc.decimals,
+        }),
+        bsc_test: (bsc_test) => ({
+            symbol: bsc_test.symbol,
+            name: bsc_test.name,
+            chain: 'bsc-test',
+            address: bsc_test.address,
+            isNative: bsc_test.standards.includes(BscTestTokenStandard.NATIVE),
+            isErc20: bsc_test.standards.includes(BscTestTokenStandard.BEP20),
+            decimals: bsc_test.decimals,
+        }),
+    });
 };

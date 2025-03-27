@@ -8,7 +8,7 @@ import type { EvmChain } from '~types/chain';
  * @returns Mutation hook for ERC20 transfer function
  */
 export function useERC20Transfer(chain: EvmChain) {
-    const { mutate, isPending, isError, isSuccess, error, data } = useWriteContract<
+    const { mutateAsync, isPending, isError, isSuccess, error, data } = useWriteContract<
         typeof erc20Abi,
         'transfer',
         [to: Address, amount: bigint]
@@ -21,7 +21,7 @@ export function useERC20Transfer(chain: EvmChain) {
      * @param amount Amount to transfer (in smallest unit, e.g. wei)
      */
     const transfer = (tokenAddress: Address, to: Address, amount: bigint) => {
-        return mutate({
+        return mutateAsync({
             address: tokenAddress,
             abi: erc20Abi,
             functionName: 'transfer',

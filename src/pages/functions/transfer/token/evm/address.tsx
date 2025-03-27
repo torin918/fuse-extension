@@ -1,10 +1,12 @@
 import { Button } from '@heroui/react';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { isAddress, type Address } from 'viem';
 
 import Icon from '~components/icon';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~components/ui/accordion';
 import { useIdentityKeys, useMarkedAddresses, useRecentAddresses } from '~hooks/store/local-secure';
+import { useSonnerToast } from '~hooks/toast';
 import { AddAddressDrawer } from '~pages/functions/settings/pages/address/components/drawer';
 import { check_chain_address, type ChainAddress } from '~types/address';
 import { match_chain, type Chain } from '~types/chain';
@@ -22,12 +24,12 @@ function FunctionTransferTokenEvmAddressPage({
 }: {
     logo?: string;
     chain: Chain;
-    onNext: (to: string) => void;
+    onNext: (to: Address) => void;
 }) {
     const [marked, { pushOrUpdateMarkedAddress }] = useMarkedAddresses();
     const [recent] = useRecentAddresses();
     const { current_identity, identity_list } = useIdentityKeys();
-
+    const toast = useSonnerToast();
     const getChainAddress = (chain: Chain, address: IdentityAddress) => {
         if (!address) return;
         return match_chain(chain, {
@@ -190,7 +192,13 @@ function FunctionTransferTokenEvmAddressPage({
                 <Button
                     className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
                     isDisabled={!check_chain_address({ type: 'evm', address: to })}
-                    onPress={() => onNext(to)}
+                    onPress={() => {
+                        if (isAddress(to)) {
+                            onNext(to);
+                        } else {
+                            toast.error('Addrees invalid!');
+                        }
+                    }}
                 >
                     Next
                 </Button>
