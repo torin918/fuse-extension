@@ -27,7 +27,7 @@ import type { IcTokenInfo } from '~types/tokens/chain/ic';
 import { get_token_logo, PRESET_ALL_TOKEN_INFO } from '~types/tokens/preset';
 
 import { TokenMetadataIc } from './components/token-metadata';
-import TransferDetailDrawer from './components/transfer-detail-drawer';
+import { TransferDetailDrawerIc } from './components/transfer-detail-drawer';
 
 const TransferItem = ({
     item,
@@ -279,7 +279,7 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
                                             records.map((record, idx) => {
                                                 return (
                                                     <div className="w-full" key={`transfer_item_${idx}`}>
-                                                        <TransferDetailDrawer
+                                                        <TransferDetailDrawerIc
                                                             trigger={
                                                                 <TransferItem item={record} logo={logo} token={token} />
                                                             }

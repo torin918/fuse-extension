@@ -1,14 +1,15 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import {
     createPublicClient,
     http,
+    zeroAddress,
     type Account,
+    type Address,
     type Chain,
     type PublicClient,
     type SendTransactionParameters,
     type SendTransactionRequest,
-    type SignTypedDataParameters,
     type TypedData,
     type TypedDataDefinition,
     type Chain as ViemChain,
@@ -178,5 +179,37 @@ export const useSignTypedData = <
             if (!client) throw new Error('Client is required');
             return client.account.signTypedData(args);
         },
+    });
+};
+
+export const useEstimateNativeTransferGas = (
+    chain: EvmChain,
+    args: {
+        data?: `0x${string}`;
+    },
+    options?: {
+        enabled: boolean;
+    },
+) => {
+    const publicClient = usePublicClientByChain(chain);
+    const identity_network = useEvmChainIdentityNetworkByChain(chain);
+    const identity_key = identity_network && get_identity_network_key(identity_network);
+    const { data } = args;
+    const enabled = !!publicClient && !!identity_key && !!(!options || options?.enabled);
+    return useQuery({
+        queryKey: [identity_key, 'estimate_native_transfer_gas_fee'],
+        queryFn: async () => {
+            const gasLimit = await publicClient.estimateGas({
+                account: identity_network?.address,
+                to: zeroAddress,
+                value: 0n,
+                data,
+            });
+            const gasPrice = await publicClient.getGasPrice();
+            const estimatedFee = gasLimit * gasPrice;
+            return { gasLimit, gasPrice, estimatedFee };
+        },
+        enabled,
+        refetchInterval: 5_000,
     });
 };

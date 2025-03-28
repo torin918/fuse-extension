@@ -25,6 +25,7 @@ export interface Erc20TransactionsHistoryInfiniteArgs
     chain: EvmChain;
     enabled?: boolean;
     initialCursor?: string;
+    contractAddresses?: Address[];
 }
 
 export const useWalletNativeTransactionsHistory = (args: TransactionsHistoryInfiniteArgs) => {
@@ -42,7 +43,7 @@ export const useWalletNativeTransactionsHistory = (args: TransactionsHistoryInfi
                 throw new Error('Chain ID or address is not set');
             }
             return getWalletNativeTransactionsHistory(chainId, {
-                address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+                address,
                 limit,
                 cursor: pageParam, // Use cursor as pagination parameter
             });
@@ -72,7 +73,9 @@ export const useWalletErc20TransactionsHistory = (args: Erc20TransactionsHistory
             if (!chainId || !address) {
                 throw new Error('Chain ID or address is not set');
             }
-
+            if (!contractAddresses) {
+                throw new Error('Contract addresses are not set');
+            }
             return getWalletErc20TransactionsHistory(chainId, {
                 address,
                 limit,
@@ -94,12 +97,12 @@ export const useWalletErc20TransactionsHistory = (args: Erc20TransactionsHistory
  * @param address - Token contract address
  * @param options - Query options (enabled, refetchInterval, etc.)
  */
-export const useTokenPrice = (args: { address: Address; chain: EvmChain }, options = {}) => {
+export const useTokenPrice = (args: { address: Address; chain: EvmChain; enabled?: boolean }, options = {}) => {
     const identity_network = useEvmChainIdentityNetworkByChain(args.chain);
     const identity_key = identity_network && get_identity_network_key(identity_network);
     const address = args?.address;
     const chainId = identity_network?.network.chain_id;
-    const enabled = !!identity_key && !!chainId && !!address;
+    const enabled = !!identity_key && !!chainId && !!address && args.enabled;
     return useQuery({
         queryKey: [identity_key, 'token_price', address],
         queryFn: () => {
