@@ -270,34 +270,37 @@ const TransferDetailDrawerEvm = ({
 
                         <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
                             <span className="text-sm text-[#999999]">To</span>
-                            <div className="flex items-center text-sm">
-                                <span>{truncate_text(decoded_transaction?.to || '')}</span>
-                                <CopyToClipboard
-                                    text={decoded_transaction?.to || ''}
-                                    onCopy={() => toast.success('Copied')}
-                                >
+                            <CopyToClipboard
+                                text={decoded_transaction?.to || ''}
+                                onCopy={() => {
+                                    toast.success('Copied');
+                                }}
+                            >
+                                <div className="flex items-center text-sm">
+                                    <span>{truncate_text(decoded_transaction?.to || '')}</span>
+
                                     <Icon
                                         name="icon-copy"
                                         className="ml-2 h-3 w-3 cursor-pointer text-[#EEEEEE] duration-300 hover:text-[#FFCF13]"
                                     />
-                                </CopyToClipboard>
-                            </div>
+                                </div>
+                            </CopyToClipboard>
                         </div>
 
                         <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">
                             <span className="text-sm text-[#999999]">From</span>
-                            <div className="flex items-center text-sm">
-                                <span>{truncate_text(decoded_transaction?.from || '')}</span>
-                                <CopyToClipboard
-                                    text={decoded_transaction?.from || ''}
-                                    onCopy={() => toast.success('Copied')}
-                                >
+                            <CopyToClipboard
+                                text={decoded_transaction?.from || ''}
+                                onCopy={() => toast.success('Copied')}
+                            >
+                                <div className="flex items-center text-sm">
+                                    <span>{truncate_text(decoded_transaction?.from || '')}</span>
                                     <Icon
                                         name="icon-copy"
                                         className="ml-2 h-3 w-3 cursor-pointer text-[#EEEEEE] duration-300 hover:text-[#FFCF13]"
                                     />
-                                </CopyToClipboard>
-                            </div>
+                                </div>
+                            </CopyToClipboard>
                         </div>
 
                         <div className="flex w-full items-center justify-between border-b border-[#222222] p-3">

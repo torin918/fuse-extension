@@ -1,7 +1,11 @@
-import { erc20Abi, type Address } from 'viem';
+import { useQuery } from '@tanstack/react-query';
+import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 
 import { useWriteContract } from '~hooks/evm/contracts';
+import { useEvmChainIdentityNetworkByChain, usePublicClientByChain } from '~hooks/evm/viem';
+import { useCurrentIdentity } from '~hooks/store/local-secure';
 import type { EvmChain } from '~types/chain';
+import { get_identity_network_key } from '~types/network';
 
 /**
  * Hook for ERC20 token transfer
@@ -74,3 +78,53 @@ export function useERC20Approve(chain: EvmChain) {
         data,
     };
 }
+
+export const useEstimateErc20TransferGasFee = (
+    chain: EvmChain,
+    args: {
+        tokenAddress?: Address;
+        to?: Address;
+        amount?: bigint;
+    },
+    options?: {
+        enabled?: boolean;
+    },
+) => {
+    const publicClient = usePublicClientByChain(chain);
+    const identity_network = useEvmChainIdentityNetworkByChain(chain);
+    const identity_key = identity_network && get_identity_network_key(identity_network);
+    const { tokenAddress, to, amount } = args;
+    const fetchGasFee = async () => {
+        if (!tokenAddress || !to || amount === undefined) {
+            return undefined;
+        }
+        const gasLimit = await publicClient.estimateGas({
+            account: identity_network?.address,
+            to: tokenAddress,
+            data: encodeFunctionData({
+                abi: erc20Abi,
+                functionName: 'transfer',
+                args: [to, amount],
+            }),
+        });
+
+        const gasPrice = await publicClient.getGasPrice();
+        const bufferedGasLimit = (gasLimit * 120n) / 100n;
+        const estimatedFee = bufferedGasLimit * gasPrice;
+
+        return { gasLimit: bufferedGasLimit, gasPrice, estimatedFee };
+    };
+    const enabled =
+        !!publicClient &&
+        !!identity_key &&
+        !!tokenAddress &&
+        !!(!options || options?.enabled) &&
+        !!to &&
+        amount !== undefined;
+    return useQuery({
+        queryKey: [identity_key, 'estimate_erc20_transfer_gas_fee', tokenAddress, to],
+        queryFn: fetchGasFee,
+        enabled,
+        refetchInterval: 10_000,
+    });
+};
