@@ -99,7 +99,6 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
     const [custom] = useTokenInfoCustom();
 
     const [list, { loading, done, load }] = useFuseRecordList(current_identity_network);
-    console.log('🚀 ~ InnerPage ~ list:', list);
 
     const loadMoreRef = useRef<HTMLDivElement>(null);
 
