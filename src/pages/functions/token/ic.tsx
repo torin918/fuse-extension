@@ -98,8 +98,10 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
     const { current_identity, current_identity_network } = useCurrentIdentity();
     const [custom] = useTokenInfoCustom();
 
-    // , { done, load }
-    const [list] = useFuseRecordList(current_identity_network);
+    const [list, { loading, done, load }] = useFuseRecordList(current_identity_network);
+    console.log('🚀 ~ InnerPage ~ list:', list);
+
+    const loadMoreRef = useRef<HTMLDivElement>(null);
 
     const getDateString = (timestamp: number) => dayjs(timestamp).format('MM/DD/YYYY');
 
@@ -128,6 +130,34 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
             return acc;
         }, {});
     }, [canister_id, list]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                // 当观察到目标元素，且有记录时触发加载
+                if (
+                    entries[0].isIntersecting &&
+                    !loading &&
+                    !done &&
+                    Object.keys(token_transferred_ic_list).length > 0
+                ) {
+                    load(list.length + 20);
+                }
+            },
+            { threshold: 0.1 },
+        );
+
+        const target = loadMoreRef.current;
+        if (target) {
+            observer.observe(target);
+        }
+
+        return () => {
+            if (target) {
+                observer.unobserve(target);
+            }
+        };
+    }, [loading, done, load, list.length, token_transferred_ic_list]);
 
     const allTokens = useMemo(() => [...PRESET_ALL_TOKEN_INFO, ...custom.map((t) => t.token)], [custom]);
 
@@ -293,6 +323,18 @@ const InnerPage = ({ canister_id, navigate }: { canister_id: string; navigate: N
                                             })}
                                     </div>
                                 ))}
+
+                                <div ref={loadMoreRef} className="py-3 text-center">
+                                    {loading ? (
+                                        <span className="text-sm text-[#999999]">Loading...</span>
+                                    ) : done ? (
+                                        <span className="text-sm text-[#999999]">No more transactions</span>
+                                    ) : (
+                                        Object.keys(token_transferred_ic_list).length > 0 && (
+                                            <span className="text-sm text-[#999999]">Loading more...</span>
+                                        )
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
