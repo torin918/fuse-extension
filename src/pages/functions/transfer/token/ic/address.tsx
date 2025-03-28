@@ -85,8 +85,8 @@ function FunctionTransferTokenIcAddressPage({ logo, onNext }: { logo?: string; o
     const ref = useRef<HTMLDivElement>(null);
 
     return (
-        <div ref={ref} className="flex h-full w-full flex-col justify-between">
-            <div className="flex w-full flex-1 flex-col">
+        <div ref={ref} className="flex h-full w-full flex-col">
+            <div className="w-full shrink-0">
                 <div className="w-full px-5">
                     <div className="mb-8 mt-5 flex w-full justify-center">
                         <img
@@ -119,66 +119,67 @@ function FunctionTransferTokenIcAddressPage({ logo, onNext }: { logo?: string; o
                         />
                     </div>
                 )}
-                <div className="relative w-full flex-1 px-5">
-                    <Accordion
-                        type="multiple"
-                        defaultValue={openAccordionItems}
-                        onValueChange={(vals) => setOpenAccordionItems(vals)}
-                    >
-                        {recentAddresses && recentAddresses.length > 0 && (
-                            <AccordionItem value="1" className="border-[#333]">
-                                <AccordionTrigger className="text-xs text-[#999]">Recent Address</AccordionTrigger>
-                                <AccordionContent>
-                                    {recentAddresses.map((address, index) => (
-                                        <div
-                                            key={index}
-                                            onClick={() => setTo(address.address.address)}
-                                            className="block w-full cursor-pointer break-words py-2 text-xs text-[#EEEEEE] duration-300 hover:bg-[#333333]"
-                                        >
-                                            {address.address.address} {address.name && <span>{address.name}</span>}
-                                        </div>
-                                    ))}
-                                </AccordionContent>
-                            </AccordionItem>
-                        )}
-                        {markedAddresses && markedAddresses.length > 0 && (
-                            <AccordionItem value="2" className="border-[#333]">
-                                <AccordionTrigger className="text-xs text-[#999]">Address Book</AccordionTrigger>
-                                <AccordionContent>
-                                    {markedAddresses.map((address, index) => (
-                                        <div
-                                            key={index}
-                                            onClick={() => setTo(address.address.address)}
-                                            className="block w-full cursor-pointer break-words py-2 text-xs text-[#EEEEEE] duration-300 hover:bg-[#333333]"
-                                        >
-                                            <div>{address.name && <span>{address.name}</span>}</div>
-                                            {address.address.address}
-                                        </div>
-                                    ))}
-                                </AccordionContent>
-                            </AccordionItem>
-                        )}
-                        {wallets && wallets.length > 0 && (
-                            <AccordionItem value="3" className="border-[#333]">
-                                <AccordionTrigger className="text-xs text-[#999]">Wallets</AccordionTrigger>
-                                <AccordionContent>
-                                    {wallets.map((address, index) => (
-                                        <div
-                                            key={index}
-                                            onClick={() => setTo(address.address.address)}
-                                            className="block w-full cursor-pointer break-words py-2 text-xs text-[#EEEEEE] duration-300 hover:bg-[#333333]"
-                                        >
-                                            <div>{address.name && <span>{address.name}</span>}</div>
-                                            {address.address.address}
-                                        </div>
-                                    ))}
-                                </AccordionContent>
-                            </AccordionItem>
-                        )}
-                    </Accordion>
-                </div>
             </div>
-            <div className="w-full p-5">
+            <div className="w-full flex-1 overflow-y-auto px-5">
+                <Accordion
+                    type="multiple"
+                    defaultValue={openAccordionItems}
+                    onValueChange={(vals) => setOpenAccordionItems(vals)}
+                >
+                    {recentAddresses && recentAddresses.length > 0 && (
+                        <AccordionItem value="1" className="border-[#333]">
+                            <AccordionTrigger className="text-xs text-[#999]">Recent Address</AccordionTrigger>
+                            <AccordionContent>
+                                {recentAddresses.map((address, index) => (
+                                    <div
+                                        key={index}
+                                        onClick={() => setTo(address.address.address)}
+                                        className="block w-full cursor-pointer break-words py-2 text-xs text-[#EEEEEE] duration-300 hover:bg-[#333333]"
+                                    >
+                                        {address.address.address} {address.name && <span>{address.name}</span>}
+                                    </div>
+                                ))}
+                            </AccordionContent>
+                        </AccordionItem>
+                    )}
+                    {markedAddresses && markedAddresses.length > 0 && (
+                        <AccordionItem value="2" className="border-[#333]">
+                            <AccordionTrigger className="text-xs text-[#999]">Address Book</AccordionTrigger>
+                            <AccordionContent>
+                                {markedAddresses.map((address, index) => (
+                                    <div
+                                        key={index}
+                                        onClick={() => setTo(address.address.address)}
+                                        className="block w-full cursor-pointer break-words py-2 text-xs text-[#EEEEEE] duration-300 hover:bg-[#333333]"
+                                    >
+                                        <div>{address.name && <span>{address.name}</span>}</div>
+                                        {address.address.address}
+                                    </div>
+                                ))}
+                            </AccordionContent>
+                        </AccordionItem>
+                    )}
+                    {wallets && wallets.length > 0 && (
+                        <AccordionItem value="3" className="border-[#333]">
+                            <AccordionTrigger className="text-xs text-[#999]">Wallets</AccordionTrigger>
+                            <AccordionContent>
+                                {wallets.map((address, index) => (
+                                    <div
+                                        key={index}
+                                        onClick={() => setTo(address.address.address)}
+                                        className="block w-full cursor-pointer break-words py-2 text-xs text-[#EEEEEE] duration-300 hover:bg-[#333333]"
+                                    >
+                                        <div>{address.name && <span>{address.name}</span>}</div>
+                                        {address.address.address}
+                                    </div>
+                                ))}
+                            </AccordionContent>
+                        </AccordionItem>
+                    )}
+                </Accordion>
+            </div>
+
+            <div className="w-full shrink-0 p-5">
                 <Button
                     className="h-[48px] w-full bg-[#FFCF13] text-lg font-semibold text-black"
                     isDisabled={!check_chain_address({ type: 'ic', address: to })}
